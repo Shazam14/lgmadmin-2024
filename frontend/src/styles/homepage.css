@@ -1,0 +1,361 @@
+/* HomePageContent.css */
+.homepage-content {
+  @apply flex flex-col items-center;
+}
+
+/* Navbar.css */
+.home-navbar {
+  @apply sticky top-0 z-10 flex flex-col md:flex-row justify-between items-center p-4 bg-gray-100;
+}
+
+.left-section {
+  @apply flex flex-col md:flex-row items-center space-y-4 md:space-y-0 md:space-x-6 mb-4 md:mb-0;
+}
+
+.chatbot-text-navbar {
+  color: #286e34;
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 22px;
+  text-align: center;
+}
+
+.right-section {
+  @apply flex items-center;
+}
+
+.lgms-portal {
+  @apply text-lg font-semibold;
+}
+
+.dropdown {
+  @apply relative;
+}
+
+.dropdown-btn {
+  @apply cursor-pointer relative bg-white text-black text-lg font-montserrat leading-6 outline-none border-b border-black;
+  width: 121px; /* Custom width, not a Tailwind utility */
+  height: 36px; /* Custom height, not a Tailwind utility */
+  padding: 0px 8px; /* Tailwind has px-2 which is 8px horizontal padding, but vertical padding needs to match */
+}
+
+.dropdown-content {
+  @apply hidden absolute bg-white shadow-lg py-2 mt-2 rounded-md w-48;
+}
+
+.dropdown:hover .dropdown-content {
+  @apply block;
+}
+
+.dropdown-content a {
+  @apply block px-4 py-2 text-gray-800 hover:bg-gray-100;
+}
+
+.home-nav-text {
+  @apply text-[#030303] text-[18px] font-montserrat leading-[22px] text-center mr-2.5;
+}
+
+/* HeroSection.css */
+.hero-section {
+  @apply flex flex-col md:flex-row items-center justify-between bg-[#cdf2d0] p-4 md:p-8 w-full;
+}
+
+.hero-content {
+  @apply w-full md:w-1/2 flex flex-col justify-center;
+}
+
+.chatbot-prompt {
+  @apply mb-4 text-left;
+}
+
+.chatbot-link {
+}
+
+/* icons.css */
+
+.website-updates-icon {
+  color: #8a8a8a;
+  fill: #8a8a8a;
+  font-size: 24px;
+  width: 24px;
+  height: 24px;
+  margin-right: 8px;
+}
+
+.website-updates-text {
+  @apply text-[#030303] text-[20px] md:text-[24px] font-montserrat font-light italic leading-[22px] md:leading-[26px];
+}
+
+.chatbot-text {
+  @apply text-[#030303] text-[32px] md:text-[40px] font-montserrat font-medium leading-[36px] md:leading-[44px];
+}
+
+.description-text {
+  @apply text-[#030303] text-[16px] md:text-[18px] font-montserrat font-light leading-[18px] md:leading-[20px];
+}
+
+.school-logo-container {
+  /* @apply flex flex-wrap items-center justify-center md:justify-end w-full; */
+  @apply flex flex-wrap justify-center md:justify-start items-center;
+}
+
+.school-logo {
+  @apply flex flex-row items-center justify-center md:justify-end;
+}
+
+.school-logo-image {
+  @apply w-[150px] h-[150px] md:w-[200px] md:h-[200px] rounded-lg bg-cover bg-center bg-no-repeat;
+}
+
+.school-logo-text {
+  /* @apply flex flex-col items-center text-center text-[#393939] font-montserrat font-light leading-normal mt-4; */
+  @apply flex flex-col items-center text-center text-3xl;
+}
+
+.school-logo-text div span:first-child {
+  @apply font-bold;
+}
+
+.learning,
+.garden,
+.montessori,
+.school {
+  @apply text-[20px] md:text-[24px];
+}
+
+.b-learning,
+.b-garden,
+.b-montessori,
+.b-school {
+  @apply font-bold; /* Apply Tailwind's font-bold utility for bold text */
+  display: inline;
+  color: #393939; /* Direct CSS for custom color */
+  font-size: 32px; /* Direct CSS for custom font size */
+  font-weight: 300; /* Direct CSS for font weight */
+  line-height: 42px; /* Direct CSS for line height */
+}
+
+/* ImageCarousel.css */
+.image-carousel-container {
+  @apply mx-auto overflow-hidden;
+}
+
+.image-slide {
+  @apply w-full h-[671px] rounded-lg relative bg-gray-100;
+}
+
+.image-slide img {
+  @apply w-full h-[671px] object-cover rounded-lg;
+}
+
+.slick-dots li button:before {
+  @apply text-[#78909c] !important;
+}
+
+.slick-dots li.slick-active button:before {
+  @apply text-[#66bb6a] !important;
+}
+
+@media (max-width: 768px) {
+  .image-slide {
+    @apply h-auto;
+  }
+  .image-slide img {
+    @apply h-auto;
+  }
+}
+
+/* TestimonialCarousel.css */
+.testimonial-carousel-container {
+  @apply p-5 bg-gray-100;
+}
+
+.testimonial-heading {
+  @apply text-[24px] font-montserrat font-light italic text-left mb-5;
+}
+
+.testimonial-slide {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  padding: 1.25rem !important;
+}
+
+.testimonial-content {
+  @apply flex-[0_0_70%] pr-5;
+}
+
+.testimonial-text {
+  @apply mb-2.5;
+}
+
+.testimonial-quote {
+  @apply text-[#030303] text-[40px] font-medium leading-[44px] mb-1;
+}
+
+.testimonial-author {
+  @apply text-[#030303] text-[18px] font-light leading-[20px];
+}
+
+.testimonial-image-container {
+  @apply flex-[0_0_30%] flex justify-end items-center;
+}
+
+.testimonial-image {
+  @apply w-[210px] h-[210px] rounded-full object-cover;
+}
+
+.testimonial-placeholder {
+  @apply w-[210px] h-[210px] rounded-full bg-[#fcf] object-cover;
+}
+
+@media (max-width: 768px) {
+  .testimonial-slide {
+    @apply flex-col text-center;
+  }
+
+  .testimonial-text,
+  .testimonial-image-container {
+    @apply flex-[0_0_100%] pr-0 mb-5;
+  }
+
+  .testimonial-image-container {
+    @apply order-first mb-5;
+  }
+}
+
+/* OnlineServices.css */
+.online-services-container {
+  @apply flex flex-col items-start;
+  padding: 1.25rem;
+}
+
+.services-header {
+  @apply w-full mb-5;
+}
+
+.services-title {
+  @apply text-[#191b1c] text-[24px] font-montserrat font-light italic leading-[26px] mb-2.5;
+}
+
+.services-list {
+  @apply flex flex-row justify-between w-full mb-5;
+}
+
+.service-item {
+  @apply flex items-center mr-5;
+}
+
+.text-homepage {
+  @apply text-[#191b1c] text-[40px] font-montserrat font-thin leading-[44px] mr-2.5;
+}
+
+.button-services {
+  @apply cursor-pointer flex justify-center items-center w-[64px] h-[64px] border-0 box-border rounded-[24px] text-[#030303] bg-[#cdf2d0] outline-none;
+}
+
+.icon {
+  @apply text-[#030303] fill-[#030303] w-[34px] h-[34px] text-[34px] !important;
+}
+
+.horizontal-divider {
+  @apply w-[1280px] h-[1px] bg-[#d1d5db] rounded-[2px] mt-2.5 mx-auto;
+}
+
+@media (max-width: 768px) {
+  .services-list {
+    @apply flex-col items-center;
+  }
+
+  .service-item {
+    @apply mr-0 mb-5;
+  }
+}
+
+@media (max-width: 768px) {
+  .services-title {
+    @apply text-[20px] leading-[24px];
+  }
+
+  .text {
+    @apply text-[32px] leading-[36px];
+  }
+}
+
+/* Announcement.css */
+.announcement-section {
+  @apply mx-auto flex flex-col mt-8 mb-8;
+}
+
+.announcement-container {
+  @apply flex flex-col items-center gap-6 max-w-[calc(100%-2rem)];
+}
+
+.announcement-heading {
+  /* @apply text-[#191b1c] text-[24px] font-montserrat font-light italic leading-[26px] text-left pl-4 mb-8; */
+  @apply text-[#191b1c] text-[24px] font-montserrat font-light italic leading-[26px] text-left pl-4 mb-8 w-full; /* Add w-full */
+}
+
+.announcement-card {
+  /* @apply bg-white rounded-[24px] shadow-[0px_2px_10px_rgba(3,3,3,0.1)] p-4 text-left; */
+  @apply bg-white rounded-[24px] shadow-[0px_2px_10px_rgba(3,3,3,0.1)] p-4 text-left w-full; /* Add w-full */
+}
+
+.announcement-title {
+  @apply text-[#030303] text-[18px] font-montserrat font-semibold leading-[21px] m-0;
+}
+
+.announcement-date {
+  @apply text-[#030303] text-[16px] font-montserrat font-normal leading-[19px] my-1.5;
+}
+
+.announcement-content {
+  @apply text-[#030303] text-[16px] font-montserrat font-normal leading-[19px] mb-4;
+}
+
+.more-announcements-button {
+  @apply cursor-pointer w-[266px] h-[46px] px-2 border border-[#030303] rounded-[24px] bg-white text-[#030303] text-[20px] font-montserrat leading-[26px] outline-none mt-8;
+}
+
+.announcement-card {
+  @apply h-[132px] bg-white rounded-[24px] shadow-[0px_2px_10px_rgba(3,3,3,0.1)];
+}
+
+.announcement-card-title {
+  @apply text-[#030303] text-[18px] font-montserrat font-semibold leading-[21px];
+}
+
+.announcement-card-content-input {
+  @apply text-[#030303] text-[16px] font-montserrat font-normal leading-[19px] w-full box-border resize-none overflow-auto;
+}
+
+.posted-on {
+  @apply text-[#030303] text-[16px] font-montserrat font-normal leading-[19px];
+}
+
+@media (max-width: 768px) {
+  .announcement-card {
+    @apply w-full p-4 box-border;
+  }
+}
+
+@media (max-width: 768px) {
+  .announcement-heading {
+    @apply text-[20px] leading-[24px] text-center pl-0;
+  }
+
+  .announcement-title {
+    @apply text-[16px] leading-[20px];
+  }
+
+  .announcement-date,
+  .announcement-content {
+    @apply text-[14px] leading-[18px];
+  }
+}
+
+@media (max-width: 768px) {
+  .more-announcements-button {
+    @apply w-full mt-4;
+  }
+}

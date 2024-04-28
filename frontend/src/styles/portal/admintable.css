@@ -1,0 +1,92 @@
+/* styles/portal/admintable.css */
+
+.table-heading {
+  color: #030303;
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 28px;
+  margin: auto;
+}
+
+.table {
+  display: table;
+  width: 100%;
+  table-layout: auto;
+  border-collapse: collapse;
+  border: 1px solid #d1d5db;
+}
+
+.table th,
+.table td {
+  border: 1px solid #d1d5db;
+}
+
+.table tbody tr:nth-child(odd) {
+  background-color: #ffffff;
+}
+
+.table tbody tr:nth-child(even) {
+  background-color: #f3f4f6;
+}
+
+.text-table {
+  color: #1f2937;
+  font-size: 1rem;
+  font-weight: bold;
+  font-family: "Montserrat", sans-serif;
+  line-height: 1.25;
+  text-align: center;
+  padding: 0.5rem;
+}
+
+.td-table {
+  font-weight: normal;
+  padding: 0.5rem;
+}
+
+.button-table {
+  cursor: pointer;
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+  padding-top: 0.25rem;
+  padding-bottom: 0.25rem;
+  border: 0;
+  box-sizing: border-box;
+  border-radius: 9999px;
+  background-color: #05d114;
+  color: #ffffff;
+  font-size: 1rem;
+  font-family: "Montserrat", sans-serif;
+  font-weight: normal;
+  line-height: 1.25;
+  outline: none;
+  margin-right: 0.625rem;
+}
+
+.button-table:last-child {
+  margin-right: 0;
+}
+
+@media (max-width: 667px) {
+  .ag-picker-field {
+    display: flex;
+    flex-direction: column;
+  }
+  .ag-label {
+    padding-bottom: 5px;
+  }
+  .ag-paging-panel {
+    width: fit-content;
+    font-size: 10px;
+  }
+  .ag-paging-page-summary-panel {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  .ag-paging-panel button,
+  .ag-paging-panel select,
+  .ag-paging-panel input {
+    font-size: 10px;
+  }
+}
