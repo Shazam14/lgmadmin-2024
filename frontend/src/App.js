@@ -3,7 +3,6 @@ import { UserRoleProvider } from "./contexts/UserRoleContext";
 import { AdminRoleProvider } from "./contexts/AdminRoleContext";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import AdminPortalPage from "./pages/AdminPortalPage";
-import { AdminUIProvider } from "./contexts/AdminUIContext";
 import "./styles/app.css";
 import HomePage from "./pages/HomePage";
 import About from "./pages/AboutPage";
@@ -20,23 +19,19 @@ function App() {
   return (
     <UserRoleProvider>
       <AdminRoleProvider>
-        <AdminUIProvider>
-          {" "}
-          {/* Moved AdminUIProvider here */}
-          <Router>
-            <Routes>
-              <Route path="/admin" element={<AdminPortalPage />} />
-              <Route path="/" element={<HomePage />} />
-              <Route path="/courses/*" element={<CoursesPage />} />
-              <Route path="/applyform/*" element={<ApplyForm />} />
-              <Route path="/about" element={<About />} />
-              <Route path="/terms-of-service" element={<TermsPage />} />
-              <Route path="/privacy-policy" element={<PrivacyPage />} />
-              <Route path="/students" element={<StudentList />} />
-              <Route path="/students/:studentId" element={<StudentDetail />} />
-            </Routes>
-          </Router>
-        </AdminUIProvider>
+        <Router>
+          <Routes>
+            <Route path="/admin" element={<AdminPortalPage />} />
+            <Route path="/" element={<HomePage />} />
+            <Route path="/courses/*" element={<CoursesPage />} />
+            <Route path="/applyform/*" element={<ApplyForm />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/terms-of-service" element={<TermsPage />} />
+            <Route path="/privacy-policy" element={<PrivacyPage />} />
+            <Route path="/students" element={<StudentList />} />
+            <Route path="/students/:studentId" element={<StudentDetail />} />
+          </Routes>
+        </Router>
       </AdminRoleProvider>
     </UserRoleProvider>
   );

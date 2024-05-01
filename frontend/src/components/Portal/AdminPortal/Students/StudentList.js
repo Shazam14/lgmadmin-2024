@@ -1,4 +1,3 @@
-// src/components/StudentList.js
 import React, { useEffect, useMemo } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";

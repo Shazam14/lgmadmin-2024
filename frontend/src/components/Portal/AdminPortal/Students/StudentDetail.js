@@ -1,7 +1,8 @@
-// StudentDetail.js
 import React, { useEffect, useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { useParams, Link, useLocation } from "react-router-dom";
 import { fetchStudentById } from "../../../../services/api";
+import AdminNavbar from "../Admin/AdminNavbar";
+import Footer from "../../../Footer/Footer";
 import StudentInfo from "./StudentInfo";
 import ParentInfo from "../Parents/Parents";
 import EmergencyContact from "../Emergency/Emergency";
@@ -52,6 +53,7 @@ const StudentDetail = () => {
 
   return (
     <div>
+      <AdminNavbar />
       <h2>Student Information TESTING</h2>
       {student ? (
         <div>
@@ -138,6 +140,7 @@ const StudentDetail = () => {
       ) : (
         <p>Loading student details...</p>
       )}
+      <Footer />
     </div>
   );
 };
