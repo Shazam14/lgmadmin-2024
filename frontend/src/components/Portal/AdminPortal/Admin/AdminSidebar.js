@@ -1,7 +1,9 @@
 import React from "react";
-import "../../../styles/admin.css";
+import { useAdminUI } from "../../../../contexts/AdminUIContext";
+import "../../../../styles/admin.css";
 
-const AdminSidebar = ({ selectedMenuItem, onMenuItemClick }) => {
+const AdminSidebar = () => {
+  const { selectedMenuItem, onMenuItemClick } = useAdminUI();
   const menuItems = [
     {
       icon: (

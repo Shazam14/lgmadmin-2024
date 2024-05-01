@@ -1,0 +1,59 @@
+.generic-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px 40px;
+}
+
+.generic-card-container {
+  display: flex;
+  width: 100%;
+  background-color: #ffffff;
+  border-radius: 2px;
+  flex-direction: column;
+  align-items: center;
+}
+
+.generic-school-logo-image {
+  width: 252px;
+  height: 239px;
+  border-radius: 8px;
+  background-position: center center;
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+.generic-text-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 20px;
+  box-shadow: 0px 2px 10px rgba(3, 3, 3, 0.1);
+  padding: 20px;
+  width: 100%;
+}
+
+.generic-text-header {
+  color: #393939;
+  font-size: 32px;
+  font-weight: 300;
+  line-height: 42px;
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.generic-textname-text {
+  color: #030303;
+  font-size: 24px;
+  font-family: "Montserrat";
+  font-weight: 700;
+  line-height: 28px;
+  margin-bottom: 10px;
+}
+
+.generic-text-description {
+  color: #030303;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 28px;
+}

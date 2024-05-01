@@ -3,10 +3,10 @@ import "../../../styles/course.css";
 
 const CASAAdmission = () => {
   return (
-    <section className="our-casa-section">
-      <div className="card-casa-box">
-        <h2 className="section-title">Admission</h2>
-        <p className="section-text">
+    <section className="our-course-section">
+      <div className="card-course-box">
+        <h2 className="course-section-title">Admission</h2>
+        <p className="course-section-text">
           We welcome applications from students who would benefit from our
           specialized education program. To apply, please review the admission
           requirements and deadlines below:

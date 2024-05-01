@@ -33,14 +33,37 @@
 }
 
 .dropdown-btn {
-  @apply cursor-pointer relative bg-white text-black text-lg font-montserrat leading-6 outline-none border-b border-black;
-  width: 121px; /* Custom width, not a Tailwind utility */
-  height: 36px; /* Custom height, not a Tailwind utility */
-  padding: 0px 8px; /* Tailwind has px-2 which is 8px horizontal padding, but vertical padding needs to match */
+  cursor: pointer;
+  background-color: #f3f4f6;
+  color: black;
+  font-size: 16px;
+  border: none;
+  border-bottom: 1px solid black;
+  padding: 0px 8px;
+  position: relative; /* Add this to position your indicator */
+  display: flex; /* Use flex layout for proper alignment */
+  align-items: center; /* Align items vertically */
+  justify-content: space-between; /* Push the indicator to the end */
 }
 
+.dropdown-btn::after {
+  content: ">";
+  font-size: 12px; /* Adjust the size as necessary */
+  display: inline-block;
+  margin-left: 5px;
+  transform: rotate(90deg); /* Rotate the '>' to point downwards */
+}
+
+.indicator {
+  margin-left: 5px;
+}
 .dropdown-content {
-  @apply hidden absolute bg-white shadow-lg py-2 mt-2 rounded-md w-48;
+  display: none;
+  position: absolute;
+  background-color: white;
+  min-width: 160px;
+  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+  z-index: 1;
 }
 
 .dropdown:hover .dropdown-content {
@@ -48,7 +71,18 @@
 }
 
 .dropdown-content a {
-  @apply block px-4 py-2 text-gray-800 hover:bg-gray-100;
+  color: black;
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+}
+
+.dropdown-content a:hover {
+  background-color: #ddd;
+}
+
+.show {
+  display: block;
 }
 
 .home-nav-text {

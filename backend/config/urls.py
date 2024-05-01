@@ -18,6 +18,8 @@ from django.contrib import admin
 from django.urls import path, include
 from .views import home
 from api.views import api_root
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
+from oauth2_provider.views import TokenView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -30,4 +32,8 @@ urlpatterns = [
         path('applicants/', include('apps.applicants.urls')),
         path('enrollments/', include('apps.enrollments.urls')),
     ])),
+    #for authentication
+    path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    path('oauth/', include('oauth2_provider.urls', namespace='oauth2_provider')),
 ]

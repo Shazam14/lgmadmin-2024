@@ -1,0 +1,234 @@
+.about-us-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px 40px;
+}
+
+.about-card-container {
+  display: flex;
+  width: 100%;
+  background-color: #ffffff;
+  border-radius: 2px;
+  flex-direction: column;
+  align-items: center;
+}
+
+.about-school-logo-image {
+  width: 252px;
+  height: 239px;
+  border-radius: 8px;
+  background-position: center center;
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+.about-text-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 20px;
+  box-shadow: 0px 2px 10px rgba(3, 3, 3, 0.1);
+  padding: 20px;
+  width: 100%;
+}
+
+.about-text-header {
+  color: #393939;
+  font-size: 32px;
+  font-weight: 300;
+  line-height: 42px;
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.about-us-text {
+  color: #030303;
+  font-size: 24px;
+  font-family: "Montserrat";
+  font-weight: 700;
+  line-height: 28px;
+  margin-bottom: 10px;
+}
+
+.about-text-description {
+  color: #030303;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 28px;
+  text-align: center;
+  max-width: 564px;
+}
+
+/* who we are section */
+
+.who-we-are-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px 40px;
+}
+
+.who-we-are-card-container {
+  width: 100%;
+  background-color: #ffffff;
+  border-radius: 2px;
+  box-shadow: 0px 2px 10px rgba(3, 3, 3, 0.1);
+  display: flex;
+  padding: 20px;
+  margin: 0 auto;
+}
+
+.who-we-are-content {
+  margin-right: 20px;
+  align-content: center;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  align-items: stretch;
+}
+
+.who-we-are-header {
+  color: #030303;
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 28px;
+  margin-bottom: auto;
+}
+
+.who-we-are-text {
+  color: #030303;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 28px;
+  text-align: left;
+  max-width: 100%;
+  margin-bottom: 20px;
+}
+
+.who-we-are-image {
+  width: 386px;
+  height: 286px;
+  display: block;
+  border-radius: 8px;
+  margin: 0 auto;
+}
+
+@media (max-width: 768px) {
+  .who-we-are-card-container {
+    flex-direction: column;
+    align-items: center;
+    width: 90%;
+  }
+
+  .who-we-are-content {
+    margin-right: 0;
+    margin-bottom: 20px;
+    max-width: 100%;
+  }
+
+  .who-we-are-image {
+    width: 100%;
+    max-width: 300px;
+  }
+}
+
+/* vision-mission.css */
+.vision-mission-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px 40px;
+}
+
+.vision-mission-container {
+  width: 100%;
+  background-color: #ffffff;
+  border-radius: 2px;
+  box-shadow: 0px 2px 10px rgba(3, 3, 3, 0.1);
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+  flex-wrap: nowrap;
+  align-items: center;
+  padding: 20px;
+}
+
+.vision-mission-text {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0 20px;
+}
+.h3-mission-vision {
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 28px;
+  text-align: center;
+}
+
+.mission-text,
+.vision-text {
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 28px;
+  text-align: center;
+  max-width: 300px;
+}
+
+.vision-text {
+  margin-bottom: 20px;
+}
+
+.core-values-container {
+  display: flex;
+  justify-content: space-evenly;
+  margin-top: 20px;
+  align-items: stretch;
+}
+
+.core-values-card {
+  width: 100%;
+  background-color: #ffffff;
+  border-radius: 2px;
+  box-shadow: 0px 2px 10px rgba(3, 3, 3, 0.1);
+  flex-direction: column;
+  align-items: center;
+}
+
+.core-value-row {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.core-value-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0 10px;
+}
+
+.core-value-icon {
+  width: 200px;
+  height: 200px;
+  margin-bottom: 10px;
+}
+
+.core-value-text {
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 27px;
+  text-align: center;
+  max-width: 200px;
+  text-transform: uppercase;
+}
+
+.core-value-description {
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 27px;
+  text-align: center;
+  max-width: 200px;
+}

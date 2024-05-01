@@ -5,7 +5,7 @@ import { getTeachers } from "../../../../redux/teacherSlice";
 import { AgGridReact } from "ag-grid-react";
 import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-alpine.css";
-import "../../../../styles/portal/admintable.css";
+import "../../../../styles/portal/admintable.css"
 
 const columnDefs = [
   {

@@ -1,55 +1,58 @@
 // CASAHeroSection.js
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import "../../../styles/course.css";
 import genericImage from "../../../assets/images/courses_img/generic.png";
+import ApplyForm from "../ApplyForm/ApplyForm";
 
-const CASAHeroSection = () => {
+const CASAHeroSection = ({ handleApplyClick }) => {
   const program = "CASA";
+
   return (
     <>
-      <section className="casa-hero-section">
+      <section className="course-hero-section">
         <div
-          className="image-container"
+          className="course-image-container"
           style={{ backgroundImage: `url(${genericImage})` }}
         >
-          <h1 className="discover-text">Discover CASA Program</h1>
-          <p className="join-us-text">
+          <h1 className="course-discover-text">Discover CASA Program</h1>
+          <p className="course-join-us-text">
             Join us to explore unique learning opportunities!
           </p>
         </div>
-        <div className="card-casa">
+        <div className="course-card">
           <div className="info-with-divider">
             <div className="text-group">
-              <span className="text-casa">Latest Updates</span>
-              <span className="text-casa-small">Ongoing Enrollment</span>
+              <span className="text-course">Latest Updates</span>
+              <span className="text-course-small">Ongoing Enrollment</span>
             </div>
             <div className="divider-vertical"></div>
             <div className="text-group">
-              <span className="text-casa">Enrollment starting at</span>
-              <span className="text-casa-small">May 1, 2024</span>
+              <span className="text-course">Enrollment starting at</span>
+              <span className="text-course-small">May 1, 2024</span>
             </div>
             <div className="divider-vertical"></div>
             <div className="text-group">
-              <span className="text-casa">Until</span>
-              <span className="text-casa-small">May 30, 2024</span>
+              <span className="text-course">Until</span>
+              <span className="text-course-small">May 30, 2024</span>
             </div>
             <div className="divider-vertical"></div>
             <div className="text-group">
-              <span className="text-casa">For School Year</span>
-              <span className="text-casa-small">2024 - 2025</span>
+              <span className="text-course">For School Year</span>
+              <span className="text-course-small">2024 - 2025</span>
+            </div>
+            <div>
+              <button onClick={handleApplyClick} className="apply-button">
+                Apply
+              </button>
             </div>
           </div>
-          <Link to={`/course-form?program=${program}`} className="apply-button">
-            Apply
-          </Link>
         </div>
       </section>
-
-      <section className="our-casa-program">
-        <div className="card-casa-box">
-          <h2 className="section-title">Our CASA Program</h2>
-          <p className="section-text">
+      <section className="our-course-program">
+        <div className="card-course-box">
+          <h2 className="course-section-title">Our CASA Program</h2>
+          <p className="course-section-text">
             CASA is based on our commitment to five-year agreement. From 2.5 to
             6 years old. It provides a prepared environment where children are
             free to respond to their natural tendency to work. The children's

@@ -1,17 +1,18 @@
 import React, { useState } from "react";
+import { useAdminUI } from "../../../../contexts/AdminUIContext";
 import AdminSidebar from "./AdminSidebar";
-import "../../../styles/admin.css";
-import StudentsList from "./components/StudentList";
-import TeachersList from "./components/TeachersList";
-import ApplicantList from "./components/ApplicantList";
-import CourseList from "./components/CourseList";
+import StudentsList from "../Students/StudentList";
+import TeachersList from "../Teachers/TeachersList";
+import ApplicantList from "../Applicants/ApplicantList";
+import CourseList from "../Courses/CourseList";
+import "../../../../styles/admin.css";
 const AdminMainContent = () => {
-  const [selectedMenuItem, setSelectedMenuItem] = useState("dashboard");
+  const { selectedMenuItem } = useAdminUI();
 
-  const handleMenuItemClick = (menuItem) => {
+  /* const handleMenuItemClick = (menuItem) => {
     setSelectedMenuItem(menuItem);
     console.log("handleMenuItemClick ", menuItem);
-  };
+  }; */
 
   const renderContent = () => {
     switch (selectedMenuItem) {
@@ -39,10 +40,7 @@ const AdminMainContent = () => {
 
   return (
     <div className="admin-main-content">
-      <AdminSidebar
-        onMenuItemClick={handleMenuItemClick}
-        selectedMenuItem={selectedMenuItem}
-      />
+      <AdminSidebar />
       <div className="admin-content">{renderContent()}</div>
     </div>
   );

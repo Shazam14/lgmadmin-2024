@@ -1,12 +1,11 @@
-// src/components/CourseList.js
+// src/components/ApplicantList.js
 import React, { useEffect, useMemo } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { getCourses } from "../../../../redux/courseSlice";
+import { getApplicants } from "../../../../redux/applicantSlice";
 import { AgGridReact } from "ag-grid-react";
 import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-alpine.css";
-import "../../../../styles/portal/admintable.css";
-
+import "../../../../styles/portal/admintable.css"
 const columnDefs = [
   {
     headerName: "Action Buttons",
@@ -17,21 +16,22 @@ const columnDefs = [
       </>
     ),
   },
-  { headerName: "Course ID", field: "course_id" },
+  { headerName: "Applicant ID", field: "applicant_id" },
   { headerName: "Name", field: "name" },
-  { headerName: "Teacher Assigned", field: "teacher_assigned" },
-  { headerName: "Details", field: "details" },
-  { headerName: "Course Status", field: "course_status" },
+  { headerName: "Birthday", field: "birthday" },
+  { headerName: "Email", field: "email" },
+  { headerName: "Program applied", field: "course_of_interest" },
+  { headerName: "Account Status", field: "application_status" },
 ];
 
-const CourseList = () => {
+const ApplicantList = () => {
   const dispatch = useDispatch();
-  const courses = useSelector((state) => state.courses.entities);
-  const loading = useSelector((state) => state.courses.loading);
-  const error = useSelector((state) => state.courses.error);
+  const applicants = useSelector((state) => state.applicants.entities);
+  const loading = useSelector((state) => state.applicants.loading);
+  const error = useSelector((state) => state.applicants.error);
 
   useEffect(() => {
-    dispatch(getCourses());
+    dispatch(getApplicants());
   }, [dispatch]);
 
   const defaultColDef = useMemo(
@@ -51,18 +51,18 @@ const CourseList = () => {
     return <div>Error: {error}</div>;
   }
 
-  console.log("Students in component", courses);
+  console.log("Applicants in component", applicants);
 
   return (
     <div>
-      <h1 className="table-heading">Courses List</h1>
+      <h1 className="table-heading">Applicant List</h1>
       <div
         className="ag-theme-alpine"
         style={{ height: "400px", width: "80vw" }}
       >
         <AgGridReact
           columnDefs={columnDefs}
-          rowData={courses}
+          rowData={applicants}
           defaultColDef={defaultColDef}
           pagination={true}
           paginationPageSize={10}
@@ -72,4 +72,4 @@ const CourseList = () => {
   );
 };
 
-export default CourseList;
+export default ApplicantList;

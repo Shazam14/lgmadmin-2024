@@ -3,13 +3,12 @@ from .models import Student
 
 
 class StudentSerializer(serializers.HyperlinkedModelSerializer):
-    url = serializers.HyperlinkedIdentityField(view_name='student-detail')
+    url = serializers.HyperlinkedIdentityField(
+        view_name='student-detail', lookup_field='student_id')
 
     class Meta:
         model = Student
-        fields = ['url', 'student_id', 'name', 'birthday', 'email',
-                  'tuition_notes', 'tuition_status', 'account_status']
-
+        fields = '__all__'
 
 class StudentUploadSerializer(serializers.Serializer):
     file = serializers.FileField()

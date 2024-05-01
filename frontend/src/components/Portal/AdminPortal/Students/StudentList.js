@@ -1,5 +1,7 @@
 // src/components/StudentList.js
 import React, { useEffect, useMemo } from "react";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { getStudents } from "../../../../redux/studentSlice";
 import { AgGridReact } from "ag-grid-react";
@@ -7,33 +9,54 @@ import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-alpine.css";
 import "../../../../styles/portal/admintable.css";
 
-const columnDefs = [
-  {
-    headerName: "Action Buttons",
-    cellRenderer: (params) => (
-      <>
-        <button className="button-table">View</button>
-        <button className="button-table">Edit</button>
-      </>
-    ),
-  },
-  { headerName: "ID", field: "student_id" },
-  { headerName: "Name", field: "name" },
-  { headerName: "Birthday", field: "birthday" },
-  { headerName: "Email", field: "email" },
-  { headerName: "Tuition Status", field: "tuition_status" },
-  { headerName: "Account Status", field: "account_status" },
-];
-
 const StudentsList = () => {
   const dispatch = useDispatch();
   const students = useSelector((state) => state.students.entities);
   const loading = useSelector((state) => state.students.loading);
   const error = useSelector((state) => state.students.error);
+  const navigate = useNavigate();
+
+  const handleViewClick = (student) => {
+    console.log("clicked students", student);
+    navigate(`/students/${student.student_id}`, {
+      state: { studentId: student.student_id },
+    });
+  };
+
+  /* const handleViewClick = (student) => {
+  console.log("Clicked student:", student);
+  navigate(`/students/${student.student_id}`);
+}; */
 
   useEffect(() => {
     dispatch(getStudents());
   }, [dispatch]);
+
+  const columnDefs = [
+    {
+      headerName: "Action Buttons",
+      cellRenderer: (params) => (
+        <>
+          <button
+            className="button-table"
+            onClick={() => handleViewClick(params.data)}
+          >
+            View
+          </button>
+        </>
+      ),
+    },
+    { headerName: "ID", field: "student_id" },
+    { headerName: "First Name", field: "first_name" },
+    { headerName: "Middle Name", field: "middle_name" },
+    { headerName: "Last Name", field: "last_name" },
+    { headerName: "Gender", field: "gender" },
+    { headerName: "Birthday", field: "birthday" },
+    { headerName: "Email", field: "email" },
+    { headerName: "phone_number", field: "phone_number" },
+    { headerName: "Tuition Status", field: "tuition_status" },
+    { headerName: "Account Status", field: "account_status" },
+  ];
 
   const defaultColDef = useMemo(
     () => ({

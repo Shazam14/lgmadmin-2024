@@ -4,29 +4,28 @@ import Navbar from "../../Navbar/Navbar";
 import CASAHeroSection from "../../Courses/CASA/CASAHeroSection";
 import CASACurriculum from "../../Courses/CASA/CASACurriculum";
 import CASAAdmission from "../../Courses/CASA/CASAAdmission";
-import CourseForm from "../CourseForm/CourseForm";
+import ApplyForm from "../ApplyForm/ApplyForm";
 import Footer from "../../Footer/Footer";
 
 const CASA = () => {
-  const [showCoursesForm, setShowCoursesForm] = useState(false);
+  const program = "CASA";
+  const [showForm, setShowForm] = useState(false);
 
   const handleApplyClick = () => {
-    setShowCoursesForm(true);
+    setShowForm(true);
   };
 
+  const handleCloseForm = () => {
+    setShowForm(false);
+  };
   return (
     <div>
       <Navbar />
-      <CASAHeroSection />
+      <CASAHeroSection handleApplyClick={handleApplyClick} />
       <CASACurriculum />
       <CASAAdmission />
+      {showForm && <ApplyForm onClose={handleCloseForm} />}
 
-      <button onClick={handleApplyClick}>Apply Now</button>
-
-      {/* Show the application form when the user clicks apply */}
-      {showCoursesForm && (
-        <CourseForm onClose={() => setShowCoursesForm(false)} />
-      )}
       <Footer />
     </div>
   );
