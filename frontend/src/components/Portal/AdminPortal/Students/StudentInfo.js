@@ -6,21 +6,21 @@ const StudentInfo = ({ student }) => {
     <div className="student-info">
       <div className="student-image">
         {/* Display the student's image */}
-        <img src={student.imageUrl} alt={student.name} />
+        {/* <img src={student.imageUrl} alt={student.first_name} /> */}
       </div>
       <div className="student-details">
         <h3>Student Information</h3>
         <div className="form-group">
           <label>First Name</label>
-          <input type="text" value={student.firstName} readOnly />
+          <input type="text" readOnly />
         </div>
-        <div className="form-group">
+        {/* <div className="form-group">
           <label>Middle Name</label>
           <input type="text" value={student.middleName} readOnly />
         </div>
         <div className="form-group">
           <label>Last Name</label>
-          <input type="text" value={student.lastName} readOnly />
+          <input type="text" value={student.last_name} readOnly />
         </div>
         <div className="form-group">
           <label>Student ID</label>
@@ -85,7 +85,7 @@ const StudentInfo = ({ student }) => {
         <div className="form-group">
           <label>Account Status</label>
           <input type="text" value={student.accountStatus} readOnly />
-        </div>
+        </div> */}
       </div>
     </div>
   );
