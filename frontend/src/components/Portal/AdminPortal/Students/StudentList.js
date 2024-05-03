@@ -1,7 +1,7 @@
 // src/components/StudentList.js
 import React, { useEffect, useMemo } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Outlet } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { getStudents } from "../../../../redux/studentSlice";
 import { AgGridReact } from "ag-grid-react";
@@ -16,17 +16,12 @@ const StudentsList = () => {
   const error = useSelector((state) => state.students.error);
   const navigate = useNavigate();
 
-  const handleViewClick = (student) => {
+  const handleEditButton = (student) => {
     console.log("clicked students", student);
     navigate(`/students/${student.student_id}`, {
       state: { studentId: student.student_id },
     });
   };
-
-  /* const handleViewClick = (student) => {
-  console.log("Clicked student:", student);
-  navigate(`/students/${student.student_id}`);
-}; */
 
   useEffect(() => {
     dispatch(getStudents());
@@ -39,9 +34,9 @@ const StudentsList = () => {
         <>
           <button
             className="button-table"
-            onClick={() => handleViewClick(params.data)}
+            onClick={() => handleEditButton(params.data)}
           >
-            View
+            Edit
           </button>
         </>
       ),

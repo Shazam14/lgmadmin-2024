@@ -1,6 +1,6 @@
 // StudentDetail.js
 import React, { useEffect, useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, Outlet, useNavigate } from "react-router-dom";
 import { fetchStudentById } from "../../../../services/api";
 import StudentInfo from "./StudentInfo";
 import ParentInfo from "../Parents/Parents";
@@ -13,6 +13,7 @@ import "../../../../styles/portal/info.css";
 const StudentDetail = () => {
   const { state } = useLocation();
   const studentId = state?.studentId;
+  const navigate = useNavigate();
   console.log("received Student id", studentId);
 
   const [student, setStudent] = useState(null);
@@ -31,28 +32,11 @@ const StudentDetail = () => {
     fetchStudent();
   }, [studentId]);
 
-  const renderTabContent = () => {
-    switch (activeTab) {
-      case "info":
-        return <StudentInfo student={student} />;
-      case "parent":
-        return <ParentInfo student={student} />;
-      case "emergency":
-        return <EmergencyContact student={student} />;
-      case "courses":
-        return <Courses student={student} />;
-      case "grades":
-        return <Grades student={student} />;
-      case "tuition":
-        return <TuitionHistory student={student} />;
-      default:
-        return null;
-    }
-  };
+  console.log("student: ", studentId);
 
   return (
     <div>
-      <h2>Student Information TESTING</h2>
+      <h2>Student Information</h2>
       {student ? (
         <div>
           <div className="student-details">
@@ -92,48 +76,6 @@ const StudentDetail = () => {
               <button className="update-btn">Update</button>
             </div>
           </div>
-          <div>
-            <ul>
-              <li
-                className={activeTab === "info" ? "active" : ""}
-                onClick={() => setActiveTab("info")}
-              >
-                Student Info
-              </li>
-              <li
-                className={activeTab === "parent" ? "active" : ""}
-                onClick={() => setActiveTab("parent")}
-              >
-                Parent Info
-              </li>
-              <li
-                className={activeTab === "emergency" ? "active" : ""}
-                onClick={() => setActiveTab("emergency")}
-              >
-                Emergency Contact
-              </li>
-              <li
-                className={activeTab === "courses" ? "active" : ""}
-                onClick={() => setActiveTab("courses")}
-              >
-                Courses
-              </li>
-              <li
-                className={activeTab === "grades" ? "active" : ""}
-                onClick={() => setActiveTab("grades")}
-              >
-                Grades
-              </li>
-              <li
-                className={activeTab === "tuition" ? "active" : ""}
-                onClick={() => setActiveTab("tuition")}
-              >
-                Tuition History
-              </li>
-            </ul>
-            <div>{renderTabContent()}</div>
-          </div>
-          <Link to="/students">Back to Student List</Link>
         </div>
       ) : (
         <p>Loading student details...</p>
