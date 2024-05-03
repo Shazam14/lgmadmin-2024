@@ -7,7 +7,6 @@ from django.http import JsonResponse
 class ParentViewSet(viewsets.ModelViewSet):
     queryset = Parent.objects.all()
     serializer_class = ParentSerializer
-    lookup_field = 'student_id'
 
 
 class ParenttUploadView(generics.CreateAPIView):
@@ -18,7 +17,7 @@ class ParenttUploadView(generics.CreateAPIView):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         file = serializer.validated_data['file']
-        return response.Response({'message': 'Students uploaded successfully'}, status=201)
+        return response.Response({'message': 'Parents upload successfully'}, status=201)
 
     def list(self, request, *args, **kwargs):
         queryset = self.get_queryset()
