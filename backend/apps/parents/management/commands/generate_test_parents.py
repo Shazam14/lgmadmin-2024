@@ -1,7 +1,8 @@
 from django.core.management.base import BaseCommand
 from faker import Faker
 # Adjust the import according to your project structure
-from apps.students.models import Student, Parent
+from apps.students.models import Student
+from apps.parents.models import Parent
 
 
 class Command(BaseCommand):
@@ -30,7 +31,7 @@ class Command(BaseCommand):
                 first_name=first_name,
                 last_name=fake.last_name(),
                 email=fake.email(),
-                phone_number=fake.phone_number(),
+                phone_number=fake.phone_number()[:15],
                 street_address=fake.street_address(),
                 city=fake.city(),
                 state_province=fake.state(),
@@ -39,8 +40,8 @@ class Command(BaseCommand):
                 account_status='Active',
                 relationship=fake.random_element(
                     ['Mother', 'Father', 'Guardian']),
-                primary_contact=fake.phone_number(),
-                secondary_contact=fake.phone_number(),
+                primary_contact=fake.phone_number()[:15],
+                secondary_contact=fake.phone_number()[:15],
                 contact_priority=fake.random_element(['Primary', 'Secondary'])
             )
         self.stdout.write(self.style.SUCCESS(
