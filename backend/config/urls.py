@@ -31,8 +31,9 @@ urlpatterns = [
         path('courses/', include('apps.courses.urls')),
         path('applicants/', include('apps.applicants.urls')),
         path('enrollments/', include('apps.enrollments.urls')),
+        path('parents/', include('apps.parents.urls')),
     ])),
-    #for authentication
+    # for authentication
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('oauth/', include('oauth2_provider.urls', namespace='oauth2_provider')),

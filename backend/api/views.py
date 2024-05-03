@@ -13,4 +13,5 @@ def api_root(request):
         'teachers': reverse('teacher-list', request=request),
         'applicants': reverse('applicant-list', request=request),
         'student_upload': reverse('student-upload', request=request),
+        'parents': reverse('parent-list', request=request),
     })
