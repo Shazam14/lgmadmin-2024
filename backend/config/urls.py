@@ -32,6 +32,7 @@ urlpatterns = [
         path('applicants/', include('apps.applicants.urls')),
         path('enrollments/', include('apps.enrollments.urls')),
         path('parents/', include('apps.parents.urls')),
+        path('grades/', include('apps.grades.urls')),
     ])),
     # for authentication
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
