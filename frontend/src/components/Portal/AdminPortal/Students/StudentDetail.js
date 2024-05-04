@@ -1,7 +1,7 @@
 // StudentDetail.js
 import React, { useEffect, useState } from "react";
 import { Link, useLocation, Outlet, useNavigate } from "react-router-dom";
-import { fetchStudentById } from "../../../../services/api";
+import { fetchStudentByStudentId } from "../../../../services/api";
 import StudentInfo from "./StudentInfo";
 import ParentInfo from "../Parents/Parents";
 import EmergencyContact from "../Emergency/Emergency";
@@ -19,10 +19,13 @@ const StudentDetail = () => {
   const [student, setStudent] = useState(null);
   const [activeTab, setActiveTab] = useState("info");
 
+  console.log("student: ", student);
+  // console.log("parents of student: ", student.parents[0]);
+
   useEffect(() => {
     const fetchStudent = async () => {
       try {
-        const data = await fetchStudentById(studentId);
+        const data = await fetchStudentByStudentId(studentId);
         setStudent(data);
       } catch (error) {
         console.error("Error fetching student:", error);

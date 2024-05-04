@@ -66,7 +66,7 @@ function App() {
                   <Route path="students/:studentId">
                     <Route index element={<StudentDetail />} />
                     <Route path="parent-details" element={<Parents />} />
-                    <Route path="emergency-contact" element={<Parents />} />
+                    {/* <Route path="emergency-contact" element={<Parents />} /> */}
                     <Route path="courses" element={<CourseList />} />
                     <Route path="grades" element={<Grades />} />
                     <Route path="tuition" element={<TuitionHistory />} />

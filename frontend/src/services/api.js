@@ -12,8 +12,8 @@ export const fetchStudents = async () => {
   }
   return data;
 };
-export const fetchStudentById = async (studentId) => {
-  console.log("fetchStudentById", studentId);
+export const fetchStudentByStudentId = async (studentId) => {
+  console.log("fetchStudentByStudentId", studentId);
   console.log(
     "url works",
     `${process.env.REACT_APP_API_BASE_URL}/students/${studentId}/`
@@ -41,7 +41,7 @@ export const fetchStudentById = async (studentId) => {
   }
 };
 
-// export const fetchStudentById = async (studentId) => {
+// export const fetchStudentByStudentId = async (studentId) => {
 //   const response = await fetch(
 //     `${process.env.REACT_APP_API_BASE_URL}/students/${studentId}/`
 //   );
