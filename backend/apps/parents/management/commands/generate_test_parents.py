@@ -1,6 +1,5 @@
 from django.core.management.base import BaseCommand
 from faker import Faker
-# Adjust the import according to your project structure
 from apps.students.models import Student
 from apps.parents.models import Parent
 
@@ -15,19 +14,24 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         fake = Faker()
         count = options['count']
-        # Fetch all students to associate parents with
-        students = list(Student.objects.all())
 
-        if not students:
+        # Fetch students who don't have any parents assigned
+        students_without_parents = Student.objects.filter(parents=None)
+
+        if not students_without_parents:
             self.stdout.write(self.style.WARNING(
-                'No students found in the database.'))
+                'All students already have parents assigned.'))
             return
 
         for _ in range(count):
+            if not students_without_parents:
+                break
+
+            student = students_without_parents.first()
+
             # First name now always starts with 'Test'
             first_name = f"Test {fake.first_name()}"
-
-            Parent.objects.create(
+            parent = Parent.objects.create(
                 first_name=first_name,
                 last_name=fake.last_name(),
                 email=fake.email(),
@@ -35,7 +39,6 @@ class Command(BaseCommand):
                 street_address=fake.street_address(),
                 city=fake.city(),
                 state_province=fake.state(),
-                student=fake.random_element(students),
                 parent_id=fake.unique.random_number(digits=10),
                 account_status='Active',
                 relationship=fake.random_element(
@@ -44,5 +47,11 @@ class Command(BaseCommand):
                 secondary_contact=fake.phone_number()[:15],
                 contact_priority=fake.random_element(['Primary', 'Secondary'])
             )
+            parent.students.add(student)
+
+            # Remove the student from the list of students without parents
+            students_without_parents = students_without_parents.exclude(
+                id=student.id)
+
         self.stdout.write(self.style.SUCCESS(
             f'Successfully created {count} test parents'))

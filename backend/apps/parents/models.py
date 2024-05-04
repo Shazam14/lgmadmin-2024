@@ -11,8 +11,7 @@ class Parent(models.Model):
     street_address = models.CharField(max_length=255)
     city = models.CharField(max_length=50)
     state_province = models.CharField(max_length=50)
-    student = models.ForeignKey(
-        'students.Student', on_delete=models.CASCADE, related_name='parents')
+    students = models.ManyToManyField(Student, related_name='parents')
     parent_id = models.CharField(max_length=20)
     account_status = models.CharField(max_length=20, default='Active')
     relationship = models.CharField(max_length=50)

@@ -1,6 +1,6 @@
 from django.core.management.base import BaseCommand
 # Adjust the import according to your project structure
-from apps.students.models import Parent
+from apps.parents.models import Parent
 
 
 class Command(BaseCommand):
