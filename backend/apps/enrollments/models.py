@@ -5,6 +5,8 @@ from apps.applicants.models import Applicant
 class Enrollment(models.Model):
     applicant = models.OneToOneField(Applicant, on_delete=models.CASCADE)
     enrollment_date = models.DateField(auto_now_add=True)
+    # subjects = models.ManyToManyField(
+    #     'subject.Subject', through='Grade', related_name='enrollments')
     student_id = models.CharField(max_length=20, unique=True)
     program = models.CharField(max_length=100)
     academic_year = models.CharField(max_length=20)

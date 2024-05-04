@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'apps.applicants',
     'apps.enrollments',
     'apps.parents',
+    'apps.grades',
     'corsheaders',
     'rest_framework',
     'oauth2_provider',
