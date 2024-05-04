@@ -20,13 +20,14 @@ The Student Management System is a web application built with Django and React t
    cd
 
 3. Set up the virtual environment:
+   You can use conda to create your environment https://docs.anaconda.com/free/miniconda/miniconda-other-resources/
    python -m venv lgm_env
    source lgm_env/bin/activate
 
-4. Install the required dependencies:
+5. Install the required dependencies:
    pip install -r requirements.txt
 
-5. Set up the Django backend:
+6. Set up the Django backend:
 
 - Navigate to the `backend` directory:
   ```
