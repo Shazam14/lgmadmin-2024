@@ -1,8 +1,7 @@
-import React from 'react';
+import React from "react";
 
+const Emergency = () => {
+  return <div>HELLO EMERGENCY</div>;
+};
 
-const Parents = () => {
-
-}
-
-export default Parents;
+export default Emergency;

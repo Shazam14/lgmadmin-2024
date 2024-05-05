@@ -1,6 +1,6 @@
 # your_app/management/commands/delete_test_applicants.py
 from django.core.management.base import BaseCommand
-from apps.applicant.models import Applicant
+from apps.applicants.models import Applicant
 
 
 class Command(BaseCommand):
