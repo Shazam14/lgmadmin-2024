@@ -1,140 +1,88 @@
 // StudentDetail.js
 import React, { useEffect, useState } from "react";
-import { Link, useLocation } from "react-router-dom";
-import { fetchStudentById } from "../../../../services/api";
-import StudentInfo from "./StudentInfo";
-import ParentInfo from "../Parents/Parents";
-import EmergencyContact from "../Emergency/Emergency";
-import Courses from "../Courses/CourseList";
-import Grades from "../Grades/Grades";
-import TuitionHistory from "../TuitionHistory/TuitionHistory";
+import { useParams } from "react-router-dom";
+import { fetchStudentByStudentId } from "../../../../services/api";
 import "../../../../styles/portal/info.css";
-
+import { useStudent } from "../../../../contexts/StudentContext";
 const StudentDetail = () => {
-  const { state } = useLocation();
-  const studentId = state?.studentId;
-  console.log("received Student id", studentId);
+  const { studentId } = useParams();
+  //console.log("received Student id", studentId);
+  const { student, updateStudent } = useStudent();
 
-  const [student, setStudent] = useState(null);
-  const [activeTab, setActiveTab] = useState("info");
-
+  // StudentDetail.js
   useEffect(() => {
     const fetchStudent = async () => {
       try {
-        const data = await fetchStudentById(studentId);
-        setStudent(data);
+        if (!student) {
+          console.log("Fetching student with ID:", studentId);
+          const data = await fetchStudentByStudentId(studentId);
+          updateStudent(data);
+        }
       } catch (error) {
         console.error("Error fetching student:", error);
       }
     };
 
-    fetchStudent();
-  }, [studentId]);
-
-  const renderTabContent = () => {
-    switch (activeTab) {
-      case "info":
-        return <StudentInfo student={student} />;
-      case "parent":
-        return <ParentInfo student={student} />;
-      case "emergency":
-        return <EmergencyContact student={student} />;
-      case "courses":
-        return <Courses student={student} />;
-      case "grades":
-        return <Grades student={student} />;
-      case "tuition":
-        return <TuitionHistory student={student} />;
-      default:
-        return null;
+    if (studentId) {
+      fetchStudent();
     }
-  };
+  }, [studentId, student]);
 
   return (
-    <div>
-      <h2>Student Information TESTING</h2>
+    <div className="student-profile-form">
       {student ? (
-        <div>
-          <div className="student-details">
-            <div className="main-details">
-              <div className="student-name">
-                <h3>{student.name}</h3>
-              </div>
-              <div className="student-id">
-                <p>Student ID: {student.student_id}</p>
-              </div>
-              <div className="student-status">
-                <p>Student Status: {student.status}</p>
-              </div>
-              <div className="active-program">
-                <p>Active Program: {student.active_program}</p>
-              </div>
-              <div className="student-grade">
-                <p>Grade: {student.grade}</p>
-              </div>
-            </div>
-            <div className="additional-details">
-              <div className="student-section">
-                <p>Section: {student.section}</p>
-              </div>
-              <div className="tuition-remarks">
-                <p>Tuition Remarks: {student.tuition_remarks}</p>
-              </div>
-              <div className="tuition-status">
-                <p>Tuition Status: {student.tuition_status}</p>
-              </div>
-              <div className="account-status">
-                <p>Account Status: {student.account_status}</p>
-              </div>
-            </div>
-            <div className="actions">
-              <button className="reset-btn">Reset</button>
-              <button className="update-btn">Update</button>
-            </div>
+        <>
+          <h1>Student Information</h1>
+          <div className="form-left">
+            {/* First name until phone */}
+            <label className="label">First Name:</label>
+            <input
+              className="input-field"
+              type="text"
+              readOnly
+              value={student.first_name}
+            />
+            <br />
+            <label className="label">Last Name:</label>
+            <input
+              className="input-field"
+              type="text"
+              readOnly
+              value={student.last_name}
+            />
+            <br />
+            <label className="label">Phone Number:</label>
+            <input
+              className="input-field"
+              type="tel"
+              readOnly
+              value={student.phone_number}
+            />
           </div>
-          <div>
-            <ul>
-              <li
-                className={activeTab === "info" ? "active" : ""}
-                onClick={() => setActiveTab("info")}
-              >
-                Student Info
-              </li>
-              <li
-                className={activeTab === "parent" ? "active" : ""}
-                onClick={() => setActiveTab("parent")}
-              >
-                Parent Info
-              </li>
-              <li
-                className={activeTab === "emergency" ? "active" : ""}
-                onClick={() => setActiveTab("emergency")}
-              >
-                Emergency Contact
-              </li>
-              <li
-                className={activeTab === "courses" ? "active" : ""}
-                onClick={() => setActiveTab("courses")}
-              >
-                Courses
-              </li>
-              <li
-                className={activeTab === "grades" ? "active" : ""}
-                onClick={() => setActiveTab("grades")}
-              >
-                Grades
-              </li>
-              <li
-                className={activeTab === "tuition" ? "active" : ""}
-                onClick={() => setActiveTab("tuition")}
-              >
-                Tuition History
-              </li>
-            </ul>
-            <div>{renderTabContent()}</div>
+          <div className="image-container">{/* Image goes here */}</div>
+          <div className="form-right">
+            {/* Student ID until Account Status */}
+            <label className="label">Student ID:</label>
+            <input
+              className="input-field"
+              type="text"
+              readOnly
+              value={student.student_id}
+            />
+            <br />
+            <label className="label">Account Status:</label>
+            <input
+              className="input-field"
+              type="text"
+              readOnly
+              value={student.account_status}
+            />
           </div>
-          <Link to="/students">Back to Student List</Link>
-        </div>
+          <div className="actions">
+            <button className="reset-btn">Reset</button>
+            <button className="update-btn">Update</button>
+          </div>
+        </>
       ) : (
         <p>Loading student details...</p>
       )}

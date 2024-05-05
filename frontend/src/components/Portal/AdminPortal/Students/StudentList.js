@@ -16,9 +16,9 @@ const StudentsList = () => {
   const error = useSelector((state) => state.students.error);
   const navigate = useNavigate();
 
-  const handleViewClick = (student) => {
-    console.log("clicked students", student);
-    navigate(`/students/${student.student_id}`, {
+  const handleEditButton = (student) => {
+    console.log("clicked students -where is this going?", student);
+    navigate(`/admin/students/${student.student_id}`, {
       state: { studentId: student.student_id },
     });
   };

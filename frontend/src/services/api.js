@@ -12,13 +12,18 @@ export const fetchStudents = async () => {
   }
   return data;
 };
-export const fetchStudentById = async (studentId) => {
-  console.log("fetchStudentById", studentId);
-  console.log("url works", `${process.env.REACT_APP_API_BASE_URL}/students/${studentId}/`);
+export const fetchStudentByStudentId = async (studentId) => {
+  console.log("fetchStudentByStudentId", studentId);
+  console.log(
+    "url works",
+    `${process.env.REACT_APP_API_BASE_URL}/students/${studentId}/`
+  );
 
   try {
-    const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/students/${studentId}/`);
-    console.log("RESPONSE", response)
+    const response = await fetch(
+      `${process.env.REACT_APP_API_BASE_URL}/students/${studentId}/`
+    );
+    console.log("RESPONSE", response);
     if (!response.ok) {
       // If the response is not okay, parse the JSON to get error details
       const errorData = await response.json();
@@ -32,13 +37,27 @@ export const fetchStudentById = async (studentId) => {
   } catch (error) {
     // Log any errors during the fetch or processing
     console.error("Error fetching student details:", error);
-    throw error;  // Rethrow to handle it where the function is called
+    throw error; // Rethrow to handle it where the function is called
   }
 };
-
-
-
-// export const fetchStudentById = async (studentId) => {
+export const fetchParentDetails = async (parentUrl) => {
+  try {
+    const response = await fetch(parentUrl);
+    console.log("Parent Details Response:", response);
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error("API Error:", errorData);
+      throw new Error(errorData.detail || "Failed to fetch parent details");
+    }
+    const data = await response.json();
+    console.log("Parent Details Data:", data);
+    return data;
+  } catch (error) {
+    console.error("Error fetching parent details:", error);
+    throw error;
+  }
+};
+// export const fetchStudentByStudentId = async (studentId) => {
 //   const response = await fetch(
 //     `${process.env.REACT_APP_API_BASE_URL}/students/${studentId}/`
 //   );
@@ -49,7 +68,6 @@ export const fetchStudentById = async (studentId) => {
 //   }
 //   return data;
 // };
-
 
 // Add updateStudent function
 export const updateStudent = async (studentId, updatedData) => {

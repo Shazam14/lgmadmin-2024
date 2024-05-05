@@ -25,50 +25,88 @@ const ApplyForm = ({ program: programProp, onClose }) => {
           <div className="form-app-section">
             <h3 className="section-subtitle">Parent's Information</h3>
             <div className="parent-info-card">
+              <label className="label">First Name:</label>
               <input
                 type="text-course-form"
                 className="input-card parent-appform-input"
                 placeholder="Parent's First Name"
               />
+              <label className="label">Middle Name:</label>
               <input
                 type="text-course-form"
                 className="input-card parent-appform-input"
                 placeholder="Parent's Middle Name"
               />
+              <label className="label">Last Name:</label>
               <input
                 type="text-course-form"
                 className="input-card parent-appform-input"
                 placeholder="Parent's Last Name"
               />
+              <label className="label">Email address:</label>
               <input
                 type="email"
                 className="input-card parent-appform-input"
-                placeholder="Parent's Email"
+                placeholder="Parent's Email Address"
               />
+              <label className="label">Address Details:</label>
               <input
                 type="tel"
                 className="input-card parent-appform-input"
-                placeholder="Parent's Phone"
+                placeholder="Address Details"
               />
+              <label className="label">Barangay:</label>
               <input
                 type="text"
                 className="input-card parent-appform-input"
-                placeholder="Parent's Address"
+                placeholder="Barangay"
               />
+              <label className="label">City:</label>
               <input
                 type="text"
                 className="input-card parent-appform-input"
-                placeholder="Parent's City"
+                placeholder="City"
               />
+              <label className="label">State/Province:</label>
               <input
                 type="text"
                 className="input-card parent-appform-input"
-                placeholder="Parent's Zip Code"
+                placeholder="State/Province"
+              />
+              <label className="label">Postal Code:</label>
+              <input
+                type="text"
+                className="input-card parent-appform-input"
+                placeholder="Postal Code"
+              />
+              <label className="label">Relationship to Applicant:</label>
+              <input
+                type="text"
+                className="input-card parent-appform-input"
+                placeholder="Relationship to Applicant"
+              />
+              <label className="label">Contact Priority:</label>
+              <input
+                type="text"
+                className="input-card parent-appform-input"
+                placeholder="Contact Priority"
+              />
+              <label className="label">Primary Contact:</label>
+              <input
+                type="text"
+                className="input-card parent-appform-input"
+                placeholder="Primary Contact"
+              />
+              <label className="label">Secondary Contact:</label>
+              <input
+                type="text"
+                className="input-card parent-appform-input"
+                placeholder="Primary Contact"
               />
             </div>
           </div>
           <div className="form-app-section">
-            <h3 className="section-subtitle">Student Information</h3>
+            <h3 className="section-subtitle">Student Applicant Information</h3>
             <div className="student-info-card">
               <input
                 type="text-course-form"
