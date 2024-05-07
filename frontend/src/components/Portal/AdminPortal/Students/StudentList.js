@@ -39,7 +39,7 @@ const StudentsList = () => {
         <>
           <button
             className="button-table"
-            onClick={() => handleViewClick(params.data)}
+            onClick={() => handleEditButton(params.data)}
           >
             View
           </button>

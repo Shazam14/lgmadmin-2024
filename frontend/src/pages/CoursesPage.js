@@ -15,7 +15,7 @@ const CoursesPage = () => {
       <Route path="/" element={<div>Select a course option below.</div>} />
       <Route path="casa" element={<CASA />} />
       <Route path="grade-school" element={<GradeSchool />} />
-      <Route path="high-school" element={<HighSchool />} />
+      <Route path="highschool" element={<HighSchool />} />
       <Route path="sped" element={<SPED />} />
       <Route path="homestudy" element={<HomeStudy />} />
       <Route path="applyform" element={<ApplyForm />} />
