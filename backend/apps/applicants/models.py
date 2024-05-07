@@ -4,23 +4,26 @@ from django.contrib.auth.models import Permission
 from django.contrib.contenttypes.models import ContentType
 from apps.parents.models import Parent
 
+
 class Applicant(models.Model):
     first_name = models.CharField(max_length=100)
     middle_name = models.CharField(max_length=100, blank=True)
     last_name = models.CharField(max_length=100)
+    parent = models.ForeignKey(
+        Parent, on_delete=models.CASCADE, related_name='applicants')
     gender = models.CharField(max_length=10, choices=[
         ('Male', 'Male'),
         ('Female', 'Female')
-    ])
-    age = models.PositiveIntegerField()
-    birthday = models.DateField()
+    ], default='Female')
+    age = models.PositiveIntegerField(default=2)
+    birthday = models.DateField(null=True, blank=True)
     program_option = models.CharField(max_length=20, choices=[
         ('CASA', 'CASA'),
         ('SPED', 'SPED'),
         ('Highschool', 'Highschool'),
         ('GradeSchool', 'GradeSchool'),
         ('Homestudy', 'Homestudy')
-    ])
+    ], default="Homestudy")
     email_same_as_parent = models.BooleanField(default=False)
     email = models.EmailField(blank=True)
     phone_number_same_as_parent = models.BooleanField(default=False)
@@ -32,7 +35,6 @@ class Applicant(models.Model):
     address_city = models.CharField(max_length=100, blank=True)
     address_state_province = models.CharField(max_length=100, blank=True)
     address_postal_code = models.CharField(max_length=20, blank=True)
-    parent = models.ForeignKey(Parent, on_delete=models.CASCADE)
     applied_date = models.DateField(default=timezone.now)
     status = models.CharField(max_length=20, choices=[
         ('Pending', 'Pending'),

@@ -1,6 +1,7 @@
 from rest_framework import viewsets
 from .models import Applicant
 from .serializers import ApplicantSerializer
+from rest_framework.views import APIView
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -15,6 +16,17 @@ class ApplicantViewSet(viewsets.ModelViewSet):
     serializer_class = ApplicantSerializer
 
 
+class ApplicantApprovalView(APIView):
+    def post(self, request, applicant_id):
+        applicant = Applicant.objects.get(id=applicant_id)
+        if applicant.status == 'Approved':
+            student = Student.objects.create(applicant=applicant)
+            enrollment = Enrollment.objects.create(
+                parent=applicant.parent, student=student)
+            # Additional logic for sending the enrollment link form
+            ...
+        # Rest of the view logic
+        ...
 
 
 def approve_applicant(request, applicant_id):
@@ -39,6 +51,7 @@ def approve_applicant(request, applicant_id):
 
     # Return the enrollment link as a JSON response
     return JsonResponse({'enrollment_link': enrollment_link})
+
 
 def generate_enrollment_link(student):
     # Generate an enrollment link using the student's JWT token

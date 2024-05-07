@@ -1,6 +1,6 @@
 from django.db import models
-
-# Create your models here.
+from apps.applicants.models import Applicant
+from apps.enrollments.models import Enrollment
 
 
 class Student(models.Model):
@@ -8,28 +8,28 @@ class Student(models.Model):
         ('U', 'Unsettled'),
         ('FP', 'Fully Paid'),
     ]
-
     ACCOUNT_STATUS_CHOICES = [
         ('A', 'Active'),
         ('I', 'Inactive')
     ]
 
-    first_name = models.CharField(max_length=50, default='First Name')
+    applicant = models.OneToOneField(
+        'applicants.Applicant', on_delete=models.CASCADE)
+    enrollment = models.ForeignKey(
+        'enrollments.Enrollment', on_delete=models.CASCADE, related_name='students')
+    first_name = models.CharField(max_length=50)
     middle_name = models.CharField(max_length=50, blank=True)
-    last_name = models.CharField(max_length=50, default='Last Name')
-    gender = models.CharField(max_length=10, default='Female')
-    age = models.PositiveIntegerField(default=7)
+    last_name = models.CharField(max_length=50)
+    gender = models.CharField(max_length=10)
+    age = models.PositiveIntegerField()
     birthday = models.DateField()
     email = models.EmailField()
-
-    # Assuming student ID is a unique identifier like '2024123456'
     student_id = models.CharField(max_length=20, unique=True)
-    student_status = models.CharField(
-        max_length=20, default='Enrolled')  # Default as 'Enrolled'
-    active_program = models.CharField(max_length=50, default='Default Program')
-    grade = models.CharField(max_length=20, default='A')
-    section = models.CharField(max_length=20, default='Hope')
-    tuition_notes = models.TextField(blank=True)  # this is remarks originally
+    student_status = models.CharField(max_length=20)
+    active_program = models.CharField(max_length=50)
+    grade = models.CharField(max_length=20)
+    section = models.CharField(max_length=20)
+    tuition_notes = models.TextField(blank=True)
     tuition_status = models.CharField(
         max_length=20, choices=TUITION_STATUS_CHOICES)
     account_status = models.CharField(

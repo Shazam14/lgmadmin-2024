@@ -1,5 +1,4 @@
 from django.db import models
-from apps.students.models import Student
 
 
 class Parent(models.Model):
@@ -11,10 +10,11 @@ class Parent(models.Model):
     street_address = models.CharField(max_length=255)
     city = models.CharField(max_length=50)
     state_province = models.CharField(max_length=50)
-    students = models.ManyToManyField(Student, related_name='parents')
-    parent_id = models.CharField(max_length=20)
-    account_status = models.CharField(max_length=20, default='Active')
-    relationship = models.CharField(max_length=50)
+    parent_id = models.CharField(max_length=20, primary_key=True)
+    account_status = models.CharField(max_length=20, default='Active', choices=[
+                                      ('Active', 'Active'), ('Inactive', 'Inactive')])
+    relationship = models.CharField(max_length=50, choices=[(
+        'Mother', 'Mother'), ('Father', 'Father'), ('Guardian', 'Guardian')])
     primary_contact = models.CharField(max_length=15)
     secondary_contact = models.CharField(max_length=15, blank=True)
     contact_priority = models.CharField(

@@ -1,7 +1,9 @@
 import React from "react";
 import "../../../../styles/admin.css";
+import { Link, Outlet, useNavigate } from "react-router-dom";
 
-const AdminSidebar = ({ selectedMenuItem, onMenuItemClick }) => {
+const AdminSidebar = ({ selectedMenuItem }) => {
+  const navigate = useNavigate();
   const menuItems = [
     {
       icon: (
@@ -9,6 +11,7 @@ const AdminSidebar = ({ selectedMenuItem, onMenuItemClick }) => {
           <path d="M500.3 443.7l-119.7-119.7c27.22-40.41 40.65-90.9 33.46-144.7C401.8 87.79 326.8 13.32 235.2 1.723C99.01-15.51-15.51 99.01 1.724 235.2c11.6 91.64 86.08 166.7 177.6 178.9c53.8 7.189 104.3-6.236 144.7-33.46l119.7 119.7c15.62 15.62 40.95 15.62 56.57 0C515.9 484.7 515.9 459.3 500.3 443.7zM79.1 208c0-70.58 57.42-128 128-128s128 57.42 128 128c0 70.58-57.42 128-128 128S79.1 278.6 79.1 208z"></path>
         </svg>
       ),
+      linkTo: "/dashboard",
       text: "Dashboard",
       key: "dashboard",
     },
@@ -18,6 +21,7 @@ const AdminSidebar = ({ selectedMenuItem, onMenuItemClick }) => {
           <path d="M144.3 32.04C106.9 31.29 63.7 41.44 18.6 61.29c-11.42 5.026-18.6 16.67-18.6 29.15l0 357.6c0 11.55 11.99 19.55 22.45 14.65c126.3-59.14 219.8 11 223.8 14.01C249.1 478.9 252.5 480 256 480c12.4 0 16-11.38 16-15.98V80.04c0-5.203-2.531-10.08-6.781-13.08C263.3 65.58 216.7 33.35 144.3 32.04zM557.4 61.29c-45.11-19.79-88.48-29.61-125.7-29.26c-72.44 1.312-118.1 33.55-120.9 34.92C306.5 69.96 304 74.83 304 80.04v383.1C304 468.4 307.5 480 320 480c3.484 0 6.938-1.125 9.781-3.328c3.925-3.018 97.44-73.16 223.8-14c10.46 4.896 22.45-3.105 22.45-14.65l.0001-357.6C575.1 77.97 568.8 66.31 557.4 61.29z"></path>
         </svg>
       ),
+      linkTo: "/admin/courses",
       text: "Courses",
       key: "courses",
     },
@@ -27,6 +31,7 @@ const AdminSidebar = ({ selectedMenuItem, onMenuItemClick }) => {
           <path d="M623.1 136.9l-282.7-101.2c-13.73-4.91-28.7-4.91-42.43 0L16.05 136.9C6.438 140.4 0 149.6 0 160s6.438 19.65 16.05 23.09L76.07 204.6c-11.89 15.8-20.26 34.16-24.55 53.95C40.05 263.4 32 274.8 32 288c0 9.953 4.814 18.49 11.94 24.36l-24.83 149C17.48 471.1 25 480 34.89 480H93.11c9.887 0 17.41-8.879 15.78-18.63l-24.83-149C91.19 306.5 96 297.1 96 288c0-10.29-5.174-19.03-12.72-24.89c4.252-17.76 12.88-33.82 24.94-47.03l190.6 68.23c13.73 4.91 28.7 4.91 42.43 0l282.7-101.2C633.6 179.6 640 170.4 640 160S633.6 140.4 623.1 136.9zM351.1 314.4C341.7 318.1 330.9 320 320 320c-10.92 0-21.69-1.867-32-5.555L142.8 262.5L128 405.3C128 446.6 213.1 480 320 480c105.1 0 192-33.4 192-74.67l-14.78-142.9L351.1 314.4z"></path>
         </svg>
       ),
+      linkTo: "/admin/grades",
       text: "Grades",
       key: "grades",
     },
@@ -36,6 +41,7 @@ const AdminSidebar = ({ selectedMenuItem, onMenuItemClick }) => {
           <path d="M96 32C96 14.33 110.3 0 128 0C145.7 0 160 14.33 160 32V64H288V32C288 14.33 302.3 0 320 0C337.7 0 352 14.33 352 32V64H400C426.5 64 448 85.49 448 112V160H0V112C0 85.49 21.49 64 48 64H96V32zM448 464C448 490.5 426.5 512 400 512H48C21.49 512 0 490.5 0 464V192H448V464z"></path>
         </svg>
       ),
+      linkTo: "/admin/schedules",
       text: "Schedules",
       key: "schedules",
     },
@@ -45,6 +51,7 @@ const AdminSidebar = ({ selectedMenuItem, onMenuItemClick }) => {
           <path d="M336 64h-53.88C268.9 26.8 233.7 0 192 0S115.1 26.8 101.9 64H48C21.5 64 0 85.48 0 112v352C0 490.5 21.5 512 48 512h288c26.5 0 48-21.48 48-48v-352C384 85.48 362.5 64 336 64zM96 392c-13.25 0-24-10.75-24-24S82.75 344 96 344s24 10.75 24 24S109.3 392 96 392zM96 296c-13.25 0-24-10.75-24-24S82.75 248 96 248S120 258.8 120 272S109.3 296 96 296zM192 64c17.67 0 32 14.33 32 32c0 17.67-14.33 32-32 32S160 113.7 160 96C160 78.33 174.3 64 192 64zM304 384h-128C167.2 384 160 376.8 160 368C160 359.2 167.2 352 176 352h128c8.801 0 16 7.199 16 16C320 376.8 312.8 384 304 384zM304 288h-128C167.2 288 160 280.8 160 272C160 263.2 167.2 256 176 256h128C312.8 256 320 263.2 320 272C320 280.8 312.8 288 304 288z"></path>
         </svg>
       ),
+      linkTo: "/admin/lesson-plan",
       text: "Lesson Plan",
       key: "lesson_plan",
     },
@@ -54,6 +61,7 @@ const AdminSidebar = ({ selectedMenuItem, onMenuItemClick }) => {
           <path d="M319.9 320c57.41 0 103.1-46.56 103.1-104c0-57.44-46.54-104-103.1-104c-57.41 0-103.1 46.56-103.1 104C215.9 273.4 262.5 320 319.9 320zM369.9 352H270.1C191.6 352 128 411.7 128 485.3C128 500.1 140.7 512 156.4 512h327.2C499.3 512 512 500.1 512 485.3C512 411.7 448.4 352 369.9 352zM512 160c44.18 0 80-35.82 80-80S556.2 0 512 0c-44.18 0-80 35.82-80 80S467.8 160 512 160zM183.9 216c0-5.449 .9824-10.63 1.609-15.91C174.6 194.1 162.6 192 149.9 192H88.08C39.44 192 0 233.8 0 285.3C0 295.6 7.887 304 17.62 304h199.5C196.7 280.2 183.9 249.7 183.9 216zM128 160c44.18 0 80-35.82 80-80S172.2 0 128 0C83.82 0 48 35.82 48 80S83.82 160 128 160zM551.9 192h-61.84c-12.8 0-24.88 3.037-35.86 8.24C454.8 205.5 455.8 210.6 455.8 216c0 33.71-12.78 64.21-33.16 88h199.7C632.1 304 640 295.6 640 285.3C640 233.8 600.6 192 551.9 192z"></path>
         </svg>
       ),
+      linkTo: "/admin/applicants",
       text: "Applicants",
       key: "applicants",
     },
@@ -78,24 +86,26 @@ const AdminSidebar = ({ selectedMenuItem, onMenuItemClick }) => {
     },
   ];
   return (
-    <div className="admin-sidebar card">
-      {menuItems.map((item) => (
-        <div
-          key={item.key}
-          className="admin-sidebar-item"
-          onClick={() => onMenuItemClick(item.key)}
-        >
+    <div>
+      <div className="admin-sidebar card">
+        {menuItems.map((item) => (
           <div
-            className={`icon-admin-sidebar ${item.key}`}
-            style={{
-              fill: selectedMenuItem === item.key ? "#05D114" : "black",
-            }}
+            key={item.key}
+            className="admin-sidebar-item"
+            onClick={() => navigate(item.linkTo)}
           >
-            {item.icon}
+            <div
+              className={`icon-admin-sidebar ${item.key}`}
+              style={{
+                fill: selectedMenuItem === item.key ? "#05D114" : "black",
+              }}
+            >
+              {item.icon}
+            </div>
+            <div className="text">{item.text}</div>
           </div>
-          <div className="text">{item.text}</div>
-        </div>
-      ))}
+        ))}
+      </div>
     </div>
   );
 };

@@ -14,9 +14,19 @@
 }
 
 .form-app-section {
-  display: flex;
   justify-content: space-between;
   margin-bottom: 24px;
+}
+.form-header {
+  display: flex;
+}
+
+.section-title {
+  padding: auto;
+}
+
+.close-button {
+  place-items: left;
 }
 
 .parent-info-card,
@@ -44,7 +54,6 @@
 }
 
 .continue-appform-button {
-  width: 100%;
   height: 40px;
   width: 133px;
   background-color: #05d114;
