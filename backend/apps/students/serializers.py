@@ -11,7 +11,7 @@ class StudentSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Student
         fields = ['id', 'first_name', 'middle_name', 'last_name', 'gender', 'age', 'birthday',
-                  'email', 'student_id', 'student_status', 'active_program', 'grade', 'section',
+                  'email', 'student_id', 'student_status', 'grade', 'section',
                   'tuition_notes', 'tuition_status', 'account_status', 'parents']
         extra_kwargs = {
             'url': {'lookup_field': 'student_id'}

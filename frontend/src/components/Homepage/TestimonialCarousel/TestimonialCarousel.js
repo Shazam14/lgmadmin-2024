@@ -5,7 +5,6 @@ import "../../../styles/tailwind.css";
 import "../../../styles/homepage.css";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import testimonialOneImage from "../../../assets/images/testimonial_img/testimonial_one.png";
 
 const TestimonialCarousel = () => {
   const settings = {
@@ -19,15 +18,18 @@ const TestimonialCarousel = () => {
   };
 
   const renderImage = (idx) => {
-    if (idx === 0) {
+    try {
+      const imageUrl = require(`../../../assets/images/testimonial_img/testimonial_${
+        idx + 1
+      }.png`);
       return (
         <img
-          src={testimonialOneImage}
-          alt="Testimonial"
+          src={imageUrl}
+          alt={`Testimonial ${idx + 1}`}
           className="testimonial-image"
         />
       );
-    } else {
+    } catch (error) {
       return <div className="testimonial-placeholder" />;
     }
   };

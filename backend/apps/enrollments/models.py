@@ -1,11 +1,15 @@
 from django.db import models
 from django.core.validators import MaxValueValidator, MinValueValidator
-from apps.grades.models import GradeLevel, Subject
 from apps.applicants.models import Applicant
+from apps.students.models import Student
+from apps.grades.models import Program, Subject, GradeLevel, Grade
 
 
 class Enrollment(models.Model):
-    applicant = models.ForeignKey(Applicant, on_delete=models.CASCADE)
+    student = models.ForeignKey(
+        "students.Student", on_delete=models.CASCADE, default=1)
+    grade_level = models.ForeignKey(
+        "grades.GradeLevel", on_delete=models.CASCADE, null=True, blank=True)
     enrollment_date = models.DateField(auto_now_add=True)
     academic_year = models.IntegerField(validators=[
         MinValueValidator(1900),
@@ -21,8 +25,7 @@ class Enrollment(models.Model):
     ]
     academic_period = models.CharField(
         max_length=3, choices=ACADEMIC_PERIOD_CHOICES)
-    grade_level = models.ForeignKey(GradeLevel, on_delete=models.CASCADE)
-    subjects = models.ManyToManyField(Subject)
+    subjects = models.ManyToManyField("grades.Subject",)
     ENROLLMENT_STATUS_CHOICES = [
         ('ENROLLED', 'Enrolled'),
         ('WITHDRAWN', 'Withdrawn'),

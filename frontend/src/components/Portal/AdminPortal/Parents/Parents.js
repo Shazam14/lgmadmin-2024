@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import {
   fetchStudentByStudentId,
   fetchParentDetails,
-} from "../../../../services/api";
+} from "../../../../services/studentApi";
 
 const Parents = () => {
   const { studentId } = useParams();

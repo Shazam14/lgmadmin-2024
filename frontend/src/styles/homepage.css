@@ -224,7 +224,7 @@
 }
 
 .testimonial-quote {
-  @apply text-[#030303] text-[40px] font-medium leading-[44px] mb-1;
+  @apply text-[#030303] text-[22px] font-medium leading-[44px] mb-1;
 }
 
 .testimonial-author {

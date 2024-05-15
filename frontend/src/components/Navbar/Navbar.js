@@ -98,16 +98,12 @@ const Navbar = () => {
           {" "}
           <Link to="/about">About</Link>
         </NavbarText>
-        <NavbarText>
-          {" "}
-          <Link to="/contact">Contact</Link>
-        </NavbarText>
-        <NavbarText>
+        {/*     <NavbarText>
           <Link to="/enroll">Apply</Link>
         </NavbarText>
         <NavbarText>
           <Link to="/apply">Enroll</Link>
-        </NavbarText>
+        </NavbarText> */}
       </div>
       <div className="right-section">
         <div className="dropdown" ref={portalDropdownRef}>

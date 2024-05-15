@@ -25,12 +25,13 @@ const ImageCarousel = () => {
     autoplaySpeed: 3000,
   };
 
+  const numImages = 5;
+
   // Placeholder images or URLs of real images
-  const images = [
-    "https://images.unsplash.com/photo-1527822618093-743f3e57977c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wyMDUzMDJ8MHwxfHNlYXJjaHwyN3x8Z3JhZGUlMjBzY2hvb2wlMjBzdHVkZW50c3xlbnwxfHx8fDE3MTA1NTE0NTl8MA&ixlib=rb-4.0.3&q=80&w=1080",
-    "https://via.placeholder.com/1440x671", // Placeholder for image 2
-    "https://via.placeholder.com/1440x671", // Placeholder for image 3
-  ];
+  const images = Array.from({ length: numImages }, (_, i) => {
+    const imageNumber = i + 1;
+    return require(`../../../assets/images/herocarousel/${imageNumber}.png`);
+  });
 
   const altTexts = [
     "Classroom image from Unsplash", // Alt text for the first image

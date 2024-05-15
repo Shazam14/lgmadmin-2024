@@ -1,6 +1,6 @@
 // src/redux/courseSlice.js
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { fetchCourses } from "../services/api";
+import { fetchCourses } from "../services/studentApi";
 
 export const getCourses = createAsyncThunk(
   "courses/getCourses",

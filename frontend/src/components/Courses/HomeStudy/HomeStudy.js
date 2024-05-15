@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useRef } from "react";
 import Navbar from "../../Navbar/Navbar";
 import ApplyForm from "../ApplyForm/ApplyForm";
 import Footer from "../../Footer/Footer";
@@ -7,10 +7,13 @@ import HomeStudyAdmission from "./HomeStudyAdmission";
 import HomeStudyCurriculum from "./HomeStudyCurriculum";
 
 const HomeStudy = () => {
-  const [showCoursesForm, setShowCoursesForm] = useState(false);
+  const program = "HomeStudy";
+  const formRef = useRef(null);
 
   const handleApplyClick = () => {
-    setShowCoursesForm(true);
+    if (formRef.current) {
+      formRef.current.focus(); // This assumes you have implemented a focus method in your ApplyForm component
+    }
   };
 
   return (
@@ -19,9 +22,7 @@ const HomeStudy = () => {
       <HomeStudyHeroSection handleApplyClick={handleApplyClick} />
       <HomeStudyAdmission />
       <HomeStudyCurriculum />
-      {showCoursesForm && (
-        <ApplyForm onClose={() => setShowCoursesForm(false)} />
-      )}
+      <ApplyForm ref={formRef} program={program} />
       <Footer />
     </div>
   );

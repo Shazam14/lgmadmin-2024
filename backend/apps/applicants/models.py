@@ -2,7 +2,7 @@ from django.db import models
 from django.utils import timezone
 from django.contrib.auth.models import Permission
 from django.contrib.contenttypes.models import ContentType
-from apps.parents.models import Parent
+from django.core.mail import send_mail
 
 
 class Applicant(models.Model):
@@ -10,20 +10,17 @@ class Applicant(models.Model):
     middle_name = models.CharField(max_length=100, blank=True)
     last_name = models.CharField(max_length=100)
     parent = models.ForeignKey(
-        Parent, on_delete=models.CASCADE, related_name='applicants')
+        'parents.Parent', on_delete=models.CASCADE, related_name='applicants')
     gender = models.CharField(max_length=10, choices=[
         ('Male', 'Male'),
         ('Female', 'Female')
     ], default='Female')
-    age = models.PositiveIntegerField(default=2)
+    age = models.PositiveIntegerField(
+        default=2, help_text="Age of the applicant in years.")
+
     birthday = models.DateField(null=True, blank=True)
-    program_option = models.CharField(max_length=20, choices=[
-        ('CASA', 'CASA'),
-        ('SPED', 'SPED'),
-        ('Highschool', 'Highschool'),
-        ('GradeSchool', 'GradeSchool'),
-        ('Homestudy', 'Homestudy')
-    ], default="Homestudy")
+    program_option = models.ForeignKey(
+        'grades.Program', on_delete=models.SET_NULL, null=True, blank=True, verbose_name="Program")
     email_same_as_parent = models.BooleanField(default=False)
     email = models.EmailField(blank=True)
     phone_number_same_as_parent = models.BooleanField(default=False)

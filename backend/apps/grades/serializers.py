@@ -18,5 +18,5 @@ class GradeSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Grade
-        fields = ['id', 'student', 'student_url', 'subject', 'school_year', 'grade_section',
-                  'q1_grade', 'q2_grade', 'q3_grade', 'q4_grade', 'final_grade', 'remarks']
+        fields = ['id', 'student', 'subject', 'written_work',
+                  'performance_task', 'quarterly_exam', 'quarterly_grade', 'final_grade', 'evaluation_code', 'remedial_passed', 'cle_mve_grade', 'student_url']

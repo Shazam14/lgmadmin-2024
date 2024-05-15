@@ -40,7 +40,7 @@ const AdminMainContent = () => {
 
   return (
     <div className="admin-main-content">
-      <AdminSidebar />
+      {/* <AdminSidebar /> */}
       <div className="admin-content">{renderContent()}</div>
     </div>
   );

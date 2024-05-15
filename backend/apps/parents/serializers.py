@@ -4,7 +4,10 @@ from apps.students.models import Student
 
 
 class ParentSerializer(serializers.ModelSerializer):
-    students = serializers.StringRelatedField(many=True)
+    students = serializers.PrimaryKeyRelatedField(
+        many=True, queryset=Student.objects.all())
+
+    """ students = serializers.StringRelatedField(many=True) """
     """ students = serializers.HyperlinkedRelatedField(
         view_name='student-detail',
         queryset=Student.objects.all(),
