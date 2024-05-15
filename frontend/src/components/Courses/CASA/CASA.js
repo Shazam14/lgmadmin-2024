@@ -1,5 +1,5 @@
 // CASA.js
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import Navbar from "../../Navbar/Navbar";
 import CASAHeroSection from "../../Courses/CASA/CASAHeroSection";
 import CASACurriculum from "../../Courses/CASA/CASACurriculum";
@@ -9,22 +9,21 @@ import Footer from "../../Footer/Footer";
 
 const CASA = () => {
   const program = "CASA";
-  const [showForm, setShowForm] = useState(false);
+  const formRef = useRef(null);
 
   const handleApplyClick = () => {
-    setShowForm(true);
+    if (formRef.current) {
+      formRef.current.focus(); // This assumes you have implemented a focus method in your ApplyForm component
+    }
   };
 
-  const handleCloseForm = () => {
-    setShowForm(false);
-  };
   return (
     <div>
       <Navbar />
       <CASAHeroSection handleApplyClick={handleApplyClick} />
       <CASACurriculum />
       <CASAAdmission />
-      {showForm && <ApplyForm onClose={handleCloseForm} />}
+      <ApplyForm ref={formRef} program={program} />
 
       <Footer />
     </div>

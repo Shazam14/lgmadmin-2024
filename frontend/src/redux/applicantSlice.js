@@ -1,6 +1,6 @@
 // src/redux/applicantsSlice.js
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { fetchApplicants } from "../services/api";
+import { fetchApplicants } from "./../services/studentApi";
 
 export const getApplicants = createAsyncThunk(
   "applicants/getApplicants",

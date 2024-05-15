@@ -1,7 +1,7 @@
 // StudentDetail.js
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { fetchStudentByStudentId } from "../../../../services/api";
+import { fetchStudentByStudentId } from "../../../../services/studentApi";
 import "../../../../styles/portal/info.css";
 import { useStudent } from "../../../../contexts/StudentContext";
 const StudentDetail = () => {

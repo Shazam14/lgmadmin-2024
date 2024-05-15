@@ -58,7 +58,7 @@ const ApplicantList = () => {
       <h1 className="table-heading">Applicant List</h1>
       <div
         className="ag-theme-alpine"
-        style={{ height: "400px", width: "80vw" }}
+        style={{ height: "600px", width: "80vw" }}
       >
         <AgGridReact
           columnDefs={columnDefs}
