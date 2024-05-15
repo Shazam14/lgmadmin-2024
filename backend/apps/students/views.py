@@ -1,4 +1,7 @@
 from rest_framework import viewsets, generics, parsers, response
+from rest_framework_simplejwt.authentication import JWTAuthentication
+
+from rest_framework.permissions import IsAuthenticated
 from .models import Student
 from .serializers import StudentSerializer, StudentUploadSerializer
 from django.http import JsonResponse
@@ -8,11 +11,15 @@ class StudentViewSet(viewsets.ModelViewSet):
     queryset = Student.objects.all()
     serializer_class = StudentSerializer
     lookup_field = 'student_id'
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
 
 
 class StudentUploadView(generics.CreateAPIView):
     serializer_class = StudentUploadSerializer
     parser_classes = [parsers.MultiPartParser]
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
 
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
@@ -35,9 +42,8 @@ class StudentUploadView(generics.CreateAPIView):
 
     def update(self, request, *args, **kwargs):
         instance = self.get_object()
-        serializer = self.get_serializer(instance, data=request.data, partial=True)
+        serializer = self.get_serializer(
+            instance, data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
         self.perform_update(serializer)
         return Response(serializer.data)
-
-        

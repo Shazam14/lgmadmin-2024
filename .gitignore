@@ -18,3 +18,8 @@ __pycache__/
 *.py[cod]
 migrations/
 
+# Backend .env
+backend/.env
+
+# Frontend .env
+frontend/.env

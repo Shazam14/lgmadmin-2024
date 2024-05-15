@@ -1,4 +1,5 @@
 from rest_framework import viewsets, generics, parsers, response
+from rest_framework.permissions import IsAuthenticated
 from .models import Parent
 from .serializers import ParentSerializer, ParentUploadSerializer
 from django.http import JsonResponse
@@ -7,11 +8,13 @@ from django.http import JsonResponse
 class ParentViewSet(viewsets.ModelViewSet):
     queryset = Parent.objects.all()
     serializer_class = ParentSerializer
+    permission_classes = [IsAuthenticated]
 
 
 class ParenttUploadView(generics.CreateAPIView):
     serializer_class = ParentUploadSerializer
     parser_classes = [parsers.MultiPartParser]
+    permission_classes = [IsAuthenticated]
 
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
