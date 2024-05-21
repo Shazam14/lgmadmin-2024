@@ -23,3 +23,5 @@ backend/.env
 
 # Frontend .env
 frontend/.env
+cert.pem
+key.pem

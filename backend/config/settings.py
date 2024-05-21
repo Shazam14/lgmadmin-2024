@@ -32,7 +32,7 @@ SECRET_KEY = 'django-insecure-a!dtsj_=5rx+qp@bicvp^_#fe0%%olsus$&if92km@llx86@js
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', '[::1]']
+ALLOWED_HOSTS = ['192.168.1.7', 'localhost', '127.0.0.1', '[::1]']
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -125,12 +125,15 @@ MIDDLEWARE = [
 
 CORS_ALLOW_CREDENTIALS = True
 CORS_ORIGIN_WHITELIST = [
-    'http://localhost:3001',  # Update with your frontend's URL
+    'http://localhost:3001',
+    'http://192.168.1.7:3001'
+    # Update with your frontend's URL
 ]
 CORS_ALLOW_ALL_ORIGINS = True
 
 CORS_ALLOWED_ORIGINS = [
-    'http://localhost:3001',  # Include the scheme (http:// or https://)
+    'http://localhost:3001',
+    'http://192.168.1.7:3001',  # Include the scheme (http:// or https://)
 ]
 # Ensure CORS allows requests from your frontend's specific origin and supports credentials
 # This should be False if you are specifying allowed origins
