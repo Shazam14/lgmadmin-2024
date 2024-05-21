@@ -11,7 +11,7 @@ const AdminSignup = () => {
   const handleSignup = async (event) => {
     event.preventDefault();
     try {
-      const response = await axios.post("http://localhost:8000/api/signup/", {
+      const response = await axios.post("http://192.168.1.7:8000/api/signup/", {
         username: username,
         password: password,
         email: email,

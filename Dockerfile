@@ -1,60 +1,61 @@
-# Use an official Python runtime as the base image
+# Use an official Python runtime as a parent image
 FROM python:3.11.0
 
-# Set the working directory in the container
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    graphviz-dev \
+    pkg-config \
+    build-essential \
+    curl \
+    nginx \
+    && curl -sL https://deb.nodesource.com/setup_18.x | bash - \
+    && apt-get install -y nodejs
+
+# Install global Yarn
+RUN npm install -g yarn
+
+# Set the working directory to /app
 WORKDIR /app
 
-# Copy the backend files to the working directory
-COPY lgmadmin/backend/ .
+# Copy and install Python dependencies from the backend
+COPY backend/requirements.txt /app/backend/
+RUN pip install --no-cache-dir -r backend/requirements.txt
 
-# Install the backend dependencies
-RUN pip install --no-cache-dir -r requirements.txt
-
-# Install Node.js and npm
-RUN curl -sL https://deb.nodesource.com/setup_14.x | bash -
-RUN apt-get install -y nodejs
-
-# Copy the frontend files to the working directory
-COPY lgmadmin/frontend/ ./frontend/
-
-# Change to the frontend directory
+# Set the working directory to /app/frontend for frontend operations
 WORKDIR /app/frontend
 
-# Install the frontend dependencies using Yarn
-RUN npm install --global yarn
+# Copy frontend package files and install JavaScript dependencies
+COPY frontend/package.json frontend/yarn.lock ./
 RUN yarn install
+RUN yarn add @mui/material @emotion/react @emotion/styled
+RUN yarn add --dev @babel/plugin-proposal-private-property-in-object
 
-# Build the React app using Yarn
-RUN yarn build
+# Copy the entire frontend directory to ensure all frontend files are included
+COPY frontend/ /app/frontend/
 
-# Install Nginx
-RUN apt-get update && apt-get install -y nginx
-
-# Remove the default Nginx configuration file
-RUN rm /etc/nginx/sites-available/default
-
-# Copy the custom Nginx configuration file
-COPY nginx.conf /etc/nginx/sites-available/default
-
-# Change back to the root directory
+# Return to the main app directory
 WORKDIR /app
 
-# Copy the .env.example files as a fallback
-COPY .env.example ./backend/.env
-COPY lgmadmin/frontend/.env.example ./frontend/.env
+# Copy the backend directory
+COPY backend/ /app/backend/
 
-# Ensure the .env file uses localhost for PostgreSQL
-RUN sed -i "s/DB_HOST=your_database_host/DB_HOST=localhost/" ./backend/.env
+# Prepare directories for static and media files
+RUN mkdir -p /app/nginx/static /app/backend/staticfiles /app/backend/media
 
-# Expose the ports for the backend and frontend
-EXPOSE 80 8000
+# Configure Nginx
+COPY nginx.conf /etc/nginx/sites-available/default
+# Remove any existing default configuration in sites-enabled
+RUN rm -f /etc/nginx/sites-enabled/default
+# Create a new symbolic link
+RUN ln -s /etc/nginx/sites-available/default /etc/nginx/sites-enabled/default
 
-# Set up entrypoint script
-COPY entrypoint.sh /entrypoint.sh
-RUN chmod +x /entrypoint.sh
+# Expose HTTP and HTTPS ports
+EXPOSE 80 443
 
-# Set the entrypoint
-ENTRYPOINT ["/entrypoint.sh"]
+# Copy and configure the entrypoint script
+COPY entrypoint.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/entrypoint.sh
 
-# Specify the command to run the Nginx server and Django server
-CMD ["sh", "-c", "service nginx start && python manage.py runserver 0.0.0.0:8000"]
+# Set the entrypoint and default command
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
+CMD ["nginx", "-g", "daemon off;"]

@@ -11,13 +11,19 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
 from pathlib import Path
-import os
 from dotenv import load_dotenv
 from datetime import timedelta
 from corsheaders.defaults import default_headers
+import os
+load_dotenv()  # Assuming there is a .env file in the same directory as this script
+
+# Test to see if it reads any environment variable from your .env file
+test_var = os.getenv("TEST_VARIABLE")
+print("Test Variable:", test_var)
+
+
 
 IS_PRODUCTION = os.getenv('DJANGO_ENV') == 'production'
-
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -32,7 +38,14 @@ SECRET_KEY = 'django-insecure-a!dtsj_=5rx+qp@bicvp^_#fe0%%olsus$&if92km@llx86@js
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', '[::1]']
+DEFAULT_HOST = '192.168.1.2'
+DEFAULT_PORT = '8001'
+
+HOST = os.environ.get('DJANGO_HOST', DEFAULT_HOST)
+PORT = os.environ.get('DJANGO_PORT', DEFAULT_PORT)
+
+
+ALLOWED_HOSTS = ['192.168.1.2', 'localhost', '127.0.0.1', '[::1]']
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -125,12 +138,15 @@ MIDDLEWARE = [
 
 CORS_ALLOW_CREDENTIALS = True
 CORS_ORIGIN_WHITELIST = [
-    'http://localhost:3001',  # Update with your frontend's URL
+    'http://localhost:3007',
+    'http://192.168.1.2:3007'
+    # Update with your frontend's URL
 ]
 CORS_ALLOW_ALL_ORIGINS = True
 
 CORS_ALLOWED_ORIGINS = [
-    'http://localhost:3001',  # Include the scheme (http:// or https://)
+    'http://localhost:3007',
+    'http://192.168.1.2:3007',  # Include the scheme (http:// or https://)
 ]
 # Ensure CORS allows requests from your frontend's specific origin and supports credentials
 # This should be False if you are specifying allowed origins
@@ -174,10 +190,14 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'config.wsgi.application'
 
-
+print("Database Name:", os.environ.get('DB_NAME'))
+print("Database User:", os.environ.get('DB_USER'))
+print("Database Password:", os.environ.get('DB_PASSWORD'))
+print("Database Host:", os.environ.get('DB_HOST'))
+print("Database Port:", os.environ.get('DB_PORT'))
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
-
+""" 
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
@@ -186,6 +206,17 @@ DATABASES = {
         'PASSWORD': os.environ.get('DB_PASSWORD'),
         'HOST': os.environ.get('DB_HOST'),
         'PORT': os.environ.get('DB_PORT'),
+    }
+} """
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'lgmdb',
+        'USER': 'postgres',
+        'PASSWORD': 'postgres',
+        'HOST': 'host.docker.internal',
+        'PORT': '5432',
     }
 }
 
@@ -224,8 +255,11 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
@@ -256,20 +290,20 @@ EMAIL_HOST_USER = ''
 EMAIL_HOST_PASSWORD = '' """
 
 
-CACHES = {
-    'default': {
-        'BACKEND': 'django_redis.cache.RedisCache',
-        'LOCATION': 'redis://127.0.0.1:6379/1',
-        'OPTIONS': {
-            'CLIENT_CLASS': 'django_redis.client.DefaultClient',
-        }
-    }
-}
+# CACHES = {
+#     'default': {
+#         'BACKEND': 'django_redis.cache.RedisCache',
+#         'LOCATION': 'redis://127.0.0.1:6379/1',
+#         'OPTIONS': {
+#             'CLIENT_CLASS': 'django_redis.client.DefaultClient',
+#         }
+#     }
+# }
 
 
 SESSION_ENGINE = "django.contrib.sessions.backends.cache"
 SESSION_CACHE_ALIAS = "default"
-
+ """
 
 CSRF_COOKIE_SECURE = False  # set to true if in Prod
 CSRF_COOKIE_HTTPONLY = True

@@ -1,28 +1,60 @@
 #!/bin/bash
+set -e
 
-# Check if PostgreSQL container is running
-if ! docker ps --format '{{.Names}}' | grep -q postgres; then
-  echo "PostgreSQL container is not running. Please start the container and try again."
-  exit 1
-fi
+# Start Django
+echo "Starting Django server..."
+cd /app/backend
+python manage.py runserver 0.0.0.0:8000 &
 
-# Get the IP address of the PostgreSQL container
-DB_HOST=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' postgres)
+# Start React
+echo "Starting React development server..."
+cd /app/frontend
+yarn start &
 
-# Update the backend .env file with the PostgreSQL container's IP address
-sed -i "s/DB_HOST=localhost/DB_HOST=$DB_HOST/" ./backend/.env
+# Keep the container running
+wait
 
-# Apply database migrations
-echo "Applying database migrations..."
-python manage.py migrate
+# #!/bin/sh
 
-# Collect static files
-echo "Collecting static files..."
-python manage.py collectstatic --noinput
+# # Apply database migrations
+# echo "Applying database migrations..."
+# cd /app/backend
+# python manage.py migrate
 
-# Start the main process
-exec "$@"
+# # Collect static files
+# echo "Collecting static files..."
+# python manage.py collectstatic --noinput
+
+# # Start Nginx
+# echo "Starting Nginx..."
+# service nginx start
+
+# # Start the main process
+# exec "$@"
 
 
-# Execute the command
-exec "$@"
+
+# # #!/bin/bash
+
+# # # Check if PostgreSQL container is running
+# # # if ! docker ps --format '{{.Names}}' | grep -q postgres; then
+# # #   echo "PostgreSQL container is not running. Please start the container and try again."
+# # #   exit 1
+# # # fi
+
+# # # Get the IP address of the PostgreSQL container
+# # DB_HOST=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' postgres)
+
+# # # Update the backend .env file with the PostgreSQL container's IP address
+# # sed -i "s/DB_HOST=localhost/DB_HOST=$DB_HOST/" ./backend/.env
+
+# # # Apply database migrations
+# # echo "Applying database migrations..."
+# # python manage.py migrate
+
+# # # Collect static files
+# # echo "Collecting static files..."
+# # python manage.py collectstatic --noinput
+
+# # # Start the main process
+# # exec "$@"

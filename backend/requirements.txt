@@ -40,7 +40,6 @@ poetry-plugin-export==1.7.1
 psycopg2-binary==2.9.9
 ptyprocess==0.7.0
 pycparser==2.22
-pygraphviz==1.12
 PyJWT==2.8.0
 pyproject_hooks==1.0.0
 python-dateutil==2.9.0.post0
@@ -56,5 +55,5 @@ trove-classifiers==2024.4.10
 typing_extensions==4.11.0
 urllib3==2.2.1
 virtualenv==20.25.1
-xattr==1.1.0
 zipp==3.18.1
+django_redis
