@@ -11,7 +11,6 @@ from rest_framework.response import Response
 from rest_framework.reverse import reverse
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.authentication import JWTAuthentication
-from config.auth.custom_authentication import BlacklistJWTAuthentication
 
 
 @api_view(['GET'])
