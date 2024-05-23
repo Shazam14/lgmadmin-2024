@@ -1,5 +1,5 @@
 import React, { useRef } from "react";
-import Navbar from "../../Navbar/Navbar";
+import NavigationHome from "../../Navbar/NavigationHome";
 import ApplyForm from "../ApplyForm/ApplyForm";
 import Footer from "../../Footer/Footer";
 import HomeStudyHeroSection from "./HomeStudyHeroSection";
@@ -18,7 +18,7 @@ const HomeStudy = () => {
 
   return (
     <div>
-      <Navbar />
+      <NavigationHome />
       <HomeStudyHeroSection handleApplyClick={handleApplyClick} />
       <HomeStudyAdmission />
       <HomeStudyCurriculum />

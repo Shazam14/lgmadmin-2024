@@ -1,8 +1,11 @@
 import React from "react";
+import { Container } from "react-bootstrap";
+
 import "../../../styles/course.css";
 
 const HighSchoolAdmission = () => {
   return (
+
     <section className="our-course-section">
       <div className="card-course-box">
         <h2 className="course-section-title">Admission</h2>

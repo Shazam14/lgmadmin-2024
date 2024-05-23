@@ -1,8 +1,6 @@
 import React, { useState } from "react";
-import { Card, Stack, Container } from "react-bootstrap";
 import "../../../styles/homepage.css";
-
-const AnnouncementCard = (props) => {
+const Card = (props) => {
   const [content, setContent] = useState(props.initialContent);
 
   const handleContentChange = (e) => {
@@ -12,22 +10,16 @@ const AnnouncementCard = (props) => {
   const postedOnDate = new Date().toLocaleDateString();
 
   return (
-    <Card>
-      <Card.Body>
-        <Card.Title>{props.title}</Card.Title>
-        <Card.Text>
-          <textarea
-            value={content}
-            onChange={handleContentChange}
-            rows={3}
-            className="form-control"
-          />
-        </Card.Text>
-        <Card.Footer>
-          <small className="text-muted">Posted on: {postedOnDate}</small>
-        </Card.Footer>
-      </Card.Body>
-    </Card>
+    <div className="announcement-card">
+      <h3 className="announcement-card-title">{props.title}</h3>
+      <textarea
+        value={content}
+        onChange={handleContentChange}
+        rows={3}
+        className="announcement-card-content-input"
+      />
+      <div className="posted-on">Posted on: {postedOnDate}</div>
+    </div>
   );
 };
 
@@ -52,7 +44,7 @@ const Announcement = () => {
   ];
 
   const cards = announcementData.map((announcement) => (
-    <AnnouncementCard
+    <Card
       key={announcement.id}
       title={announcement.title}
       initialContent={announcement.initialContent}
@@ -60,17 +52,16 @@ const Announcement = () => {
   ));
 
   return (
-    <Container fluid>
-      <div className="announcement-section">
-        <h1 className="display-6">//Featured Announcements</h1>
-        <Stack direction="vertical" gap={3}>
-          {cards}
-        </Stack>
-        {/* <Button variant="primary" className="more-announcements-button">
-        More Announcements
-      </Button> */}
+    <div className="announcement-section">
+      <h1 className="display-6">Display 6</h1>
+      <h2 className="announcement-heading">Featured Announcements</h2>
+      <div className="announcement-container">
+        {cards}
+        <button className="more-announcements-button">
+          More Announcements
+        </button>
       </div>
-    </Container>
+    </div>
   );
 };
 

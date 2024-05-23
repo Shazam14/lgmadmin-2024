@@ -1,12 +1,12 @@
 import React from "react";
-import Navbar from "../components/Navbar/Navbar";
+import NavigationHome from "../components/Navbar/NavigationHome";
 import Privacy from "../components/Privacy/Privacy";
 import Footer from "../components/Footer/Footer";
 
 const PrivacyPage = () => {
   return (
     <div>
-      <Navbar />
+      <NavigationHome />
       <Privacy />
       <Footer />
     </div>

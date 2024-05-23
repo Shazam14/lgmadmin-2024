@@ -11,12 +11,12 @@
   top: 0;
   z-index: 10;
   display: flex;
-  flex-direction: column;
   justify-content: space-between;
   align-items: center;
   padding: 1rem;
   background-color: #f3f4f6;
 }
+
 
 @media screen and (min-width: 768px) {
   .home-navbar {
@@ -26,9 +26,17 @@
 
 .left-section {
   display: flex;
-  flex-direction: column;
   align-items: center;
-  margin-bottom: 1rem;
+  justify-content: space-between  ;
+  margin-right: 3rem;
+}
+
+.left-section > * {
+  margin-right: 3 rem; /* Add margin-right to each direct child element */
+}
+
+.left-section > *:last-child {
+  margin-right: 0; /* Remove margin-right from the last child element */
 }
 
 @media screen and (min-width: 768px) {

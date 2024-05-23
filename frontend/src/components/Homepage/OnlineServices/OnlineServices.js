@@ -1,4 +1,5 @@
 import React from "react";
+import { Container } from "react-bootstrap";
 import "../../../styles/homepage.css";
 
 const OnlineServices = () => {
@@ -9,20 +10,23 @@ const OnlineServices = () => {
   ];
 
   return (
-    <div className="online-services-container">
-      <div className="services-header">
-        <div className="services-title">// Our Online Services</div>
+    <Container fluid>
+      <div className="online-services-container">
+        <div className="services-header">
+          <h1 className="display-6">//Our Online Services</h1>
+        </div>
+
+        <div className="services-list">
+          {items.map((item, index) => (
+            <div key={index} className="service-item">
+              <button className="button-services">{item.icon}</button>
+              <div className="text-homepage">{item.text}</div>
+            </div>
+          ))}
+        </div>
+        <div className="horizontal-divider"></div>
       </div>
-      <div className="services-list">
-        {items.map((item, index) => (
-          <div key={index} className="service-item">
-            <button className="button-services">{item.icon}</button>
-            <div className="text-homepage">{item.text}</div>
-          </div>
-        ))}
-      </div>
-      <div className="horizontal-divider"></div>
-    </div>
+    </Container>
   );
 };
 

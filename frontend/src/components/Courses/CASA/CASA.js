@@ -1,6 +1,6 @@
 // CASA.js
-import React, { useRef, useState } from "react";
-import Navbar from "../../Navbar/Navbar";
+import React, { useRef } from "react";
+import NavigationHome from "../../Navbar/NavigationHome";
 import CASAHeroSection from "../../Courses/CASA/CASAHeroSection";
 import CASACurriculum from "../../Courses/CASA/CASACurriculum";
 import CASAAdmission from "../../Courses/CASA/CASAAdmission";
@@ -19,7 +19,7 @@ const CASA = () => {
 
   return (
     <div>
-      <Navbar />
+      <NavigationHome />
       <CASAHeroSection handleApplyClick={handleApplyClick} />
       <CASACurriculum />
       <CASAAdmission />

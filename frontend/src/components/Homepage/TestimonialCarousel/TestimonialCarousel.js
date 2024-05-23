@@ -1,7 +1,7 @@
 import React from "react";
+import { Container } from "react-bootstrap";
 import Slider from "react-slick";
 import testimonials from "./TestimonialContentText";
-import "../../../styles/tailwind.css";
 import "../../../styles/homepage.css";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
@@ -35,23 +35,26 @@ const TestimonialCarousel = () => {
   };
 
   return (
-    <div className="testimonial-carousel-container">
-      <div className="testimonial-heading">// Testimonial</div>
-      <Slider {...settings}>
-        {testimonials.map((testimonial, idx) => (
-          <div key={idx} className="testimonial-slide">
-            <div className="testimonial-content">
-              <p className="testimonial-text">{testimonial.text}</p>
-              <p className="testimonial-quote">{testimonial.quote}</p>
-              <p className="testimonial-author">{testimonial.author}</p>
+    <Container fluid>
+      <div className="testimonial-carousel-container">
+        <h1 className="display-6">//Testimonial</h1>
+
+        <Slider {...settings}>
+          {testimonials.map((testimonial, idx) => (
+            <div key={idx} className="testimonial-slide">
+              <div className="testimonial-content">
+                <p className="testimonial-text">{testimonial.text}</p>
+                <p className="testimonial-quote">{testimonial.quote}</p>
+                <p className="testimonial-author">{testimonial.author}</p>
+              </div>
+              <div className="testimonial-image-container">
+                {renderImage(idx)}
+              </div>
             </div>
-            <div className="testimonial-image-container">
-              {renderImage(idx)}
-            </div>
-          </div>
-        ))}
-      </Slider>
-    </div>
+          ))}
+        </Slider>
+      </div>
+    </Container>
   );
 };
 
