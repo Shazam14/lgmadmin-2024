@@ -8,7 +8,7 @@ from apps.grades.models import Program
 def generate_unique_student_id():
     # Generate a unique student ID using current date and time for uniqueness
     # Includes year, month, day, hour, minute, second
-    return "LRN" + timezone.now().strftime('%Y%m%d%H%M%S')
+    return "AN" + timezone.now().strftime("%Y%m%d%H%M%S")
 
 
 def get_program_based_on_applicant(applicant):
