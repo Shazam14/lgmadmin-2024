@@ -26,6 +26,4 @@ frontend/.env
 cert.pem
 key.pem
 frontend/7.21.4
-
-yarn.lock
 .env
