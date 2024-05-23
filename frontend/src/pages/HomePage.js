@@ -1,6 +1,6 @@
 // In ./pages/Home.js
 import React from "react";
-import Navbar from "../components/Navbar/Navbar";
+import NavigationHome from "../components/Navbar/NavigationHome";
 import HeroSection from "../components/Homepage/HeroSection/HeroSection";
 import ImageCarousel from "../components/Homepage/ImageCarousel/ImageCarousel";
 import TestimonialCarousel from "../components/Homepage/TestimonialCarousel/TestimonialCarousel";
@@ -12,7 +12,7 @@ import "../styles/homepage.css";
 const HomePage = () => {
   return (
     <div>
-      <Navbar />
+      <NavigationHome />
       <HeroSection />
       <ImageCarousel />
       <TestimonialCarousel />

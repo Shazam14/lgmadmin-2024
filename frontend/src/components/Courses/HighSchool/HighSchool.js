@@ -1,5 +1,5 @@
 import React, { useRef } from "react";
-import Navbar from "../../Navbar/Navbar";
+import NavigationHome from "../../Navbar/NavigationHome";
 import HighSchoolHeroSection from "../HighSchool/HighSchooHeroSection";
 import HighSchoolAdmission from "../HighSchool/HighSchoolAdmission";
 import HighSchoolCurriculum from "../HighSchool/HighSchoolCurriculum";
@@ -18,7 +18,7 @@ const HighSchool = () => {
 
   return (
     <div>
-      <Navbar />
+      <NavigationHome />
       <HighSchoolHeroSection handleApplyClick={handleApplyClick} />
       <HighSchoolAdmission />
       <HighSchoolCurriculum />

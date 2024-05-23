@@ -1,22 +1,72 @@
 import React from "react";
+import { Container } from "react-bootstrap";
+import Icons from "./Icons";
 import "../../styles/footer.css";
 
 const Footer = () => {
   return (
-    <footer className="footer">
-      <div className="footer-text">© 2024 Learning Garden Montessori</div>
-      <div className="footer-links">
-        <a href="/terms-of-service" className="footer-link">
-          Terms of Service
-        </a>
-        <a href="/privacy-policy" className="footer-link">
-          Privacy Policy
-        </a>
-        <svg className="icon" viewBox="0 0 512 512">
-          <path d="M504 256C504 119 393 8 256 8S8 119 8 256c0 123.78 90.69 226.38 209.25 245V327.69h-63V256h63v-54.64c0-62.15 37-96.48 93.67-96.48 27.14 0 55.52 4.84 55.52 4.84v61h-31.28c-30.8 0-40.41 19.12-40.41 38.73V256h68.78l-11 71.69h-57.78V501C413.31 482.38 504 379.78 504 256z"></path>
-        </svg>
-      </div>
-    </footer>
+    <Container fluid>
+      <Icons />
+      <footer className="d-flex flex-wrap justify-content-between align-items-center py-3 my-4 border-top">
+        <div className="col-md-4 d-flex align-items-center">
+          <a
+            href="/"
+            className="mb-3 me-2 mb-md-0 text-body-secondary text-decoration-none lh-1"
+          >
+            <svg className="bi" width="30" height="24">
+              <use xlinkHref="#bootstrap" />
+            </svg>
+          </a>
+          <span className="mb-3 mb-md-0 text-body-secondary">
+            © 2024 Learning Garden Montessori
+          </span>
+        </div>
+
+        <ul className="nav col-md-4 justify-content-end list-unstyled d-flex">
+          <li className="ms-3">
+            <a className="text-body-secondary" href="/terms-of-service">
+              Terms of Service
+            </a>
+          </li>
+          <li className="ms-3">
+            <a className="text-body-secondary" href="/privacy-policy">
+              Privacy Policy
+            </a>
+          </li>
+
+          <li className="ms-3">
+            <a
+              className="text-body-secondary"
+              href="https://twitter.com/your-twitter-handle"
+            >
+              <svg className="bi" width="24" height="24">
+                <use xlinkHref="#twitter" />
+              </svg>
+            </a>
+          </li>
+          <li className="ms-3">
+            <a
+              className="text-body-secondary"
+              href="https://instagram.com/your-instagram-handle"
+            >
+              <svg className="bi" width="24" height="24">
+                <use xlinkHref="#instagram" />
+              </svg>
+            </a>
+          </li>
+          <li className="ms-3">
+            <a
+              className="text-body-secondary"
+              href="https://facebook.com/your-facebook-page"
+            >
+              <svg className="bi" width="24" height="24">
+                <use xlinkHref="#facebook" />
+              </svg>
+            </a>
+          </li>
+        </ul>
+      </footer>
+    </Container>
   );
 };
 

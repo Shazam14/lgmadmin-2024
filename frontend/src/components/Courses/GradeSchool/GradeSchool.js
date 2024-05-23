@@ -1,5 +1,5 @@
 import React, { useRef } from "react";
-import Navbar from "../../Navbar/Navbar";
+import NavigationHome from "../../Navbar/NavigationHome";
 import GradeSchoolHeroSection from "./GradeSchoolHeroSection";
 import GradeSchoolAdmission from "./GradeSchoolAdmission";
 import GradeSchoolCurriculum from "./GradeSchoolCurriculum";
@@ -17,7 +17,7 @@ const GradeSchool = () => {
 
   return (
     <div>
-      <Navbar />
+      <NavigationHome />
       <GradeSchoolHeroSection handleApplyClick={handleApplyClick} />
       <GradeSchoolAdmission />
       <GradeSchoolCurriculum />

@@ -1,5 +1,5 @@
 import React, { useRef } from "react";
-import Navbar from "../../Navbar/Navbar";
+import NavigationHome from "../../Navbar/NavigationHome";
 import CourseForm from "../ApplyForm/ApplyForm";
 import Footer from "../../Footer/Footer";
 import SPEDHeroSection from "./SPEDHeroSection";
@@ -19,7 +19,7 @@ const SPED = () => {
 
   return (
     <div>
-      <Navbar />
+      <NavigationHome />
       <SPEDHeroSection handleApplyClick={handleApplyClick} />
       <SPEDAdmission />
       <SPEDCurriculum />
