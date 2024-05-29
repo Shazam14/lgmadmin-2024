@@ -13,96 +13,120 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.authentication import JWTAuthentication
 
 
-@api_view(['GET'])
+@api_view(["GET"])
 @permission_classes([IsAuthenticated])
 def api_root(request):
-    return Response({
-        'students': reverse('student-list', request=request),
-        'courses': reverse('course-list', request=request),
-        'teachers': reverse('teacher-list', request=request),
-        'applicants': reverse('applicant-list', request=request),
-        'enrollments': reverse('enrollment-list', request=request),
-        'student_upload': reverse('student-upload', request=request),
-        'parents': reverse('parent-list', request=request),
-        'grades': reverse('grade-list', request=request)
-    })
+    
+    return Response(
+        {
+            "students": reverse("student-list", request=request),
+            "courses": reverse("course-list", request=request),
+            "teachers": reverse("teacher-list", request=request),
+            "applicants": reverse("applicant-list", request=request),
+            "enrollments": reverse("enrollment-list", request=request),
+            "student_upload": reverse("student-upload", request=request),
+            "parents": reverse("parent-list", request=request),
+            "grades": reverse("grade-list", request=request),
+        }
+    )
 
 
 class SignupView(APIView):
     permission_classes = [AllowAny]
 
     def post(self, request, *args, **kwargs):
-        username = request.data.get('username')
-        password = request.data.get('password')
-        email = request.data.get('email')
+        username = request.data.get("username")
+        password = request.data.get("password")
+        email = request.data.get("email")
 
         if not username or not password or not email:
-            return Response({'error': 'Please provide username, password, and email'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {"error": "Please provide username, password, and email"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
         if User.objects.filter(username=username).exists():
-            return Response({'error': 'Username already exists'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {"error": "Username already exists"}, status=status.HTTP_400_BAD_REQUEST
+            )
 
         try:
             user = User.objects.create_user(
-                username=username, password=password, email=email)
+                username=username, password=password, email=email
+            )
             user.save()
             refresh = RefreshToken.for_user(user)
-            response = JsonResponse({'message': 'Signup successful'})
-            response.set_cookie('access_token', str(
-                refresh.access_token), httponly=True)
-            response.set_cookie('refresh_token', str(refresh), httponly=True)
-            response.set_cookie('username', username, httponly=True)
-            response['X-CSRFToken'] = get_token(request)
+            response = JsonResponse({"message": "Signup successful"})
+            response.set_cookie(
+                "access_token", str(refresh.access_token), httponly=True
+            )
+            response.set_cookie("refresh_token", str(refresh), httponly=True)
+            response.set_cookie("username", username, httponly=True)
+            response["X-CSRFToken"] = get_token(request)
             return response
         except Exception as e:
-            return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class LoginView(APIView):
     permission_classes = [AllowAny]
 
     def post(self, request, *args, **kwargs):
-        username = request.data.get('username')
-        password = request.data.get('password')
+        username = request.data.get("username")
+        password = request.data.get("password")
+
+        origin = request.META.get("HTTP_ORIGIN")
+        print(origin, "ORIGIN HERE")
 
         try:
             user = User.objects.get(username=username)
             if user.check_password(password):
                 refresh = RefreshToken.for_user(user)
-                response = JsonResponse({'message': 'Login successful'})
+                response = JsonResponse(
+                    {
+                        "access": str(refresh.access_token),
+                        "refresh": str(refresh),
+                        "message": "Login successful",
+                    }
+                )
                 response.set_cookie(
-                    'access_token',
+                    "access_token",
                     str(refresh.access_token),
                     httponly=True,
                     secure=False,
-                    samesite='Lax'
+                    samesite="Lax",
                 )
                 response.set_cookie(
-                    'refresh_token',
+                    "refresh_token",
                     str(refresh),
                     httponly=True,
                     secure=False,
-                    samesite='Lax'
+                    samesite="Lax",
                 )
-                response.set_cookie(
-                    'username',
-                    username,
-                    httponly=True,
-                    samesite='Lax'
+                response.set_cookie("username", username, httponly=True, samesite="Lax")
+                response["X-CSRFToken"] = get_token(request)
+                response["Access-Control-Allow-Origin"] = origin
+                response["Access-Control-Allow-Credentials"] = "true"
+                response["Access-Control-Allow-Methods"] = "POST, OPTIONS"
+                response["Access-Control-Allow-Headers"] = (
+                    "Authorization, Content-Type, X-CSRFToken"
                 )
-                response['X-CSRFToken'] = get_token(request)
-                print('Response from LOGIN', response)
+                print("Response from LOGIN", response)
                 return response
             else:
-                return Response({'error': 'Invalid credentials'}, status=status.HTTP_400_BAD_REQUEST)
+                return Response(
+                    {"error": "Invalid credentials"}, status=status.HTTP_400_BAD_REQUEST
+                )
         except User.DoesNotExist:
-            return Response({'error': 'Invalid credentials'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {"error": "Invalid credentials"}, status=status.HTTP_400_BAD_REQUEST
+            )
 
 
 class LogoutView(APIView):
     def post(self, request):
         response = Response()
-        response.delete_cookie('access_token')
-        response.delete_cookie('refresh_token')
-        response.data = {'message': 'Logout successful'}
+        response.delete_cookie("access_token")
+        response.delete_cookie("refresh_token")
+        response.data = {"message": "Logout successful"}
         return response

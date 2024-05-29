@@ -1,8 +1,9 @@
 import React, { useContext } from "react";
-import { Navigate, Outlet } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 import { AdminRoleContext } from "../../contexts/AdminRoleContext";
 
 const ProtectedRoute = ({ children }) => {
+  console.log("PROTECTED ROUTE!!!");
   const { isAdmin } = useContext(AdminRoleContext);
   return isAdmin ? children : <Navigate to="/admin-login" />;
 };

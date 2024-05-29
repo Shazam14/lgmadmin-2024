@@ -2,7 +2,7 @@ import React from "react";
 import "../../../../styles/admin.css";
 import { useNavigate } from "react-router-dom";
 import axiosInstance from "../../../../axiosConfig";
-import axios from "axios";
+import Cookies from "js-cookie";
 const AdminNavbar = () => {
   const navigate = useNavigate();
 
@@ -10,6 +10,14 @@ const AdminNavbar = () => {
     try {
       await axiosInstance.post("/logout/");
       console.log("Logout successful");
+
+      // Clear cookies
+      Cookies.remove("access_token", { path: "/" });
+      Cookies.remove("refresh_token", { path: "/" });
+      Cookies.remove("csrftoken", { path: "/" });
+      Cookies.remove("username", { path: "/" });
+
+      // Optionally, clear any additional state or context related to admin user
 
       // Navigate to the admin login page after successful logout
       navigate("/admin-login");

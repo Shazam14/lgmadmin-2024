@@ -1,38 +1,40 @@
 import React, { useState, useContext } from "react";
 import Cookies from "js-cookie";
-import { useNavigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 import "../styles/adminlogin.css";
 import { AdminRoleContext } from "../contexts/AdminRoleContext";
-import api from "../services/api";
+import axiosConfig from "./../axiosConfig";
 const AdminLogin = ({ setToken }) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
   const [isSignup, setIsSignup] = useState(false); // State for toggling
-  const { setIsAdmin } = useContext(AdminRoleContext);
-
+  const { updateAdminRole } = useContext(AdminRoleContext);
   const navigate = useNavigate();
-
   const handleLogin = async (event) => {
     event.preventDefault();
     try {
-      const response = await api.post("login/", {
+      const response = await axiosConfig.post("login/", {
         username: username,
         password: password,
       });
+      console.log("Login response LINE 23:", response.data);
 
-      const token = response.data.token;
-      console.log("Token from Admin Login:", token);
-      Cookies.set("access_token", token, { path: "/" });
+      const token = response.data.access;
 
-      const storedToken = Cookies.get("access_token");
-      console.log("Token stored in cookies:", storedToken);
+      const refreshToken = response.data.refresh;
+      Cookies.set("access_token", token, {
+        expires: 7,
+      });
+      Cookies.set("refresh_token", refreshToken, {
+        expires: 7,
+      });
 
-      if (setToken) {
-        setToken(token);
-      }
+      console.log(token, "token in Admin login");
+      console.log(refreshToken, "response data refresh");
 
-      setIsAdmin(true);
+      setToken(token);
+      updateAdminRole(true);
       navigate("/admin");
     } catch (error) {
       console.error("Login failed:", error);
@@ -42,21 +44,24 @@ const AdminLogin = ({ setToken }) => {
   const handleSignup = async (event) => {
     event.preventDefault();
     try {
-      const response = await api.post("signup/", {
+      const response = await axiosConfig.post("signup/", {
         username: username,
         password: password,
         email: email,
       });
-
-      const token = response.data.token;
+      console.log(response.data.access, "GETTING THERE");
+      const token = response.data.access;
+      const refreshToken = response.data.refresh; // Update based on your response structure
+      console.log(token, "tRYING TO GET TOKEN DATA HERE");
       Cookies.set("access_token", token, { path: "/" });
+      Cookies.set("refresh_token", refreshToken, { path: "/" });
 
-      // Verify token set in cookies
-      const storedToken = Cookies.get("access_token");
-      console.log("Token stored in cookies:", storedToken);
+      console.log("Access token after setting:", Cookies.get("access_token"));
+      console.log("Refresh token after setting:", Cookies.get("refresh_token"));
 
-      setIsAdmin(true);
-      navigate("/admin");
+      updateAdminRole(true);
+      Navigate();
+      console.log("after the admin Role");
     } catch (error) {
       console.error("Signup failed:", error);
     }

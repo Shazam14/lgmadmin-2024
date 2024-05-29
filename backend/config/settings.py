@@ -15,6 +15,7 @@ from dotenv import load_dotenv
 from datetime import timedelta
 from corsheaders.defaults import default_headers
 import os
+
 load_dotenv()  # Assuming there is a .env file in the same directory as this script
 
 # Test to see if it reads any environment variable from your .env file
@@ -22,203 +23,183 @@ test_var = os.getenv("TEST_VARIABLE")
 print("Test Variable:", test_var)
 
 
-
-IS_PRODUCTION = os.getenv('DJANGO_ENV') == 'production'
+IS_PRODUCTION = os.getenv("DJANGO_ENV") == "production"
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-load_dotenv(os.path.join(BASE_DIR, '.env'))
+load_dotenv(os.path.join(BASE_DIR, ".env"))
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-a!dtsj_=5rx+qp@bicvp^_#fe0%%olsus$&if92km@llx86@js'
+SECRET_KEY = "django-insecure-a!dtsj_=5rx+qp@bicvp^_#fe0%%olsus$&if92km@llx86@js"
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-DEFAULT_HOST = '192.168.1.2'
-DEFAULT_PORT = '8001'
+DEFAULT_HOST = "192.168.1.2"
+DEFAULT_PORT = "8001"
 
-HOST = os.environ.get('DJANGO_HOST', DEFAULT_HOST)
-PORT = os.environ.get('DJANGO_PORT', DEFAULT_PORT)
+HOST = os.environ.get("DJANGO_HOST", DEFAULT_HOST)
+PORT = os.environ.get("DJANGO_PORT", DEFAULT_PORT)
 
 
-ALLOWED_HOSTS = ['192.168.1.2', 'localhost', '127.0.0.1', '[::1]']
+ALLOWED_HOSTS = [
+    "192.168.1.2",
+    "localhost",
+    "testlgms.learninggardenmontesssori.ph",
+    "testadmin.learninggardenmontessori.ph",
+    "127.0.0.1",
+    "[::1]",
+]
 
 INSTALLED_APPS = [
-    'django.contrib.admin',
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.messages',
-    'django.contrib.staticfiles',
-    'apps.parents',
-    'apps.teachers',
-    'apps.applicants',
-    'apps.courses',
-    'apps.enrollments',
-    'apps.students',
-    'apps.grades',
-    'corsheaders',
-    'rest_framework',
-    'oauth2_provider',
-    'rest_framework_simplejwt',
-    'django_extensions',
+    "django.contrib.admin",
+    "django.contrib.auth",
+    "django.contrib.contenttypes",
+    "django.contrib.sessions",
+    "django.contrib.messages",
+    "django.contrib.staticfiles",
+    "apps.parents",
+    "apps.teachers",
+    "apps.applicants",
+    "apps.courses",
+    "apps.enrollments",
+    "apps.students",
+    "apps.grades",
+    "corsheaders",
+    "rest_framework",
+    "oauth2_provider",
+    "rest_framework_simplejwt",
+    "django_extensions",
 ]
 
 REST_FRAMEWORK = {
-    'DEFAULT_PERMISSION_CLASSES': (
-        'rest_framework.permissions.IsAuthenticated',
-    ),
-    'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.IsAuthenticated",),
+    "DEFAULT_AUTHENTICATION_CLASSES": (
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
     ),
 }
 
 OAUTH2_PROVIDER = {
-    'ACCESS_TOKEN_EXPIRE_SECONDS': 36000,
-    'AUTHORIZATION_CODE_EXPIRE_SECONDS': 600,
-    'CLIENT_ID_GENERATOR_CLASS': 'oauth2_provider.generators.ClientIdGenerator',
-    'CLIENT_SECRET_GENERATOR_CLASS': 'oauth2_provider.generators.ClientSecretGenerator',
-    'REFRESH_TOKEN_EXPIRE_SECONDS': 864000,
+    "ACCESS_TOKEN_EXPIRE_SECONDS": 36000,
+    "AUTHORIZATION_CODE_EXPIRE_SECONDS": 600,
+    "CLIENT_ID_GENERATOR_CLASS": "oauth2_provider.generators.ClientIdGenerator",
+    "CLIENT_SECRET_GENERATOR_CLASS": "oauth2_provider.generators.ClientSecretGenerator",
+    "REFRESH_TOKEN_EXPIRE_SECONDS": 864000,
 }
 
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=15),
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
-    'ROTATE_REFRESH_TOKENS': False,
-    'BLACKLIST_AFTER_ROTATION': True,
-    'UPDATE_LAST_LOGIN': False,
-    'AUTH_COOKIE_HTTP_ONLY': True,  # Enable HttpOnly cookies
-    'AUTH_COOKIE_SECURE': True,  # Enable HTTPS for cookies (recommended)
-    'AUTH_COOKIE_PATH': '/',  # Set the cookie path
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=15),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
+    "ROTATE_REFRESH_TOKENS": False,
+    "BLACKLIST_AFTER_ROTATION": True,
+    "UPDATE_LAST_LOGIN": False,
+    "AUTH_COOKIE_HTTP_ONLY": True,  # Enable HttpOnly cookies
+    "AUTH_COOKIE_SECURE": True,  # Enable HTTPS for cookies (recommended)
+    "AUTH_COOKIE_PATH": "/",  # Set the cookie path
     # Set the SameSite attribute for CSRF protection
-    'AUTH_COOKIE_SAMESITE': 'Strict',
+    "AUTH_COOKIE_SAMESITE": "Strict",
+    "AUTH_COOKIE": "Authorization",
 }
 
-""" 
-SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=5),
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
-    'ROTATE_REFRESH_TOKENS': True,
-    'BLACKLIST_AFTER_ROTATION': True,
-    'ALGORITHM': 'HS256',
-    'SIGNING_KEY': SECRET_KEY,
-    'VERIFYING_KEY': None,
-    'AUDIENCE': None,
-    'ISSUER': None,
-    'AUTH_HEADER_TYPES': ('Bearer',),
-    'AUTH_HEADER_NAME': 'HTTP_AUTHORIZATION',
-    'USER_ID_FIELD': 'id',
-    'USER_ID_CLAIM': 'user_id',
-    'AUTH_TOKEN_CLASSES': ('rest_framework_simplejwt.tokens.AccessToken',),
-    'TOKEN_TYPE_CLAIM': 'token_type',
-    'JTI_CLAIM': 'jti',
-    'AUTH_COOKIE': 'access_token',
-    'AUTH_COOKIE_HTTP_ONLY': True,
-    'AUTH_COOKIE_PATH': '/',
-    'AUTH_COOKIE_SECURE': True,  # Set to True if using HTTPS
-    'AUTH_COOKIE_SAMESITE': 'Lax',  # Adjust according to your requirements
-    # ...requirements
-} """
 
 MIDDLEWARE = [
-    'corsheaders.middleware.CorsMiddleware',
-    'django.middleware.security.SecurityMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    "corsheaders.middleware.CorsMiddleware",
+    "django.middleware.security.SecurityMiddleware",
+    "django.contrib.sessions.middleware.SessionMiddleware",
+    "django.middleware.common.CommonMiddleware",
+    "django.middleware.csrf.CsrfViewMiddleware",
+    "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "django.contrib.messages.middleware.MessageMiddleware",
+    "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
-
-CORS_ALLOW_CREDENTIALS = True
-CORS_ORIGIN_WHITELIST = [
-    'http://localhost:3007',
-    'http://192.168.1.2:3007'
-    # Update with your frontend's URL
-]
-CORS_ALLOW_ALL_ORIGINS = True
 
 CORS_ALLOWED_ORIGINS = [
-    'http://localhost:3007',
-    'http://192.168.1.2:3007',  # Include the scheme (http:// or https://)
+    "http://192.168.1.2:3007",
 ]
-# Ensure CORS allows requests from your frontend's specific origin and supports credentials
-# This should be False if you are specifying allowed origins
-""" CORS_ALLOW_ALL_ORIGINS = False
+CORS_ALLOW_CREDENTIALS = True
 
-CORS_ALLOW_CREDENTIALS = True  # This allows cookies to be submitted across domains
+CORS_ALLOW_ALL_ORIGINS = True
 
+# CORS_ALLOWED_ORIGINS = [
+#     "http://localhost:3007",
+#     "http://192.168.1.2:3007",
+#     "https://testlgms.learninggardenmontessori.ph",
+#     "https://testadmin.learninggardenmontessori.ph",  # this is 192.168.1.2 backend counterpart
+# ]
 
-# Define trusted origins for CSRF protection
-CSRF_TRUSTED_ORIGINS = [
-    'http://localhost:3001',
+# CSRF_TRUSTED_ORIGINS = [
+#     "http://localhost:3007",
+#     "http://192.168.1.2:3007",
+#     "https://testlgms.learninggardenmontessori.ph",
+#     "https://testadmin.learninggardenmontessori.ph",
+#     "https://testadmin.learninggardenmontessori.ph/api/login",
+# ]
+
+# Allow all HTTP methods (GET, POST, etc.)
+CORS_ALLOW_METHODS = [
+    "DELETE",
+    "GET",
+    "OPTIONS",
+    "PATCH",
+    "POST",
+    "PUT",
 ]
 
-# Optionally, ensure that the headers needed for your requests are allowed
-CORS_ALLOW_HEADERS = list(default_headers) + [
-    'X-CSRFToken',
-] """
+# Allow all headers
+CORS_ALLOW_HEADERS = [
+    "accept",
+    "accept-encoding",
+    "authorization",
+    "content-type",
+    "dnt",
+    "origin",
+    "user-agent",
+    "x-csrftoken",
+    "x-requested-with",
+]
 
-
-""" if not IS_PRODUCTION:
-    print('NOT PRODUCTION')
-    CORS_ALLOW_ALL_ORIGINS = True """
-
-ROOT_URLCONF = 'config.urls'
+ROOT_URLCONF = "config.urls"
 
 TEMPLATES = [
     {
-        'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
-        'APP_DIRS': True,
-        'OPTIONS': {
-            'context_processors': [
-                'django.template.context_processors.debug',
-                'django.template.context_processors.request',
-                'django.contrib.auth.context_processors.auth',
-                'django.contrib.messages.context_processors.messages',
+        "BACKEND": "django.template.backends.django.DjangoTemplates",
+        "DIRS": [],
+        "APP_DIRS": True,
+        "OPTIONS": {
+            "context_processors": [
+                "django.template.context_processors.debug",
+                "django.template.context_processors.request",
+                "django.contrib.auth.context_processors.auth",
+                "django.contrib.messages.context_processors.messages",
             ],
         },
     },
 ]
 
-WSGI_APPLICATION = 'config.wsgi.application'
+WSGI_APPLICATION = "config.wsgi.application"
 
-print("Database Name:", os.environ.get('DB_NAME'))
-print("Database User:", os.environ.get('DB_USER'))
-print("Database Password:", os.environ.get('DB_PASSWORD'))
-print("Database Host:", os.environ.get('DB_HOST'))
-print("Database Port:", os.environ.get('DB_PORT'))
+print("Database Name:", os.environ.get("DB_NAME"))
+print("Database User:", os.environ.get("DB_USER"))
+print("Database Password:", os.environ.get("DB_PASSWORD"))
+print("Database Host:", os.environ.get("DB_HOST"))
+print("Database Port:", os.environ.get("DB_PORT"))
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.environ.get('DB_NAME'),
-        'USER': os.environ.get('DB_USER'),
-        'PASSWORD': os.environ.get('DB_PASSWORD'),
-        'HOST': os.environ.get('DB_HOST'),
-        'PORT': os.environ.get('DB_PORT'),
+    "default": {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": os.environ.get("DB_NAME"),
+        "USER": os.environ.get("DB_USER"),
+        "PASSWORD": os.environ.get("DB_PASSWORD"),
+        "HOST": os.environ.get("DB_HOST"),
+        "PORT": os.environ.get("DB_PORT"),
     }
 }
-
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql',
-#         'NAME': 'lgmdb',
-#         'USER': 'postgres',
-#         'PASSWORD': 'postgres',
-#         'HOST': 'host.docker.internal',
-#         'PORT': '5432',
-#     }
-# }
 
 
 # Password validation
@@ -226,16 +207,16 @@ DATABASES = {
 
 AUTH_PASSWORD_VALIDATORS = [
     {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+        "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+        "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
     },
 ]
 
@@ -243,9 +224,9 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/5.0/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = "en-us"
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = "UTC"
 
 USE_I18N = True
 
@@ -255,24 +236,24 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
-STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATIC_URL = "/static/"
+STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 
-MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = "/media/"
+MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 
 # EMAIL gmail
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = "smtp.gmail.com"
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
-EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
+EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
 
 
 # email localhost
@@ -307,5 +288,8 @@ SESSION_CACHE_ALIAS = "default"
 
 CSRF_COOKIE_SECURE = False  # set to true if in Prod
 CSRF_COOKIE_HTTPONLY = True
-CSRF_COOKIE_SAMESITE = 'Lax'
+CSRF_COOKIE_SAMESITE = "Lax"
 SESSION_COOKIE_SECURE = False  # set to true if in Prod
+# settings.py
+
+SECURE_CROSS_ORIGIN_OPENER_POLICY = "same-origin"

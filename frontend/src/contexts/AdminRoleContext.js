@@ -1,5 +1,3 @@
-// src/contexts/AdminRoleContext.js
-
 import React, { createContext, useState } from "react";
 
 export const AdminRoleContext = createContext();
@@ -7,10 +5,13 @@ export const AdminRoleContext = createContext();
 export const AdminRoleProvider = ({ children }) => {
   const [isAdmin, setIsAdmin] = useState(false);
 
-  // Add any necessary functions or state management related to admin roles
+  const updateAdminRole = (value) => {
+    console.log("Updating the admin role", value);
+    setIsAdmin(value);
+  };
 
   return (
-    <AdminRoleContext.Provider value={{ isAdmin, setIsAdmin }}>
+    <AdminRoleContext.Provider value={{ isAdmin, updateAdminRole }}>
       {children}
     </AdminRoleContext.Provider>
   );

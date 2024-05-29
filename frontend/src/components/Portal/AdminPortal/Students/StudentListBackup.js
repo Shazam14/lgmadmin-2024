@@ -22,7 +22,6 @@ const StudentsList = () => {
     return <div>Error: {error}</div>;
   }
 
-  console.log("Students in component", students);
 
   return (
     <div>

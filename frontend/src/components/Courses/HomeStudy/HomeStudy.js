@@ -5,21 +5,17 @@ import Footer from "../../Footer/Footer";
 import HomeStudyHeroSection from "./HomeStudyHeroSection";
 import HomeStudyAdmission from "./HomeStudyAdmission";
 import HomeStudyCurriculum from "./HomeStudyCurriculum";
-
+import { handleApplyClick } from "../../../utils/applyFormUtils";
 const HomeStudy = () => {
   const program = "HomeStudy";
   const formRef = useRef(null);
 
-  const handleApplyClick = () => {
-    if (formRef.current) {
-      formRef.current.focus(); // This assumes you have implemented a focus method in your ApplyForm component
-    }
-  };
-
   return (
     <div>
       <NavigationHome />
-      <HomeStudyHeroSection handleApplyClick={handleApplyClick} />
+      <HomeStudyHeroSection
+        handleApplyClick={() => handleApplyClick(formRef)}
+      />
       <HomeStudyAdmission />
       <HomeStudyCurriculum />
       <ApplyForm ref={formRef} program={program} />

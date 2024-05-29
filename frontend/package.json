@@ -3,6 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@botpress/sdk": "^0.8.15",
+    "@botpress/webchat": "^1.3.11",
     "@emotion/react": "^11.11.4",
     "@emotion/styled": "^11.11.5",
     "@mui/material": "^5.15.18",
@@ -40,8 +42,10 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
+    "start:local": "cross-env USE_SECURE_WS=false webpack serve --config webpack.config.js",
+    "start:secure": "cross-env USE_SECURE_WS=true webpack serve --config webpack.config.js",
+    "start": "webpack serve --config webpack.config.js",
+    "build": "webpack --config webpack.config.js",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
@@ -66,5 +70,19 @@
   "description": "LGM frontend for landing page and admin",
   "main": "index.js",
   "author": "Shazam14 <w_gmbg@yahoo.com>",
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "@babel/preset-react": "^7.24.1",
+    "css-loader": "^7.1.2",
+    "cypress": "^13.10.0",
+    "file-loader": "^6.2.0",
+    "html-webpack-plugin": "^5.6.0",
+    "source-map-loader": "^5.0.0",
+    "style-loader": "^4.0.0",
+    "url-loader": "^4.1.1",
+    "webpack-assets-manifest": "^5.2.1",
+    "webpack-cli": "^5.1.4",
+    "webpack-dev-server": "^5.0.4",
+    "webpack-manifest-plugin": "^5.0.0"
+  }
 }
