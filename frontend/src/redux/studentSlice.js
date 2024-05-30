@@ -7,7 +7,7 @@ export const getStudents = createAsyncThunk(
   "students/getStudents",
   async (_, { rejectWithValue }) => {
     try {
-      const data = await api.fetchData("/students/");
+      const data = await api.fetchData("students/");
       return data;
     } catch (error) {
       console.error("Error fetching students:", error);

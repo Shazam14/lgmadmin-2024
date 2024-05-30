@@ -24,6 +24,8 @@ const AdminLogin = ({ setAuthenticated }) => {
       Cookies.set("access_token", token, { path: "/" });
       Cookies.set("refresh_token", refreshToken, { path: "/" });
 
+      localStorage.setItem('username', username);
+
       setIsAdmin(true);
       setAuthenticated(true);
       navigate("/admin");

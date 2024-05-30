@@ -1,12 +1,11 @@
 // src/redux/courseSlice.js
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { fetchCourses } from "../services/studentApi";
-
+import api from "../services/api";
 export const getCourses = createAsyncThunk(
   "courses/getCourses",
   async (_, { rejectWithValue }) => {
     try {
-      const courses = await fetchCourses();
+      const courses = await api.fetchData("courses/");
       console.log("Courses in asynch thunk", courses);
       return courses;
     } catch (error) {

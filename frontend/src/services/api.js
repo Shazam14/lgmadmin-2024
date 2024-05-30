@@ -21,6 +21,11 @@ const api = {
     try {
       const response = await fetch(url, mergedOptions);
       const data = await response.json();
+
+      if (data.username) {
+        localStorage.setItem('username', data.username);
+      }
+      
       return data;
     } catch (error) {
       console.error(`Error fetching data from ${url}:`, error);
