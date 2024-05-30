@@ -1,74 +1,32 @@
-import axios from "axios";
-import { jwtDecode } from "jwt-decode";
+// src/services/api.js
 
-const api = axios.create({
-  baseURL: "http://192.168.1.7:8007/api",
-  headers: {
-    "Content-Type": "application/json",
-  },
-  withCredentials: true,
-});
+import { getCookieValue } from "./apiUtils";
 
-// Get the Access token from storage (local/session storage or cookie)
-const getAccessToken = () => {
-  return localStorage.getItem("accessToken");
-};
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
+console.log(API_BASE_URL);
+const api = {
+  fetchData: async (endpoint, options = {}) => {
+    const url = `${API_BASE_URL}/${endpoint}`;
+    const accessToken = getCookieValue("access_token");
 
-// Get the Refresh token from storage (local/session storage or cookie)
-const getRefreshToken = () => {
-  return localStorage.getItem("refreshToken");
-};
+    const defaultOptions = {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    };
 
-// Update the Access token in storage
-const setAccessToken = (token) => {
-  localStorage.setItem("accessToken", token);
-};
+    const mergedOptions = { ...defaultOptions, ...options };
 
-// Refresh the Access token using the Refresh token
-const refreshAccessToken = async () => {
-  const refreshToken = getRefreshToken();
-
-  try {
-    const response = await axios.post("/api/refresh", { refreshToken });
-    const { accessToken } = response.data;
-    setAccessToken(accessToken);
-    return accessToken;
-  } catch (error) {
-    console.error("Failed to refresh access token:", error);
-    throw error;
-  }
-};
-
-// Check if token is expired
-const isTokenExpired = (token) => {
-  if (!token) return true;
-  const { exp } = jwtDecode(token);
-  return Date.now() >= exp * 1000; // Convert to milliseconds
-};
-
-// Add a request interceptor to handle expired Access tokens
-api.interceptors.request.use(
-  async (config) => {
-    let accessToken = getAccessToken();
-
-    if (accessToken && isTokenExpired(accessToken)) {
-      try {
-        accessToken = await refreshAccessToken();
-      } catch (error) {
-        console.error("Failed to refresh access token:", error);
-        // Optional: Redirect to login or other error handling
-      }
+    try {
+      const response = await fetch(url, mergedOptions);
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error(`Error fetching data from ${url}:`, error);
+      throw error;
     }
-
-    if (accessToken) {
-      config.headers.Authorization = `Bearer ${accessToken}`;
-    }
-
-    return config;
   },
-  (error) => {
-    return Promise.reject(error);
-  }
-);
+};
 
 export default api;

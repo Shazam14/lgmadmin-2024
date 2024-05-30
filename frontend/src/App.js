@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { UserRoleProvider } from "./contexts/UserRoleContext";
 import { AdminRoleProvider } from "./contexts/AdminRoleContext";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
@@ -6,7 +6,6 @@ import { StudentProvider } from "./contexts/StudentContext";
 import AdminPortalPage from "./pages/AdminPortalPage";
 import AdminLogin from "./auth/AdminLogin.js";
 import StudentPage from "./pages/StudentPage";
-import "./styles/app.css";
 import HomePage from "./pages/HomePage";
 import About from "./pages/AboutPage";
 import CoursesPage from "./pages/CoursesPage";
@@ -14,8 +13,6 @@ import CourseList from "./components/Portal/AdminPortal/Courses/CourseList";
 import SchedulePage from "./components/Portal/AdminPortal/Schedules/SchedulePage";
 import ApplicantList from "./components/Portal/AdminPortal/Applicants/ApplicantList.js";
 import EnrollmentList from "./components/Portal/AdminPortal/Enrollments/EnrollmentList.js";
-import "slick-carousel/slick/slick.css";
-import "slick-carousel/slick/slick-theme.css";
 import ApplyForm from "./components/Courses/ApplyForm/ApplyForm";
 import StudentList from "./components/Portal/AdminPortal/Students/StudentList";
 import TermsPage from "./pages/TermsPage";
@@ -27,14 +24,38 @@ import Grades from "./components/Portal/AdminPortal/Grades/Grades";
 import TuitionHistory from "./components/Portal/AdminPortal/TuitionHistory/TuitionHistory";
 import Emergency from "./components/Portal/AdminPortal/Emergency/Emergency";
 import Lessons from "./components/Portal/AdminPortal/Lessons/Lessons.js";
-import StudentPortal from "./components/Portal/StudentPortal/StudentPortalMainContent.js";
-import TeachersList from "./components/Portal/AdminPortal/Teachers/TeachersList.js";
 import StudentPortalPage from "./pages/StudentPortalPage";
 import StudentPortalDashboard from "./components/Portal/StudentPortal/StudentPortalDashboard.js";
 import ProtectedRoute from "./components/auth/ProtectedRoute.js";
+import apiClient from "./services/apiClient.js";
+import TeachersList from "./components/Portal/AdminPortal/Teachers/TeachersList.js";
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
+import "./styles/app.css";
 
 function App() {
-  const [token, setToken] = useState(localStorage.getItem("access_token"));
+  const [authenticated, setAuthenticated] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  const checkAuthStatus = async () => {
+    try {
+      const response = await apiClient.get("auth-status/");
+      setAuthenticated(response.data.isAuthenticated);
+    } catch (error) {
+      console.error("Auth status check failed:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    checkAuthStatus();
+  }, []);
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
   return (
     <UserRoleProvider>
       <AdminRoleProvider>
@@ -60,13 +81,13 @@ function App() {
 
               <Route
                 path="/admin-login"
-                element={<AdminLogin setToken={setToken} />}
+                element={<AdminLogin setAuthenticated={setAuthenticated} />}
               />
 
               <Route
                 path="/admin"
                 element={
-                  <ProtectedRoute>
+                  <ProtectedRoute authenticated={authenticated}>
                     <AdminPortalPage />
                   </ProtectedRoute>
                 }
@@ -88,6 +109,13 @@ function App() {
                   <Route path="tuition" element={<TuitionHistory />} />
                 </Route>
               </Route>
+
+              {!authenticated && (
+                <Route
+                  path="/admin"
+                  element={<AdminLogin setAuthenticated={setAuthenticated} />}
+                />
+              )}
             </Routes>
           </Router>
         </StudentProvider>

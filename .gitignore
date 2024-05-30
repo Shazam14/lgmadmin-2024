@@ -25,5 +25,3 @@ backend/.env
 frontend/.env
 cert.pem
 key.pem
-frontend/7.21.4
-.env
