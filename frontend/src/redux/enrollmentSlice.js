@@ -1,12 +1,12 @@
 // src/redux/applicantsSlice.js
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { fetchEnrollments } from "./../services/studentApi";
+import api from "../services/api";
 
 export const getEnrollments = createAsyncThunk(
   "applicants/getApplicants",
   async (_, { rejectWithValue }) => {
     try {
-      const enrollments = await fetchEnrollments();
+      const enrollments = await api.fetchData("enrollments/");
       console.log("Enrollments in asynch thunk", enrollments);
       return enrollments;
     } catch (error) {

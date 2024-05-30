@@ -1,10 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Card, CardContent, Typography, Grid } from "@mui/material";
-import {
-  fetchStudents,
-  fetchApplicants,
-  fetchEnrollments,
-} from "../../../../services/studentApi";
+import api from "../../../../services/api";
 
 const AdminDashboard = () => {
   const [applicantsCount, setApplicantsCount] = useState(0);
@@ -12,17 +8,22 @@ const AdminDashboard = () => {
   const [studentsCount, setStudentsCount] = useState(0);
 
   useEffect(() => {
-    fetchApplicants()
-      .then((data) => setApplicantsCount(data.length))
-      .catch((error) => console.error("Error fetching applicants:", error));
+    const fetchCounts = async () => {
+      try {
+        const applicantsData = await api.fetchData("applicants/");
+        setApplicantsCount(applicantsData.length);
 
-    fetchEnrollments()
-      .then((data) => setEnrollmentsCount(data.length))
-      .catch((error) => console.error("Error fetching enrollments:", error));
+        const enrollmentsData = await api.fetchData("enrollments/");
+        setEnrollmentsCount(enrollmentsData.length);
 
-    fetchStudents()
-      .then((data) => setStudentsCount(data.length))
-      .catch((error) => console.error("Error fetching students:", error));
+        const studentsData = await api.fetchData("students/");
+        setStudentsCount(studentsData.length);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    fetchCounts();
   }, []);
 
   return (
@@ -72,4 +73,5 @@ const AdminDashboard = () => {
     </div>
   );
 };
+
 export default AdminDashboard;
