@@ -11,6 +11,8 @@ from rest_framework.response import Response
 from rest_framework.reverse import reverse
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.authentication import JWTAuthentication
+from rest_framework_simplejwt.tokens import UntypedToken
+from rest_framework_simplejwt.exceptions import InvalidToken, TokenError
 
 
 @api_view(['GET'])
@@ -26,6 +28,23 @@ def api_root(request):
         'parents': reverse('parent-list', request=request),
         'grades': reverse('grade-list', request=request)
     })
+
+
+class AuthStatusView(APIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request, *args, **kwargs):
+        auth_status = {'isAuthenticated': False}
+
+        try:
+            token = request.COOKIES.get('access_token')
+            if token:
+                UntypedToken(token)
+                auth_status['isAuthenticated'] = True
+        except (InvalidToken, TokenError):
+            pass
+
+        return Response(auth_status)
 
 
 class SignupView(APIView):
@@ -62,41 +81,56 @@ class LoginView(APIView):
     permission_classes = [AllowAny]
 
     def post(self, request, *args, **kwargs):
-        username = request.data.get('username')
-        password = request.data.get('password')
+        username = request.data.get("username")
+        password = request.data.get("password")
+
+        origin = request.META.get("HTTP_ORIGIN")
+        print(origin, "ORIGIN HERE")
 
         try:
             user = User.objects.get(username=username)
             if user.check_password(password):
                 refresh = RefreshToken.for_user(user)
-                response = JsonResponse({'message': 'Login successful'})
+                response = JsonResponse(
+                    {
+                        "access": str(refresh.access_token),
+                        "refresh": str(refresh),
+                        "message": "Login successful",
+                    }
+                )
                 response.set_cookie(
-                    'access_token',
+                    "access_token",
                     str(refresh.access_token),
                     httponly=True,
                     secure=False,
-                    samesite='Lax'
+                    samesite="Lax",
                 )
                 response.set_cookie(
-                    'refresh_token',
+                    "refresh_token",
                     str(refresh),
                     httponly=True,
                     secure=False,
-                    samesite='Lax'
+                    samesite="Lax",
                 )
-                response.set_cookie(
-                    'username',
-                    username,
-                    httponly=True,
-                    samesite='Lax'
+                response.set_cookie("username", username,
+                                    httponly=True, samesite="Lax")
+                response["X-CSRFToken"] = get_token(request)
+                response["Access-Control-Allow-Origin"] = origin
+                response["Access-Control-Allow-Credentials"] = "true"
+                response["Access-Control-Allow-Methods"] = "POST, OPTIONS"
+                response["Access-Control-Allow-Headers"] = (
+                    "Authorization, Content-Type, X-CSRFToken"
                 )
-                response['X-CSRFToken'] = get_token(request)
-                print('Response from LOGIN', response)
+                print("Response from LOGIN", response)
                 return response
             else:
-                return Response({'error': 'Invalid credentials'}, status=status.HTTP_400_BAD_REQUEST)
+                return Response(
+                    {"error": "Invalid credentials"}, status=status.HTTP_400_BAD_REQUEST
+                )
         except User.DoesNotExist:
-            return Response({'error': 'Invalid credentials'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {"error": "Invalid credentials"}, status=status.HTTP_400_BAD_REQUEST
+            )
 
 
 class LogoutView(APIView):

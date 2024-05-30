@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { Navbar, Nav, NavDropdown, Container } from "react-bootstrap";
-
+import BotpressChat from "../Botpress/BotpressChat";
 const NavigationHome = () => {
   return (
     <Container>
@@ -20,7 +20,7 @@ const NavigationHome = () => {
             <Nav.Link as={Link} to="/chatbot" style={{ color: "#286e34" }}>
               Chatbot
             </Nav.Link>
-            <NavDropdown title="Courses" id="courses-dropdown">
+            <NavDropdown title="Programs" id="courses-dropdown">
               <NavDropdown.Item as={Link} to="/courses/casa">
                 CASA
               </NavDropdown.Item>
@@ -39,6 +39,9 @@ const NavigationHome = () => {
             </NavDropdown>
             <Nav.Link as={Link} to="/about">
               About
+            </Nav.Link>
+            <Nav.Link as={Link} to="/apply-form">
+              Apply Online
             </Nav.Link>
           </Nav>
           <Nav className="ms-auto">

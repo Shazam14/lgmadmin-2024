@@ -1,12 +1,13 @@
 // src/redux/teachersSlice.js
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { fetchTeachers } from "./../services/studentApi";
+import api from "../services/api";
+
 
 export const getTeachers = createAsyncThunk(
   "teachers/getTeachers",
   async (_, { rejectWithValue }) => {
     try {
-      const teachers = await fetchTeachers();
+      const teachers = await api.fetchData("teachers/");
       console.log("Teachers in asynch thunk", teachers);
       return teachers;
     } catch (error) {

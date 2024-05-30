@@ -51,7 +51,6 @@ const CourseList = () => {
     return <div>Error: {error}</div>;
   }
 
-  console.log("Students in component", courses);
 
   return (
     <div>

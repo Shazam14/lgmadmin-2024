@@ -3,36 +3,33 @@ import Cookies from "js-cookie";
 import { useNavigate } from "react-router-dom";
 import "../styles/adminlogin.css";
 import { AdminRoleContext } from "../contexts/AdminRoleContext";
-import api from "../services/api";
-const AdminLogin = ({ setToken }) => {
+import apiClient from "../services/apiClient";
+
+const AdminLogin = ({ setAuthenticated }) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
-  const [isSignup, setIsSignup] = useState(false); // State for toggling
+  const [isSignup, setIsSignup] = useState(false);
   const { setIsAdmin } = useContext(AdminRoleContext);
-
   const navigate = useNavigate();
 
   const handleLogin = async (event) => {
     event.preventDefault();
     try {
-      const response = await api.post("login/", {
+      const response = await apiClient.post("login/", {
         username: username,
         password: password,
       });
 
-      const token = response.data.token;
-      console.log("Token from Admin Login:", token);
+      const token = response.data.access;
+      const refreshToken = response.data.refresh;
       Cookies.set("access_token", token, { path: "/" });
+      Cookies.set("refresh_token", refreshToken, { path: "/" });
 
-      const storedToken = Cookies.get("access_token");
-      console.log("Token stored in cookies:", storedToken);
-
-      if (setToken) {
-        setToken(token);
-      }
+      localStorage.setItem('username', username);
 
       setIsAdmin(true);
+      setAuthenticated(true);
       navigate("/admin");
     } catch (error) {
       console.error("Login failed:", error);
@@ -42,21 +39,24 @@ const AdminLogin = ({ setToken }) => {
   const handleSignup = async (event) => {
     event.preventDefault();
     try {
-      const response = await api.post("signup/", {
+      const response = await apiClient.post("signup/", {
         username: username,
         password: password,
         email: email,
       });
-
-      const token = response.data.token;
+      console.log(response.data.access, "GETTING THERE");
+      const token = response.data.access;
+      const refreshToken = response.data.refresh; // Update based on your response structure
+      console.log(token, "tRYING TO GET TOKEN DATA HERE");
       Cookies.set("access_token", token, { path: "/" });
+      Cookies.set("refresh_token", refreshToken, { path: "/" });
 
-      // Verify token set in cookies
-      const storedToken = Cookies.get("access_token");
-      console.log("Token stored in cookies:", storedToken);
+      console.log("Access token after setting:", Cookies.get("access_token"));
+      console.log("Refresh token after setting:", Cookies.get("refresh_token"));
 
-      setIsAdmin(true);
+      setAuthenticated(true);
       navigate("/admin");
+      console.log("after the admin Role");
     } catch (error) {
       console.error("Signup failed:", error);
     }

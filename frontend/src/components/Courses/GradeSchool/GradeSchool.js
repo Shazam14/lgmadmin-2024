@@ -5,20 +5,19 @@ import GradeSchoolAdmission from "./GradeSchoolAdmission";
 import GradeSchoolCurriculum from "./GradeSchoolCurriculum";
 import ApplyForm from "../ApplyForm/ApplyForm";
 import Footer from "../../Footer/Footer";
+
+import { handleApplyClick } from "../../../utils/applyFormUtils";
+
 const GradeSchool = () => {
   const program = "GradeSchool";
   const formRef = useRef(null);
 
-  const handleApplyClick = () => {
-    if (formRef.current) {
-      formRef.current.focus(); // This assumes you have implemented a focus method in your ApplyForm component
-    }
-  };
-
   return (
     <div>
       <NavigationHome />
-      <GradeSchoolHeroSection handleApplyClick={handleApplyClick} />
+      <GradeSchoolHeroSection
+        handleApplyClick={() => handleApplyClick(formRef)}
+      />
       <GradeSchoolAdmission />
       <GradeSchoolCurriculum />
       <ApplyForm ref={formRef} program={program} />
