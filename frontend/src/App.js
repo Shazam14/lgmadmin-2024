@@ -26,6 +26,7 @@ import Emergency from "./components/Portal/AdminPortal/Emergency/Emergency";
 import Lessons from "./components/Portal/AdminPortal/Lessons/Lessons.js";
 import StudentPortalPage from "./pages/StudentPortalPage";
 import StudentPortalDashboard from "./components/Portal/StudentPortal/StudentPortalDashboard.js";
+import ConfirmForm from "../src/components/Courses/ApplyForm/ConfirmForm";
 import ProtectedRoute from "./components/auth/ProtectedRoute.js";
 import BotpressChat from "./components/Botpress/BotpressChat.js";
 import apiClient from "./services/apiClient.js";
@@ -70,6 +71,7 @@ function App() {
               <Route path="courses/*" element={<CoursesPage />} />
               <Route path="chatbot/*" element={<BotpressChat />} />
               <Route path="apply-form" element={<ApplyForm />} />
+              <Route path="/confirm" element={<ConfirmForm />} />
 
               <Route path="/studentportal" element={<StudentPortalPage />}>
                 <Route index element={<StudentPortalDashboard />} />

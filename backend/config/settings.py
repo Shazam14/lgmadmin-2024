@@ -22,7 +22,6 @@ test_var = os.getenv("TEST_VARIABLE")
 print("Test Variable:", test_var)
 
 
-
 IS_PRODUCTION = os.getenv('DJANGO_ENV') == 'production'
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -61,6 +60,7 @@ INSTALLED_APPS = [
     'apps.enrollments',
     'apps.students',
     'apps.grades',
+    'apps.announcements',
     'corsheaders',
     'rest_framework',
     'oauth2_provider',
@@ -68,9 +68,15 @@ INSTALLED_APPS = [
     'django_extensions',
 ]
 
+# REST_FRAMEWORK = {
+#     'DEFAULT_PERMISSION_CLASSES': [],
+#     'DEFAULT_AUTHENTICATION_CLASSES': [],
+# }
+
+
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': (
-        'rest_framework.permissions.IsAuthenticated',
+        'rest_framework.permissions.AllowAny',
     ),
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
@@ -138,15 +144,15 @@ MIDDLEWARE = [
 
 CORS_ALLOW_CREDENTIALS = True
 CORS_ORIGIN_WHITELIST = [
-    'http://localhost:3007',
-    'http://192.168.1.2:3007'
+    'http://localhost:3001',
+    'http://192.168.1.2:3001',
     # Update with your frontend's URL
 ]
 CORS_ALLOW_ALL_ORIGINS = True
 
 CORS_ALLOWED_ORIGINS = [
-    'http://localhost:3007',
-    'http://192.168.1.2:3007',  # Include the scheme (http:// or https://)
+    'http://localhost:3001',
+    'http://192.168.1.2:3001',  # Include the scheme (http:// or https://)
 ]
 # Ensure CORS allows requests from your frontend's specific origin and supports credentials
 # This should be False if you are specifying allowed origins
@@ -309,3 +315,18 @@ CSRF_COOKIE_SECURE = False  # set to true if in Prod
 CSRF_COOKIE_HTTPONLY = True
 CSRF_COOKIE_SAMESITE = 'Lax'
 SESSION_COOKIE_SECURE = False  # set to true if in Prod
+
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'root': {
+        'handlers': ['console'],
+        'level': 'DEBUG',
+    },
+}

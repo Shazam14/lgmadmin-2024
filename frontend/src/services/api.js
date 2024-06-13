@@ -23,14 +23,29 @@ const api = {
       const data = await response.json();
 
       if (data.username) {
-        localStorage.setItem('username', data.username);
+        localStorage.setItem("username", data.username);
       }
-      
+
       return data;
     } catch (error) {
       console.error(`Error fetching data from ${url}:`, error);
       throw error;
     }
+  },
+
+  get: async (endpoint, options = {}) => {
+    return await api.fetchData(endpoint, { ...options, method: "GET" });
+  },
+
+  post: async (endpoint, body, options = {}) => {
+    return await api.fetchData(endpoint, {
+      ...options,
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(body),
+    });
   },
 };
 

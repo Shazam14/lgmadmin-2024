@@ -9,14 +9,6 @@ const Footer = () => {
       <Icons />
       <footer className="d-flex flex-wrap justify-content-between align-items-center py-3 my-4 border-top">
         <div className="col-md-4 d-flex align-items-center">
-          <a
-            href="/"
-            className="mb-3 me-2 mb-md-0 text-body-secondary text-decoration-none lh-1"
-          >
-            <svg className="bi" width="30" height="24">
-              <use xlinkHref="#bootstrap" />
-            </svg>
-          </a>
           <span className="mb-3 mb-md-0 text-body-secondary">
             © 2024 Learning Garden Montessori
           </span>
@@ -33,21 +25,10 @@ const Footer = () => {
               Privacy Policy
             </a>
           </li>
-
           <li className="ms-3">
             <a
               className="text-body-secondary"
-              href="https://twitter.com/your-twitter-handle"
-            >
-              <svg className="bi" width="24" height="24">
-                <use xlinkHref="#twitter" />
-              </svg>
-            </a>
-          </li>
-          <li className="ms-3">
-            <a
-              className="text-body-secondary"
-              href="https://instagram.com/your-instagram-handle"
+              href="https://instagram.com/learninggardenmontessori"
             >
               <svg className="bi" width="24" height="24">
                 <use xlinkHref="#instagram" />
@@ -57,7 +38,7 @@ const Footer = () => {
           <li className="ms-3">
             <a
               className="text-body-secondary"
-              href="https://facebook.com/your-facebook-page"
+              href="https://facebook.com/LearninngardenMontessori"
             >
               <svg className="bi" width="24" height="24">
                 <use xlinkHref="#facebook" />

@@ -1,8 +1,8 @@
 // src/utils/applyFormUtils.js
 
-const handleApplyClick = (formRef) => {
-  if (formRef.current) {
-    formRef.current.scrollIntoView({ behavior: "smooth" });
+const handleApplyClick = (ref) => {
+  if (ref.current) {
+    ref.current.scrollIntoView({ behavior: "smooth" });
   }
 };
 

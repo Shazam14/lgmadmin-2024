@@ -28,8 +28,15 @@ const AdminLogin = ({ setAuthenticated }) => {
 
       localStorage.setItem('username', username);
 
-      setIsAdmin(true);
-      setAuthenticated(true);
+      const roleResponse = await apiClient.get("user-role/", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+      const isAdmin = roleResponse.data.role === "admin";
+      setIsAdmin(isAdmin);
+      setAuthenticated(isAdmin);
+      Cookies.set("is_admin", isAdmin, { path: "/" });
       navigate("/admin");
     } catch (error) {
       console.error("Login failed:", error);

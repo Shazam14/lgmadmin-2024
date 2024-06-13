@@ -2,8 +2,11 @@ import os
 from django.core.mail import EmailMessage
 from django.db import transaction
 from rest_framework import status
-from rest_framework import viewsets
-from rest_framework.permissions import IsAuthenticated
+from rest_framework import permissions, viewsets
+from rest_framework.decorators import api_view, permission_classes
+from django.views.decorators.csrf import csrf_exempt
+from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.response import Response
 from .models import Applicant
 from .serializers import ApplicantSerializer
 from rest_framework.views import APIView
@@ -19,15 +22,69 @@ from apps.applicants.utils.utils import (
     generate_unique_student_id,
 )
 from datetime import timedelta
+from apps.parents.serializers import ParentSerializer
+
 import logging
 
 logger = logging.getLogger(__name__)
 
 
+@api_view(['POST'])
+def validate_applicant(request):
+    logger.debug(f"verify_applicant view reached: {request.data}")
+    serializer = ApplicantSerializer(data=request.data)
+    if serializer.is_valid():
+        return Response({'message': 'Applicant data is valid'}, status=status.HTTP_200_OK)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['POST'])
+def create_applicant(request):
+    try:
+        applicant_data = request.data.get('applicant')
+        parent_data = request.data.get('parent')
+
+        # Validate parent data
+        parent_serializer = ParentSerializer(data=parent_data)
+        if not parent_serializer.is_valid():
+            logger.error(f"Parent data invalid: {parent_serializer.errors}")
+            return Response(parent_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        # Save parent
+        parent = parent_serializer.save()
+        logger.debug(f"Parent created with ID: {parent.id}")
+
+        # Ensure parent ID is set in applicant data
+        applicant_data['parent'] = parent.id
+        logger.debug(f"Applicant data before validation: {applicant_data}")
+
+        # Validate applicant data
+        applicant_serializer = ApplicantSerializer(data=applicant_data)
+        if not applicant_serializer.is_valid():
+            logger.error(
+                f"Applicant data invalid: {applicant_serializer.errors}")
+            return Response(applicant_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        # Save applicant
+        applicant = applicant_serializer.save()
+        logger.debug(f"Applicant created with ID: {applicant.id}")
+
+        return Response({"message": "Form submitted successfully"}, status=status.HTTP_201_CREATED)
+    except Exception as e:
+        logger.exception("An error occurred during applicant creation.")
+        return Response({'error': 'An error occurred.'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
 class ApplicantViewSet(viewsets.ModelViewSet):
     queryset = Applicant.objects.all()
     serializer_class = ApplicantSerializer
-    permission_classes = [IsAuthenticated]
+
+    def get_permissions(self):
+        if self.action == 'create':
+            permission_classes = [AllowAny]
+        else:
+            permission_classes = [IsAuthenticated]
+        return [permission() for permission in permission_classes]
 
 
 class ApplicantApprovalView(APIView):

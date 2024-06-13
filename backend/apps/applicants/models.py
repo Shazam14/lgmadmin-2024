@@ -16,16 +16,12 @@ class Applicant(models.Model):
         ('Female', 'Female')
     ], default='Female')
     age = models.PositiveIntegerField(
-        default=2, help_text="Age of the applicant in years.")
-
-    birthday = models.DateField(null=True, blank=True)
+        help_text="Age of the applicant in years.")
+    birthday = models.DateField(default=timezone.now)
     program_option = models.ForeignKey(
         'grades.Program', on_delete=models.SET_NULL, null=True, blank=True, verbose_name="Program")
-    email_same_as_parent = models.BooleanField(default=False)
     email = models.EmailField(blank=True)
-    phone_number_same_as_parent = models.BooleanField(default=False)
     phone_number = models.CharField(max_length=20, blank=True)
-    address_same_as_parent = models.BooleanField(default=False)
     address_house_no = models.CharField(max_length=10, blank=True)
     address_street = models.CharField(max_length=200, blank=True)
     address_barangay = models.CharField(max_length=100, blank=True)

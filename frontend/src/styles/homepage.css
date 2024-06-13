@@ -269,8 +269,7 @@
 .school-logo-text {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  text-align: center;
+  text-align: right;
   font-size: 1.5rem;
 }
 

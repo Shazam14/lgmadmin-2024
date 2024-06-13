@@ -68,5 +68,8 @@
   "description": "LGM frontend for landing page and admin",
   "main": "index.js",
   "author": "Shazam14 <w_gmbg@yahoo.com>",
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "cypress": "^13.10.0"
+  }
 }

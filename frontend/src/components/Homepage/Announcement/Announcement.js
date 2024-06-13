@@ -1,28 +1,17 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Card, Stack, Container } from "react-bootstrap";
 import "../../../styles/homepage.css";
+import apiClient from "../../../services/apiClient";
+import api from "../../../services/api";
 
-const AnnouncementCard = (props) => {
-  const [content, setContent] = useState(props.initialContent);
-
-  const handleContentChange = (e) => {
-    setContent(e.target.value);
-  };
-
-  const postedOnDate = new Date().toLocaleDateString();
+const AnnouncementCard = ({ announcement }) => {
+  const postedOnDate = new Date(announcement.created_at).toLocaleDateString();
 
   return (
     <Card>
       <Card.Body>
-        <Card.Title>{props.title}</Card.Title>
-        <Card.Text>
-          <textarea
-            value={content}
-            onChange={handleContentChange}
-            rows={3}
-            className="form-control"
-          />
-        </Card.Text>
+        <Card.Title>{announcement.title}</Card.Title>
+        <Card.Text>{announcement.content}</Card.Text>
         <Card.Footer>
           <small className="text-muted">Posted on: {postedOnDate}</small>
         </Card.Footer>
@@ -32,43 +21,43 @@ const AnnouncementCard = (props) => {
 };
 
 const Announcement = () => {
-  const announcementData = [
-    {
-      id: 1,
-      title: "School Event",
-      initialContent:
-        "Join us for the annual school event celebrating student achievements.",
-    },
-    {
-      id: 2,
-      title: "Card 2 Title",
-      initialContent: "This is the initial content of Card 2. You can edit it.",
-    },
-    {
-      id: 3,
-      title: "Card 3 Title",
-      initialContent: "This is the initial content of Card 3. You can edit it.",
-    },
-  ];
+  const [announcements, setAnnouncements] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  const cards = announcementData.map((announcement) => (
-    <AnnouncementCard
-      key={announcement.id}
-      title={announcement.title}
-      initialContent={announcement.initialContent}
-    />
-  ));
+  useEffect(() => {
+    const fetchAnnouncements = async () => {
+      try {
+        const response = await apiClient.get("announcements/");
+        setAnnouncements(response.data);
+        setLoading(false);
+      } catch (error) {
+        console.error("Failed to fetch announcements:", error);
+        setError("Failed to fetch announcements. Please try again later.");
+        setLoading(false);
+      }
+    };
+
+    fetchAnnouncements();
+  }, []);
 
   return (
     <Container fluid>
       <div className="announcement-section">
-        <h1 className="display-6">//Featured Announcements</h1>
-        <Stack direction="vertical" gap={3}>
-          {cards}
-        </Stack>
-        {/* <Button variant="primary" className="more-announcements-button">
-        More Announcements
-      </Button> */}
+        <h1 className="display-6">Featured Announcements</h1>
+        {loading ? (
+          <p>Loading announcements...</p>
+        ) : error ? (
+          <p>{error}</p>
+        ) : announcements && announcements.length > 0 ? (
+          <Stack direction="vertical" gap={3}>
+            {announcements.map((announcement) => (
+              <AnnouncementCard key={announcement.id} announcement={announcement} />
+            ))}
+          </Stack>
+        ) : (
+          <p>No announcements found.</p>
+        )}
       </div>
     </Container>
   );

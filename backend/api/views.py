@@ -26,8 +26,18 @@ def api_root(request):
         'enrollments': reverse('enrollment-list', request=request),
         'student_upload': reverse('student-upload', request=request),
         'parents': reverse('parent-list', request=request),
-        'grades': reverse('grade-list', request=request)
+        'grades': reverse('grade-list', request=request),
+        'announcements': reverse('announcement-list', request=request)
     })
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def user_role(request):
+    is_admin = request.user.is_staff
+    role = "admin" if is_admin else "user"
+    print("MY BACKEND ROLE: ", role)
+    return Response({"role": role})
 
 
 class AuthStatusView(APIView):

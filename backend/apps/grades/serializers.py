@@ -1,5 +1,11 @@
 from rest_framework import serializers
-from .models import Subject, Grade
+from .models import Subject, Grade, Program
+
+
+class ProgramSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Program
+        fields = ['id', 'name', 'description', 'age_range']
 
 
 class SubjectSerializer(serializers.ModelSerializer):
