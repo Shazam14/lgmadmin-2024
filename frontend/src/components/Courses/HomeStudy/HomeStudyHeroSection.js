@@ -5,15 +5,11 @@ import genericImage from "../../../assets/images/courses_img/lgms_apply_header.j
 import { Card, Container, Modal, Button, Table } from "react-bootstrap";
 import requirementsData from "../ApplyForm/requirementsData";
 
-const HomeStudyHeroSection = ({ handleApplyClick }) => {
+const HomeStudyHeroSection = ({ handleApplyClick, formRef }) => {
   const [showModal, setShowModal] = useState(false);
-  const [selectedRequirements, setSelectedRequirements] = useState(
-    requirementsData.casa
-  );
 
   const handleOpenModal = () => setShowModal(true);
   const handleCloseModal = () => setShowModal(false);
-  const program = "Playgroup";
   return (
     <>
       <Container fluid className="py-4">
@@ -24,7 +20,7 @@ const HomeStudyHeroSection = ({ handleApplyClick }) => {
             </div>
             <div className="text-container">
               <h1 className="course-discover-text">
-                Discover {program.toUpperCase()} Program
+                Discover Playgroup Program
               </h1>
               <p className="course-join-us-text">
                 Join us to explore unique learning opportunities!
@@ -73,10 +69,10 @@ const HomeStudyHeroSection = ({ handleApplyClick }) => {
       {/* --modal */}
       <Modal show={showModal} onHide={handleCloseModal} size="lg">
         <Modal.Header closeButton>
-          <Modal.Title>{selectedRequirements.title}</Modal.Title>
+          <Modal.Title>{requirementsData.title}</Modal.Title>{" "}
         </Modal.Header>
         <Modal.Body>
-          {selectedRequirements.sections.map((section, index) => (
+          {requirementsData.sections.map((section, index) => (
             <Card className="mb-4" key={index}>
               <Card.Body>
                 <Card.Title>{section.title}</Card.Title>
@@ -100,7 +96,7 @@ const HomeStudyHeroSection = ({ handleApplyClick }) => {
           <Button
             variant="primary"
             onClick={() => {
-              handleApplyClick();
+              handleApplyClick(formRef);
               handleCloseModal();
             }}
           >

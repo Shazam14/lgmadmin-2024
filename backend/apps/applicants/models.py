@@ -34,6 +34,7 @@ class Applicant(models.Model):
         ('Approved', 'Approved'),
         ('Rejected', 'Rejected')
     ], default='Pending')
+    reference_number = models.CharField(max_length=20, unique=True, blank=True)
 
     def __str__(self):
         return f"{self.first_name} {self.last_name}"

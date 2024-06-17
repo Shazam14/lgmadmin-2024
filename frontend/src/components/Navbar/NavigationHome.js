@@ -28,7 +28,7 @@ const NavigationHome = () => {
                 CASA
               </NavDropdown.Item>
               <NavDropdown.Item as={Link} to="/courses/grade-school">
-                Grade School
+                Elementary School
               </NavDropdown.Item>
               <NavDropdown.Item as={Link} to="/courses/highschool">
                 High School

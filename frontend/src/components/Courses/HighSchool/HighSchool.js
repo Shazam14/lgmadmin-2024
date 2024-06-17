@@ -8,14 +8,12 @@ import Footer from "../../Footer/Footer";
 import { handleApplyClick } from "../../../utils/applyFormUtils";
 import AdmissionModal from "../ApplyForm/AdmissionModal";
 import requirementsData from "../ApplyForm/requirementsData";
+import useProgramData from "../ApplyForm/ProgramData";
 
 const HighSchool = () => {
-  const program = "HighSchool";
   const formRef = useRef(null);
+  const { program } = useProgramData("High School Program");
   const [showModal, setShowModal] = useState(false);
-  const [selectedRequirements, setSelectedRequirements] = useState(
-    requirementsData[program]
-  );
 
   const handleOpenModal = () => setShowModal(true);
   const handleCloseModal = () => setShowModal(false);
@@ -23,16 +21,16 @@ const HighSchool = () => {
   return (
     <div>
       <NavigationHome />
-
       <HighSchoolHeroSection
         handleApplyClick={() => handleApplyClick(formRef)}
       />
       <HighSchoolCurriculum />
-      <ApplyForm ref={formRef} program={program} />
+      {program && <ApplyForm ref={formRef} program={program.name} />}
       <AdmissionModal
         show={showModal}
         handleClose={handleCloseModal}
-        requirements={selectedRequirements}
+        requirements={requirementsData}
+        formRef={formRef}
       />
       <Footer />
     </div>

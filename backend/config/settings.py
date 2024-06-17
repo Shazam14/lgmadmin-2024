@@ -13,29 +13,38 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 from pathlib import Path
 from dotenv import load_dotenv
 from datetime import timedelta
+from django.conf import settings
 from corsheaders.defaults import default_headers
 import os
+import sys
 load_dotenv()  # Assuming there is a .env file in the same directory as this script
-
-# Test to see if it reads any environment variable from your .env file
-test_var = os.getenv("TEST_VARIABLE")
-print("Test Variable:", test_var)
-
-
-IS_PRODUCTION = os.getenv('DJANGO_ENV') == 'production'
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+print("Current Python Path:", sys.path)
 
 load_dotenv(os.path.join(BASE_DIR, '.env'))
-# Quick-start development settings - unsuitable for production
+
+test_var = os.getenv("TEST_VARIABLE")
+print("Test Variable:", test_var)
+
+DJANGO_ENV = os.getenv('DJANGO_ENV', 'development')
+dotenv_file = f'.env.{DJANGO_ENV}'
+
+dotenv_path = BASE_DIR / dotenv_file
+if dotenv_path.exists():
+    # Quick-start development settings - unsuitable for production
+    load_dotenv(dotenv_path)
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-a!dtsj_=5rx+qp@bicvp^_#fe0%%olsus$&if92km@llx86@js'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+SECRET_KEY = os.getenv('SECRET_KEY')
+if not SECRET_KEY:
+    raise ValueError("SECRET_KEY environment variable not set")
+
+
+DEBUG = os.getenv('DEBUG', 'True') == 'True'
 
 DEFAULT_HOST = '192.168.1.2'
 DEFAULT_PORT = '8001'
@@ -68,11 +77,6 @@ INSTALLED_APPS = [
     'django_extensions',
 ]
 
-# REST_FRAMEWORK = {
-#     'DEFAULT_PERMISSION_CLASSES': [],
-#     'DEFAULT_AUTHENTICATION_CLASSES': [],
-# }
-
 
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': (
@@ -104,31 +108,6 @@ SIMPLE_JWT = {
     'AUTH_COOKIE_SAMESITE': 'Strict',
 }
 
-""" 
-SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=5),
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
-    'ROTATE_REFRESH_TOKENS': True,
-    'BLACKLIST_AFTER_ROTATION': True,
-    'ALGORITHM': 'HS256',
-    'SIGNING_KEY': SECRET_KEY,
-    'VERIFYING_KEY': None,
-    'AUDIENCE': None,
-    'ISSUER': None,
-    'AUTH_HEADER_TYPES': ('Bearer',),
-    'AUTH_HEADER_NAME': 'HTTP_AUTHORIZATION',
-    'USER_ID_FIELD': 'id',
-    'USER_ID_CLAIM': 'user_id',
-    'AUTH_TOKEN_CLASSES': ('rest_framework_simplejwt.tokens.AccessToken',),
-    'TOKEN_TYPE_CLAIM': 'token_type',
-    'JTI_CLAIM': 'jti',
-    'AUTH_COOKIE': 'access_token',
-    'AUTH_COOKIE_HTTP_ONLY': True,
-    'AUTH_COOKIE_PATH': '/',
-    'AUTH_COOKIE_SECURE': True,  # Set to True if using HTTPS
-    'AUTH_COOKIE_SAMESITE': 'Lax',  # Adjust according to your requirements
-    # ...requirements
-} """
 
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
@@ -154,27 +133,7 @@ CORS_ALLOWED_ORIGINS = [
     'http://localhost:3001',
     'http://192.168.1.2:3001',  # Include the scheme (http:// or https://)
 ]
-# Ensure CORS allows requests from your frontend's specific origin and supports credentials
-# This should be False if you are specifying allowed origins
-""" CORS_ALLOW_ALL_ORIGINS = False
 
-CORS_ALLOW_CREDENTIALS = True  # This allows cookies to be submitted across domains
-
-
-# Define trusted origins for CSRF protection
-CSRF_TRUSTED_ORIGINS = [
-    'http://localhost:3001',
-]
-
-# Optionally, ensure that the headers needed for your requests are allowed
-CORS_ALLOW_HEADERS = list(default_headers) + [
-    'X-CSRFToken',
-] """
-
-
-""" if not IS_PRODUCTION:
-    print('NOT PRODUCTION')
-    CORS_ALLOW_ALL_ORIGINS = True """
 
 ROOT_URLCONF = 'config.urls'
 
@@ -204,6 +163,7 @@ print("Database Port:", os.environ.get('DB_PORT'))
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
@@ -214,17 +174,20 @@ DATABASES = {
         'PORT': os.environ.get('DB_PORT'),
     }
 }
+# Apply environment-specific settings
+if DJANGO_ENV == 'production':
+    DATABASES['default']['OPTIONS'] = {
+        'sslmode': 'require',
+    }
+elif DJANGO_ENV in ['development', 'testing']:
+    DATABASES['default']['HOST'] = 'localhost'
+    DATABASES['default']['PORT'] = '5432'
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql',
-#         'NAME': 'lgmdb',
-#         'USER': 'postgres',
-#         'PASSWORD': 'postgres',
-#         'HOST': 'host.docker.internal',
-#         'PORT': '5432',
-#     }
-# }
+# Ensure all necessary database configuration variables are set
+required_db_vars = ['DB_NAME', 'DB_USER', 'DB_PASSWORD', 'DB_HOST', 'DB_PORT']
+for var in required_db_vars:
+    if not os.getenv(var):
+        raise ValueError(f"Environment variable {var} is required but not set")
 
 
 # Password validation
@@ -272,28 +235,42 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
-# EMAIL gmail
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
-EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
-EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
+if DJANGO_ENV == 'production':
+    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+    EMAIL_HOST = 'smtp.gmail.com'
+    EMAIL_PORT = 587
+    EMAIL_USE_TLS = True
+    EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
+    EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
+    DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', EMAIL_HOST_USER)
+elif DJANGO_ENV == 'testing':
+    EMAIL_BACKEND = 'config.custom_email_backend.CustomEmailBackend'
+    EMAIL_HOST = 'localhost'
+    EMAIL_PORT = 1025
+    EMAIL_USE_TLS = False
+    EMAIL_USE_SSL = False
+    EMAIL_HOST_USER = ''
+    EMAIL_HOST_PASSWORD = ''
+    DEFAULT_FROM_EMAIL = 'test@example.com'  # Use a default from email for testing
+    EMAIL_OVERRIDE_RECIPIENT = 'dummy@example.com'
+else:  # development
+    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+    EMAIL_HOST = 'smtp.gmail.com'
+    EMAIL_PORT = 587
+    EMAIL_USE_TLS = True
+    EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
+    EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
+    DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', EMAIL_HOST_USER)
 
-
-# email localhost
-# EMAIL_BACKEND = 'django.core.mail.backends.locmem.EmailBackend'
-
-
-# settings.py in your Django project
-
-# Configure email backend to use SMTP server
-""" EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'localhost'
-EMAIL_PORT = 8025
-EMAIL_USE_TLS = False
-EMAIL_HOST_USER = ''
-EMAIL_HOST_PASSWORD = '' """
+print("EMAIL_HOST_USER --:", EMAIL_HOST_USER)
+print("EMAIL_HOST_PASSWORD--:", EMAIL_HOST_PASSWORD)
+print("EMAIL_BACKEND --:", EMAIL_BACKEND)
+print("EMAIL_HOST --:", EMAIL_HOST)
+print("EMAIL_PORT --:", EMAIL_PORT)
+print("EMAIL_USE_TLS --:", EMAIL_USE_TLS)
+print("DEFAULT_FROM_EMAIL --:", DEFAULT_FROM_EMAIL)
+print("EMAIL_OVERRIDE_RECIPIENT --:",
+      getattr(settings, 'EMAIL_OVERRIDE_RECIPIENT', 'None'))
 
 
 # CACHES = {

@@ -1,6 +1,7 @@
 const { defineConfig } = require("cypress");
 
 module.exports = defineConfig({
+  projectId: "q79k4g",
   e2e: {
     baseUrl: "http://localhost:3001",
     REACT_APP_RECAPTCHA_SITE_KEY: "6LehhNkpAAAAAAbT4e83dfASMjlIqXzheo49BT4j",

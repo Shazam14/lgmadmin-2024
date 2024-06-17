@@ -12,6 +12,7 @@ class ApplicantSerializer(serializers.ModelSerializer):
         slug_field='name',
         queryset=Program.objects.all()
     )
+    reference_number = serializers.CharField(read_only=True)
 
     class Meta:
         model = Applicant

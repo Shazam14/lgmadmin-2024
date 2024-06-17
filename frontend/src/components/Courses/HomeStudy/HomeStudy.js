@@ -3,19 +3,15 @@ import NavigationHome from "../../Navbar/NavigationHome";
 import ApplyForm from "../ApplyForm/ApplyForm";
 import Footer from "../../Footer/Footer";
 import HomeStudyHeroSection from "./HomeStudyHeroSection";
-import HomeStudyAdmission from "./HomeStudyAdmission";
-import HomeStudyCurriculum from "./HomeStudyCurriculum";
 import { handleApplyClick } from "../../../utils/applyFormUtils";
 import AdmissionModal from "../ApplyForm/AdmissionModal";
 import requirementsData from "../ApplyForm/requirementsData";
+import useProgramData from "../ApplyForm/ProgramData";
 
 const HomeStudy = () => {
-  const program = "Playgroup";
   const formRef = useRef(null);
+  const { program } = useProgramData("Playgroup Program");
   const [showModal, setShowModal] = useState(false);
-  const [selectedRequirements, setSelectedRequirements] = useState(
-    requirementsData[program]
-  );
 
   const handleOpenModal = () => setShowModal(true);
   const handleCloseModal = () => setShowModal(false);
@@ -26,12 +22,12 @@ const HomeStudy = () => {
       <HomeStudyHeroSection
         handleApplyClick={() => handleApplyClick(formRef)}
       />
-      {/* <HomeStudyCurriculum /> */}
-      <ApplyForm ref={formRef} program={program} />
+      {program && <ApplyForm ref={formRef} program={program.name} />}
       <AdmissionModal
         show={showModal}
         handleClose={handleCloseModal}
-        requirements={selectedRequirements}
+        requirements={requirementsData}
+        formRef={formRef}
       />
       <Footer />
     </div>

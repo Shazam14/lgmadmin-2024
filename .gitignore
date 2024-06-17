@@ -27,3 +27,9 @@ cert.pem
 key.pem
 frontend/7.21.4
 .env
+frontend/.env.testing
+frontend/cypress/screenshots/applyform.cy.js/Application Form Submission -- fills out and submits the application form (failed) (1).png
+frontend/cypress/screenshots/applyform.cy.js/Application Form Submission -- fills out and submits the application form (failed) (2).png
+frontend/cypress/screenshots/applyform.cy.js/Application Form Submission -- fills out and submits the application form (failed) (3).png
+frontend/cypress/screenshots/applyform.cy.js/Application Form Submission -- fills out and submits the application form (failed) (4).png
+frontend/cypress/screenshots/applyform.cy.js/Application Form Submission -- fills out and submits the application form (failed).png

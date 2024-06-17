@@ -4,12 +4,8 @@ import "../../../styles/course.css";
 import { Card, Container, Modal, Button, Table } from "react-bootstrap";
 import requirementsData from "../ApplyForm/requirementsData";
 
-const SPEDHeroSection = ({ handleApplyClick }) => {
-  const program = "LGMS T.E.A.C.H Program";
+const SPEDHeroSection = ({ handleApplyClick, formRef }) => {
   const [showModal, setShowModal] = useState(false);
-  const [selectedRequirements, setSelectedRequirements] = useState(
-    requirementsData.casa
-  );
 
   const handleOpenModal = () => setShowModal(true);
   const handleCloseModal = () => setShowModal(false);
@@ -23,7 +19,7 @@ const SPEDHeroSection = ({ handleApplyClick }) => {
             </div>
             <div className="text-container">
               <h1 className="course-discover-text">
-                Discover {program.toUpperCase()} Program
+                Discover LGMS T.E.A.C.H. Program
               </h1>
               <p className="course-join-us-text">
                 Join us to explore unique learning opportunities!
@@ -124,10 +120,10 @@ const SPEDHeroSection = ({ handleApplyClick }) => {
       {/* --modal */}
       <Modal show={showModal} onHide={handleCloseModal} size="lg">
         <Modal.Header closeButton>
-          <Modal.Title>{selectedRequirements.title}</Modal.Title>
+          <Modal.Title>{requirementsData.title}</Modal.Title>{" "}
         </Modal.Header>
         <Modal.Body>
-          {selectedRequirements.sections.map((section, index) => (
+          {requirementsData.sections.map((section, index) => (
             <Card className="mb-4" key={index}>
               <Card.Body>
                 <Card.Title>{section.title}</Card.Title>
@@ -151,7 +147,7 @@ const SPEDHeroSection = ({ handleApplyClick }) => {
           <Button
             variant="primary"
             onClick={() => {
-              handleApplyClick();
+              handleApplyClick(formRef);
               handleCloseModal();
             }}
           >

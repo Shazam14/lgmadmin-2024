@@ -4,15 +4,11 @@ import { Card, Container, Modal, Button, Table } from "react-bootstrap";
 import "../../../styles/course.css";
 import requirementsData from "../ApplyForm/requirementsData";
 
-const GradeSchoolHeroSection = ({ handleApplyClick }) => {
+const GradeSchoolHeroSection = ({ handleApplyClick, formRef }) => {
   const [showModal, setShowModal] = useState(false);
-  const [selectedRequirements, setSelectedRequirements] = useState(
-    requirementsData.casa
-  );
 
   const handleOpenModal = () => setShowModal(true);
   const handleCloseModal = () => setShowModal(false);
-  const program = "GradeSchool";
   return (
     <>
       <Container fluid className="py-4">
@@ -23,7 +19,7 @@ const GradeSchoolHeroSection = ({ handleApplyClick }) => {
             </div>
             <div className="text-container">
               <h1 className="course-discover-text">
-                Discover {program.toUpperCase()} Program
+                Discover Elementary Program
               </h1>
               <p className="course-join-us-text">
                 Join us to explore unique learning opportunities!
@@ -61,7 +57,7 @@ const GradeSchoolHeroSection = ({ handleApplyClick }) => {
         </section>
         <section className="our-course-program">
           <div className="card-course-box">
-            <h2 className="course-section-title">Grade School Class Program</h2>
+            <h2 className="course-section-title">Elementary Class Program</h2>
             <p className="course-section-text">
               The Grade School is for children ages 6-12 years old. This is the
               age when they want to explore the universe through their
@@ -88,13 +84,13 @@ const GradeSchoolHeroSection = ({ handleApplyClick }) => {
           </div>
         </section>
       </Container>
-      {/* --modal */}
+      {/* --modal */} {/* --modal */}
       <Modal show={showModal} onHide={handleCloseModal} size="lg">
         <Modal.Header closeButton>
-          <Modal.Title>{selectedRequirements.title}</Modal.Title>
+          <Modal.Title>{requirementsData.title}</Modal.Title>{" "}
         </Modal.Header>
         <Modal.Body>
-          {selectedRequirements.sections.map((section, index) => (
+          {requirementsData.sections.map((section, index) => (
             <Card className="mb-4" key={index}>
               <Card.Body>
                 <Card.Title>{section.title}</Card.Title>
@@ -118,7 +114,7 @@ const GradeSchoolHeroSection = ({ handleApplyClick }) => {
           <Button
             variant="primary"
             onClick={() => {
-              handleApplyClick();
+              handleApplyClick(formRef);
               handleCloseModal();
             }}
           >

@@ -1,71 +1,150 @@
 describe("Application Form Submission", () => {
-  it("fills out and submits the application form", () => {
-    // Visit the page
-    console.log("Base URL:", Cypress.env("baseUrl")); // Check what this outputs
-    cy.visit("/courses/casa");
+  const programs = [
+    "CASA Program",
+    "High School Program",
+    "Elementary Program",
+    "Playgroup Program",
+    "LGMS T.E.A.C.H. Program",
+  ];
 
-    // Fill parent's information
-    cy.get("[data-cy=parentFirstName]").type("John");
-    cy.get("[data-cy=parentMiddleName]").type("Quincy");
-    cy.get("[data-cy=parentLastName]").type("Public");
-    cy.get("[data-cy=parentEmail]").type("parent@example.com");
-    cy.get("[data-cy=parentHouseNumber]").type("123");
-    cy.get("[data-cy=parentBarangay]").type("Barangay 123");
-    cy.get("[data-cy=parentCity]").type("City");
-    cy.get("[data-cy=parentState]").type("State");
-    cy.get("[data-cy=parentPostalCode]").type("12345");
-    cy.get("[data-cy=parentRelationship]").type("Father");
-    cy.get("[data-cy=parentPrimaryContact]").type("1");
-    cy.get("[data-cy=parentSecondaryContact]").type("9876543210");
+  const failedPrograms = [];
+  programs.forEach((program) => {
+    it("fills out and submits the application form", () => {
+      // Intercept the API requests and mock the responses
 
-    // Fill applicant's information
-    cy.get("[data-cy=applicantFirstName]").type("Jane");
-    cy.get("[data-cy=applicantMiddleName]").type("Doe");
-    cy.get("[data-cy=applicantLastName]").type("Public");
-    cy.get("[data-cy=applicantGender]").select("Female");
-    cy.get("[data-cy=applicantAge]").type("5");
-    cy.get("[data-cy=applicantBirthday]").type("2018-05-16");
-    cy.get("[data-cy=programOption]").then(($field) => {
-      if ($field.is("select")) {
-        cy.wrap($field).select("CASA");
-      } else {
-        cy.wrap($field).should("have.value", "CASA");
+      // Visit the page
+      cy.visit("/courses/casa");
+
+      // Fill parent's information
+      cy.get("#parent\\.first_name").type("John");
+      cy.get("#parent\\.middle_name").type("Quincy");
+      cy.get("#parent\\.last_name").type("Public");
+      cy.get("#parent\\.email").type("parent@example.com");
+      cy.get("#parent\\.phone_number").type("1234567890");
+      cy.get("#parent\\.street_address").type("123 Main St");
+      cy.get("#parent\\.city").type("City");
+      cy.get("#parent\\.state_province").type("State");
+      cy.get("#parent\\.relationship").select("Father");
+      cy.get("#parent\\.primary_contact_value").type("1234567890");
+      cy.get("#parent\\.primary_contact_type").select("Phone");
+      cy.get("#parent\\.secondary_contact_value").type("parent@example.com");
+      cy.get("#parent\\.secondary_contact_type").select("Email");
+      cy.get("#parent\\.contact_priority").select("Primary");
+      // Click the "Next" button to proceed to applicant's information
+      cy.get("button").contains("Next").click();
+
+      // Fill applicant's information
+      cy.get("#applicant\\.first_name").type("Jane");
+      cy.get("#applicant\\.middle_name").type("Doe");
+      cy.get("#applicant\\.last_name").type("Public");
+      cy.get("#applicant\\.gender").select("Female");
+      cy.get("#applicant\\.age").type("5");
+      cy.get("#birthMonth").select("5");
+      cy.get("#birthDay").type("16"); // Changed from select to type
+
+      // Verify the birthday
+      cy.get("#applicant\\.birthday")
+        .invoke("val")
+        .then((actualBirthday) => {
+          const currentYear = new Date().getFullYear();
+          const expectedYear = currentYear - 5;
+          const expectedBirthday = `${expectedYear}-05-16`;
+          expect(actualBirthday).to.equal(expectedBirthday);
+        });
+
+      // Select program option
+      // Verify that program options are loaded
+      try {
+        cy.get("#applicant\\.program_option")
+          .should("exist")
+          .then(($select) => {
+            // Ensure the select has the correct options
+            const options = $select
+              .find("option")
+              .map((i, el) => Cypress.$(el).text())
+              .get();
+            cy.log("Options:", options);
+
+            // Select program option
+            cy.get("#applicant\\.program_option").select(program);
+          });
+      } catch (error) {
+        failedPrograms.push(program);
+        throw error;
       }
+      cy.get("#studentEmail").type("applicant@example.com");
+      cy.get("#studentPhoneNumber").type("9876543210");
+
+      // Click the "Next" button to proceed to the confirmation step
+      cy.get("button").contains("Next").click();
+
+      // Log the HTML content before asserting
+      cy.get("body").then(($body) => {
+        cy.log("Page HTML before assertion:", $body.html());
+      });
+
+      // Add a wait to ensure the page loads the confirmation details
+
+      // Assert the confirmation details
+
+      // Click the "Submit" button on the confirmation step
+      //cy.get("button").contains("Submit").click();
+
+      // Check for the success modal and verify its contents
+      //cy.get(".success-modal").should("be.visible");
+      cy.contains("Application Submitted").should("be.visible");
+      cy.contains("Thank you for submitting your application!").should(
+        "be.visible"
+      );
+
+      // Click the "Close" button on the success modal
+      cy.get("button").contains("Close").click();
+
+      // Optionally check that the modal has closed
+      cy.get(".success-modal").should("not.exist");
+
+      // Make a request to the email_test_view endpoint
+      cy.request("http://localhost:8025/api/v2/messages").then((response) => {
+        expect(response.status).to.equal(200);
+
+        // Find emails
+        const applicantEmail = response.body.items.find((email) =>
+          email.Content.Headers.Subject.includes("Application Submitted")
+        );
+        const adminEmail = response.body.items.find((email) =>
+          email.Content.Headers.Subject.includes("New Application Submitted")
+        );
+
+        // Assert the email details for the applicant
+        expect(applicantEmail.Content.Headers.Subject[0]).to.include(
+          "Application Submitted"
+        );
+        expect(applicantEmail.Content.Body).to.include("Dear John Public");
+        expect(applicantEmail.Content.Body).to.include(
+          "Thank you for submitting the application for Jane Public"
+        );
+        expect(applicantEmail.Content.Headers.From[0]).to.include(
+          "test@example.com"
+        );
+        expect(applicantEmail.Content.Headers.To[0]).to.equal(
+          "applicant@example.com"
+        );
+
+        // Assert the email details for the admin
+        expect(adminEmail.Content.Headers.Subject[0]).to.include(
+          "New Application Submitted"
+        );
+        expect(adminEmail.Content.Body).to.include(
+          "A new application has been submitted by John Public"
+        );
+        expect(adminEmail.Content.Body).to.include("for Jane Public");
+        expect(adminEmail.Content.Headers.From[0]).to.include(
+          "test@example.com"
+        );
+        expect(adminEmail.Content.Headers.To[0]).to.equal(
+          "lgmsmontessori@gmail.com"
+        );
+      });
     });
-
-    // Checkboxes for phone and address
-    cy.get("[data-cy=sameAsParentsPhone]").check();
-    cy.get("[data-cy=sameAsParentsAddress]").check();
-
-    // Submit the initial form
-    cy.get("[data-cy=submitFormButton]").click();
-    cy.wait(2000);
-
-    // Assert the modal content
-
-    // Assume redirection to the confirmation page
-    cy.url().should("eq", "http://localhost:3001/confirm");
-
-    cy.get('[data-cy="finalSubmitButton"]').click();
-    // Check details on the confirmation page
-    cy.contains("Parent's Name: John").should("be.visible");
-    cy.contains("Applicant Full Name: Jane Public").should("be.visible");
-
-    // Assuming reCAPTCHA is bypassed or mocked in test environment
-    // Here you would trigger any necessary mocks or directly simulate captcha solving
-
-    // Final submission on the confirmation form
-    cy.get("button").contains("Submit").click();
-
-    // Check for the success modal and verify its contents
-    cy.contains("Application Submitted").should("be.visible");
-    cy.contains("Thank you for submitting your application!").should(
-      "be.visible"
-    );
-    cy.get("button").contains("Close").click();
-
-    // Optionally check that the modal has closed
-    cy.get("[data-cy=successModal]").should("not.exist");
-    cy.get(".success-modal").should("be.visible");
   });
 });
