@@ -88,10 +88,16 @@ const ApplyForm = React.forwardRef(
     const handleInputChange = (e) => {
       const { name, value } = e.target;
       const [model, field] = name.split(".");
+
+      if (model === "applicant" && field === "program_option") {
+        console.log("Selected Program:", value);
+      }
+
       if (!formData[model]) {
         console.error(`Invalid model: ${model}`);
         return;
       }
+
       setFormData((prevData) => ({
         ...prevData,
         [model]: {

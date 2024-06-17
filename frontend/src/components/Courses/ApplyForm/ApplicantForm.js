@@ -135,7 +135,7 @@ const ApplicantForm = ({
           "select",
           {
             options: programs.map((program) => ({
-              value: program.id,
+              value: program.name,
               label: program.name,
             })),
           }

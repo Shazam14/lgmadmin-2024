@@ -3,6 +3,8 @@ from django.utils import timezone
 from django.contrib.auth.models import Permission
 from django.contrib.contenttypes.models import ContentType
 from django.core.mail import send_mail
+import datetime
+import random
 
 
 class Applicant(models.Model):
@@ -34,10 +36,25 @@ class Applicant(models.Model):
         ('Approved', 'Approved'),
         ('Rejected', 'Rejected')
     ], default='Pending')
-    reference_number = models.CharField(max_length=20, unique=True, blank=True)
+    reference_number = models.CharField(max_length=30, unique=True, blank=True)
 
     def __str__(self):
         return f"{self.first_name} {self.last_name}"
+
+    def save(self, *args, **kwargs):
+        if not self.reference_number:
+            self.reference_number = self.generate_unique_reference_number()
+        super().save(*args, **kwargs)
+
+    @staticmethod
+    def generate_unique_reference_number():
+        while True:
+            now = datetime.datetime.now()
+            timestamp = now.strftime('%Y%m%d%H%M%S')  # 14 characters
+            random_integer = random.randint(100, 999)  # 3 characters
+            reference_number = f"APPLLRNGRD{timestamp}{random_integer}"
+            if not Applicant.objects.filter(reference_number=reference_number).exists():
+                return reference_number
 
     class Meta:
         permissions = [

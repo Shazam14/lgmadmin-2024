@@ -13,6 +13,7 @@ from rest_framework.views import APIView
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from rest_framework_simplejwt.tokens import RefreshToken
+from django.db import IntegrityError
 from apps.applicants.models import Applicant
 from apps.students.models import Student
 from apps.parents.models import Parent
@@ -85,13 +86,19 @@ def create_applicant(request):
                 f"Applicant data invalid: {applicant_serializer.errors}")
             return Response(applicant_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-        now = datetime.now()
-        reference_number = f"APPLLRNGRD{now.strftime('%Y%m%d%H%M%S')}"
+        reference_number = Applicant.generate_unique_reference_number()
         applicant_data['reference_number'] = reference_number
 
         # Save applicant
-        applicant = applicant_serializer.save()
-        logger.debug(f"Applicant created with ID: {applicant.id}")
+        try:
+            applicant = applicant_serializer.save()
+            logger.debug(f"Applicant created with ID: {applicant.id}")
+        except IntegrityError:
+            reference_number = Applicant.generate_unique_reference_number()
+            applicant_data['reference_number'] = reference_number
+            applicant = applicant_serializer.save()
+
+        logger.debug(f"Applicant data after validation: {applicant_data}")
 
         # Send email to applicant
         send_mail(

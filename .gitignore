@@ -33,3 +33,6 @@ frontend/cypress/screenshots/applyform.cy.js/Application Form Submission -- fill
 frontend/cypress/screenshots/applyform.cy.js/Application Form Submission -- fills out and submits the application form (failed) (3).png
 frontend/cypress/screenshots/applyform.cy.js/Application Form Submission -- fills out and submits the application form (failed) (4).png
 frontend/cypress/screenshots/applyform.cy.js/Application Form Submission -- fills out and submits the application form (failed).png
+.env.development
+.env.production
+.env.testing
