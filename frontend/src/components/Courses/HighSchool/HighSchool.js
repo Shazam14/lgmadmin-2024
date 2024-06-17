@@ -12,7 +12,7 @@ import useProgramData from "../ApplyForm/ProgramData";
 
 const HighSchool = () => {
   const formRef = useRef(null);
-  const { program } = useProgramData("High School Program");
+  const { program } = useProgramData("Junior High School Program");
   const [showModal, setShowModal] = useState(false);
 
   const handleOpenModal = () => setShowModal(true);

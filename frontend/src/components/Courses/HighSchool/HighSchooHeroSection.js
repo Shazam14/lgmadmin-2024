@@ -21,7 +21,7 @@ const HighSchoolHeroSection = ({ handleApplyClick, formRef }) => {
             </div>
             <div className="text-container">
               <h1 className="course-discover-text">
-                Discover HighSchool Class Program
+                Discover Junior High School Class Program
               </h1>
               <p className="course-join-us-text">
                 Join us to explore unique learning opportunities!
