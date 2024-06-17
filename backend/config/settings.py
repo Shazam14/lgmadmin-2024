@@ -38,14 +38,14 @@ SECRET_KEY = 'django-insecure-a!dtsj_=5rx+qp@bicvp^_#fe0%%olsus$&if92km@llx86@js
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-DEFAULT_HOST = '192.168.1.2'
-DEFAULT_PORT = '8001'
+DEFAULT_HOST = '192.168.0.148'
+DEFAULT_PORT = '8002'
 
 HOST = os.environ.get('DJANGO_HOST', DEFAULT_HOST)
 PORT = os.environ.get('DJANGO_PORT', DEFAULT_PORT)
 
 
-ALLOWED_HOSTS = ['192.168.1.2', 'localhost', '127.0.0.1', '[::1]']
+ALLOWED_HOSTS = ['192.168.0.148', 'localhost', '127.0.0.1', '[::1]']
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -136,39 +136,38 @@ MIDDLEWARE = [
 ]
 
 
+
 CORS_ALLOW_CREDENTIALS = True
-CORS_ORIGIN_WHITELIST = [
-    'http://localhost:3007',
-    'http://192.168.1.2:3007'
-    # Update with your frontend's URL
-]
-CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_ALL_ORIGINS = False
 
 CORS_ALLOWED_ORIGINS = [
-    'http://localhost:3007',
-    'http://192.168.1.2:3007',  # Include the scheme (http:// or https://)
-]
-# Ensure CORS allows requests from your frontend's specific origin and supports credentials
-# This should be False if you are specifying allowed origins
-""" CORS_ALLOW_ALL_ORIGINS = False
-
-CORS_ALLOW_CREDENTIALS = True  # This allows cookies to be submitted across domains
-
-
-# Define trusted origins for CSRF protection
-CSRF_TRUSTED_ORIGINS = [
     'http://localhost:3001',
+    'http://localhost:8004',
+    'http://192.168.0.148:3001',
+    'http://192.168.0.148:8004',
+    'http://192.168.0.148',
+    'https://beta.learninggardenmontessori.ph',
+
+] 
+CORS_ALLOW_METHODS = [
+    'DELETE',
+    'GET',
+    'OPTIONS',
+    'PATCH',
+    'POST',
+    'PUT',
 ]
-
-# Optionally, ensure that the headers needed for your requests are allowed
-CORS_ALLOW_HEADERS = list(default_headers) + [
-    'X-CSRFToken',
-] """
-
-
-""" if not IS_PRODUCTION:
-    print('NOT PRODUCTION')
-    CORS_ALLOW_ALL_ORIGINS = True """
+CORS_ALLOW_HEADERS = [
+    'accept',
+    'accept-encoding',
+    'authorization',
+    'content-type',
+    'dnt',
+    'origin',
+    'user-agent',
+    'x-csrftoken',
+    'x-requested-with',
+]
 
 ROOT_URLCONF = 'config.urls'
 
@@ -198,27 +197,27 @@ print("Database Port:", os.environ.get('DB_PORT'))
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.environ.get('DB_NAME'),
-        'USER': os.environ.get('DB_USER'),
-        'PASSWORD': os.environ.get('DB_PASSWORD'),
-        'HOST': os.environ.get('DB_HOST'),
-        'PORT': os.environ.get('DB_PORT'),
-    }
-}
-
 # DATABASES = {
 #     'default': {
 #         'ENGINE': 'django.db.backends.postgresql',
-#         'NAME': 'lgmdb',
-#         'USER': 'postgres',
-#         'PASSWORD': 'postgres',
-#         'HOST': 'host.docker.internal',
-#         'PORT': '5432',
+#         'NAME': os.environ.get('DB_NAME'),
+#         'USER': os.environ.get('DB_USER'),
+#         'PASSWORD': os.environ.get('DB_PASSWORD'),
+#         'HOST': os.environ.get('DB_HOST'),
+#         'PORT': os.environ.get('DB_PORT'),
 #     }
 # }
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'postgres',
+        'USER': 'postgres',
+        'PASSWORD': 'postgres',
+        'HOST': '192.168.0.148',
+        'PORT': '5432',
+    }
+}
 
 
 # Password validation

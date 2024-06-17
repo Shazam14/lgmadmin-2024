@@ -2,7 +2,7 @@ import axios from "axios";
 import Cookies from "js-cookie";
 
 const axiosInstance = axios.create({
-  baseURL: "http://192.168.1.7:8000/api/",
+  baseURL: "http://192.168.0.148:8004/api/",
   withCredentials: true, // Ensures cookies are sent with the request
 });
 

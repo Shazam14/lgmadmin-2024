@@ -2,6 +2,7 @@ import React, {useState, useEffect} from "react";
 import "../../../../styles/admin.css";
 import { useNavigate } from "react-router-dom";
 import api from "../../../../services/api";
+import apiClient from "../../../../services/apiClient";
 const AdminNavbar = () => {
   const [username, setUsername] = useState("Loading...");
   const navigate = useNavigate();

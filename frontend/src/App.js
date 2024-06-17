@@ -27,7 +27,7 @@ import Lessons from "./components/Portal/AdminPortal/Lessons/Lessons.js";
 import StudentPortalPage from "./pages/StudentPortalPage";
 import StudentPortalDashboard from "./components/Portal/StudentPortal/StudentPortalDashboard.js";
 import ProtectedRoute from "./components/auth/ProtectedRoute.js";
-import BotpressChat from "./components/Botpress/BotpressChat.js";
+import LGMSChatbot from "./components/LGMSChatbot/LGMSChatbot.js";
 import apiClient from "./services/apiClient.js";
 import TeachersList from "./components/Portal/AdminPortal/Teachers/TeachersList.js";
 import "slick-carousel/slick/slick.css";
@@ -68,7 +68,7 @@ function App() {
               <Route path="terms-of-service" element={<TermsPage />} />
               <Route path="privacy-policy" element={<PrivacyPage />} />
               <Route path="courses/*" element={<CoursesPage />} />
-              <Route path="chatbot/*" element={<BotpressChat />} />
+              <Route path="chatbot/*" element={<LGMSChatbot />} />
               <Route path="apply-form" element={<ApplyForm />} />
 
               <Route path="/studentportal" element={<StudentPortalPage />}>

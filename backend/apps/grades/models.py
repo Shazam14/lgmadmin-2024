@@ -106,7 +106,7 @@ class Grade(models.Model):
     written_work = models.FloatField(default=0)
     performance_task = models.FloatField(default=0)
     quarterly_exam = models.FloatField(default=0)
-    quarterly_grade = models.FloatField(default=0)
+    quarterly_grade = models.FloatField(default=0) #no input
     final_grade = models.FloatField(default=0)
     evaluation_code = models.CharField(
         max_length=30, choices=GRADE_CHOICES, default='Beginning')

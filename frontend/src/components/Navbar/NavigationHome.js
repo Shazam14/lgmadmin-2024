@@ -1,8 +1,16 @@
-import React from "react";
+import React, { useState} from "react";
 import { Link } from "react-router-dom";
-import { Navbar, Nav, NavDropdown, Container } from "react-bootstrap";
-import BotpressChat from "../Botpress/BotpressChat";
+import { Navbar, Nav, NavDropdown, Container, Modal, Button } from "react-bootstrap";
+import LGMSChatbot from "../LGMSChatbot/LGMSChatbot";
+
 const NavigationHome = () => {
+
+  const [showChatbot, setShowChatbot] = useState(false);
+
+  const handleShowChatbot = () => setShowChatbot(true);
+  const handleCloseChatbot = () => setShowChatbot(false);
+
+
   return (
     <Container>
       <Navbar
@@ -17,8 +25,8 @@ const NavigationHome = () => {
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="me-auto">
-            <Nav.Link as={Link} to="/chatbot" style={{ color: "#286e34" }}>
-              Chatbot
+            <Nav.Link as={Link} to="#" onClick={handleShowChatbot} style={{ color: "#286e34" }}>
+              LGMSChatbot
             </Nav.Link>
             <NavDropdown title="Programs" id="courses-dropdown">
               <NavDropdown.Item as={Link} to="/courses/casa">
@@ -56,6 +64,14 @@ const NavigationHome = () => {
           </Nav>
         </Navbar.Collapse>
       </Navbar>
+      <Modal className="custom-modal" show={showChatbot} onHide={handleCloseChatbot} size="lg">
+        <Modal.Header closeButton>
+          <Modal.Title>LGMS Chatbot</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <LGMSChatbot />
+        </Modal.Body>
+      </Modal>
     </Container>
   );
 };

@@ -10,7 +10,7 @@ const AdminDashboard = () => {
   useEffect(() => {
     const fetchCounts = async () => {
       try {
-        const applicantsData = await api.fetchData("applicants/");
+        const applicantsData = await api.fetchData("applicants");
         setApplicantsCount(applicantsData.length);
 
         const enrollmentsData = await api.fetchData("enrollments/");
