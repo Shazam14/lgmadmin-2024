@@ -1,10 +1,31 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import '../../styles/chatbot.css';  // Ensure this path is correct
 
 const LGMSChatbot = () => {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
+
+  useEffect(() => {
+    // Send a message to the Rasa server to trigger the first chatbot message
+    const triggerFirstMessage = async () => {
+      try {
+        const response = await axios.post('http://0.0.0.0:5005/webhooks/rest/webhook', {
+          sender: 'test_user',
+          message: 'hi'
+        });
+        const botMessages = response.data.map((msg, index) => ({
+          sender: 'bot',
+          message: msg.text || <img src={msg.image} alt="bot response" />
+        }));
+        setMessages(botMessages);
+      } catch (error) {
+        console.error('Error triggering first message:', error);
+      }
+    };
+
+    triggerFirstMessage();
+  }, []);
 
   const sendMessage = async () => {
     if (input.trim()) {
@@ -28,7 +49,7 @@ const LGMSChatbot = () => {
         console.error('Error sending message to Rasa:', error);
       }
     }
-  };
+  }
 
   return (
     <div className="chat-container">
