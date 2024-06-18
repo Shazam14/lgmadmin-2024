@@ -12,7 +12,7 @@ const AdmissionModal = ({ show, handleClose, requirements }) => {
         <Modal.Title>Admission Requirements</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <Card className="mb-4">
+        
           <Card.Header>{requirements.title}</Card.Header>
           <Card.Body>
             {requirements.sections.map((section, index) => (
@@ -30,7 +30,7 @@ const AdmissionModal = ({ show, handleClose, requirements }) => {
               </div>
             ))}
           </Card.Body>
-        </Card>
+        
       </Modal.Body>
       <Modal.Footer>
         <Button variant="secondary" onClick={handleClose}>

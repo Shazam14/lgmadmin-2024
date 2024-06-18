@@ -6,7 +6,7 @@ const SPEDCurriculum = () => {
   return (
     <Container fluid>
       <section className="our-course-section">
-        <Card className="mb-4">
+        
           <Card.Header>
             <h2 className="course-section-title">Instructional Programs</h2>
           </Card.Header>
@@ -62,7 +62,7 @@ const SPEDCurriculum = () => {
               </tbody>
             </Table>
           </Card.Body>
-        </Card>
+        
       </section>
     </Container>
   );

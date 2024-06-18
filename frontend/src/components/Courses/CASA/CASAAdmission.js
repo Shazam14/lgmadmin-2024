@@ -10,7 +10,7 @@ const CASAAdmission = () => {
           <h2 className="course-section-title">LGMS ADMISSION REQUIREMENTS</h2>
           <Row>
             <Col>
-              <Card className="mb-4">
+              
                 <Card.Header>New Students Requirements</Card.Header>
                 <Card.Body>
                   <Card.Title>A. Procedure</Card.Title>
@@ -137,11 +137,11 @@ const CASAAdmission = () => {
                     </tbody>
                   </Table>
                 </Card.Body>
-              </Card>
+              
             </Col>
 
             <Col>
-              <Card className="mb-4">
+              
                 <Card.Header>Old Students Requirements</Card.Header>
                 <Card.Body>
                   <Table striped bordered hover>
@@ -194,7 +194,7 @@ const CASAAdmission = () => {
                     </tbody>
                   </Table>
                 </Card.Body>
-              </Card>
+              
             </Col>
           </Row>
         </div>

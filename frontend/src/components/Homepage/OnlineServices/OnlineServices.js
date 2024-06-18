@@ -13,7 +13,7 @@ const OnlineServices = () => {
     <Container fluid>
       <div className="online-services-container">
         <div className="services-header">
-          <h1 className="display-6">//Our Online Services</h1>
+          <h1 className="display-6">Our Online Services - coming soon!</h1>
         </div>
 
         <div className="services-list">

@@ -8,7 +8,7 @@ const AnnouncementCard = ({ announcement }) => {
   const postedOnDate = new Date(announcement.created_at).toLocaleDateString();
 
   return (
-    <Card>
+    
       <Card.Body>
         <Card.Title>{announcement.title}</Card.Title>
         <Card.Text>{announcement.content}</Card.Text>
@@ -16,7 +16,7 @@ const AnnouncementCard = ({ announcement }) => {
           <small className="text-muted">Posted on: {postedOnDate}</small>
         </Card.Footer>
       </Card.Body>
-    </Card>
+    
   );
 };
 

@@ -4,7 +4,6 @@ import schoolImage from "../../assets/images/about_img/schoolbldg.jpeg";
 
 const WhoWeAre = () => {
   return (
-    <div className="who-we-are-section">
       <div className="who-we-are-card-container">
         <div className="who-we-are-content">
           <h3 className="who-we-are-header">Who we are</h3>
@@ -25,7 +24,6 @@ const WhoWeAre = () => {
           alt="School Building"
         />
       </div>
-    </div>
   );
 };
 

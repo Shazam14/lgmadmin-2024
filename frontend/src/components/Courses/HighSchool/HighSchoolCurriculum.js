@@ -10,7 +10,7 @@ const HighSchoolCurriculum = () => {
           <h2 className="course-section-title">Our High School Curriculum</h2>
 
           {/* English Offerings Section */}
-          <Card>
+          
             <div className="curriculum-section">
               <h3 className="main-title">English Offerings</h3>
               <Card.Body>
@@ -144,8 +144,8 @@ const HighSchoolCurriculum = () => {
                 </Table>
               </Card.Body>
             </div>
-          </Card>
-          <Card>
+          
+          
             <div className="curriculum-section">
               <h3 className="main-title">Science and Technology Offerings</h3>
               <Card.Body>
@@ -270,8 +270,8 @@ const HighSchoolCurriculum = () => {
                 </Table>
               </Card.Body>
             </div>
-          </Card>
-          <Card>
+          
+          
             <div className="curriculum-section">
               <h3 className="main-title">Mathematics Offerings</h3>
               <Card.Body>
@@ -386,8 +386,8 @@ const HighSchoolCurriculum = () => {
                 </Table>
               </Card.Body>
             </div>
-          </Card>
-          <Card>
+          
+          
             <div className="curriculum-section">
               <h3 className="main-title">
                 Technology and Livelihood Education Offerings
@@ -509,9 +509,9 @@ const HighSchoolCurriculum = () => {
                 </Table>
               </Card.Body>
             </div>
-          </Card>
+          
 
-          <Card>
+          
             <div className="curriculum-section">
               <h3 className="main-title">Filipino Offerings</h3>
               <Card.Body>
@@ -622,9 +622,9 @@ const HighSchoolCurriculum = () => {
                 </Table>
               </Card.Body>
             </div>
-          </Card>
+          
 
-          <Card>
+          
             <div className="curriculum-section">
               <h3 className="main-title">Social Studies Offerings</h3>
               <Card.Body>
@@ -743,9 +743,9 @@ const HighSchoolCurriculum = () => {
                 </Table>
               </Card.Body>
             </div>
-          </Card>
+          
 
-          <Card>
+          
             <div className="curriculum-section">
               <h3 className="main-title">
                 Religion and Christian Values Education Offerings
@@ -796,9 +796,9 @@ const HighSchoolCurriculum = () => {
                 </Table>
               </Card.Body>
             </div>
-          </Card>
+          
 
-          <Card>
+          
             <div className="curriculum-section">
               <h3 className="main-title">PEHMA Offerings</h3>
               <Card.Body>
@@ -913,7 +913,7 @@ const HighSchoolCurriculum = () => {
                 </Table>
               </Card.Body>
             </div>
-          </Card>
+          
         </div>
       </section>
     </Container>

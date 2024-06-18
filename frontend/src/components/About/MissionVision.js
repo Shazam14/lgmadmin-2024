@@ -10,11 +10,10 @@ import accountabilityIcon from "../../assets/images/about_img/accountability.png
 
 const MissionVision = () => {
   return (
-    <div className="vision-mission-section">
+    <div className="card-course-box" style={{ margin: "20px 0 0 0"}} >
       <Container fluid>
         <Row>
           <Col>
-            <Card>
               <Card.Body>
                 <Card.Title className="h3-mission-vision">MISSION</Card.Title>
                 <Card.Text className="mission-text">
@@ -24,10 +23,8 @@ const MissionVision = () => {
                   environment.
                 </Card.Text>
               </Card.Body>
-            </Card>
           </Col>
           <Col>
-            <Card>
               <Card.Body>
                 <Card.Title className="h3-mission-vision">VISION</Card.Title>
                 <Card.Text className="vision-text">
@@ -36,14 +33,13 @@ const MissionVision = () => {
                   to be great citizens.
                 </Card.Text>
               </Card.Body>
-            </Card>
           </Col>
         </Row>
       </Container>
-      <Container>
+    
+      <Container>  
         <Row>
-          <Col>
-            <Card className="core-values-card">
+          <Col>      
               <Card.Body>
                 <Row className="core-value-row">
                   <Col className="core-value-item">
@@ -129,7 +125,6 @@ const MissionVision = () => {
                   </Col>
                 </Row>
               </Card.Body>
-            </Card>
           </Col>
         </Row>
       </Container>

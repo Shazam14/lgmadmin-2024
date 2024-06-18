@@ -73,8 +73,8 @@ const HomeStudyHeroSection = ({ handleApplyClick, formRef }) => {
         </Modal.Header>
         <Modal.Body>
           {requirementsData.sections.map((section, index) => (
-            <Card className="mb-4" key={index}>
-              <Card.Body>
+            
+              <Card.Body key={index}>
                 <Card.Title>{section.title}</Card.Title>
                 <Table striped bordered hover>
                   <tbody>
@@ -86,7 +86,7 @@ const HomeStudyHeroSection = ({ handleApplyClick, formRef }) => {
                   </tbody>
                 </Table>
               </Card.Body>
-            </Card>
+            
           ))}
         </Modal.Body>
         <Modal.Footer>

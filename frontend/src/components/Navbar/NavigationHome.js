@@ -17,7 +17,7 @@ const NavigationHome = () => {
       fixed="top"
       bg="light"
       expand="lg"
-      style={{ backgroundColor: "#f0f0f0" }}
+      style={{ backgroundColor: "#f0f0f0", padding: "10px" }}
         >
           <Navbar.Brand as={Link} to="/">
             Home

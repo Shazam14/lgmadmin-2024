@@ -4,8 +4,7 @@
     position: fixed;
     bottom: 0;
     right: 0;
-    margin: 0;
-    width: 300px; /* Adjust width as needed */
+    margin: 0 0 0 0;
   }
   
   .custom-modal .modal-content {

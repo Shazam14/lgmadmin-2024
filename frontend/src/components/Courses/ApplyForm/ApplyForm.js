@@ -32,14 +32,12 @@ const ApplyForm = React.forwardRef(
         last_name: "",
         email: "",
         phone_number: "",
+        phone_code: "+63",
         street_address: "",
         city: "",
         state_province: "",
         relationship: "Mother",
         primary_contact_value: "",
-        primary_contact_type: "Phone",
-        secondary_contact_value: "",
-        secondary_contact_type: "Phone",
         contact_priority: "Primary",
       },
       applicant: {
@@ -195,7 +193,7 @@ const ApplyForm = React.forwardRef(
       console.log("Form Data on Submit:", formData); // Debugging form data before submission
       console.log("Current Step:", currentStep);
       console.log("CAPTCHA Value:", captchaValue);
-
+      
       try {
         if (currentStep === 1 && validateParent()) {
           console.log("Attempting to submit parent data...");
@@ -314,17 +312,17 @@ const ApplyForm = React.forwardRef(
                   {currentStep === 3 && <Confirm formData={formData} />}
                   <div className="form-navigation-buttons">
                     {currentStep > 1 && currentStep < 3 && (
-                      <button type="button" onClick={handlePreviousStep}>
+                      <button type="button" onClick={handlePreviousStep} className="buttons-apply-form">
                         Previous
                       </button>
                     )}
                     {currentStep < 3 && (
-                      <button type="button" onClick={handleNextStep}>
+                      <button type="button" onClick={handleNextStep} className="buttons-apply-form float-right">
                         Next
                       </button>
                     )}
                     {currentStep === 3 && (
-                      <button type="button" onClick={handleNextStep}>
+                      <button type="button" onClick={handleNextStep} className="buttons-apply-form float-right">
                         Submit
                       </button>
                     )}

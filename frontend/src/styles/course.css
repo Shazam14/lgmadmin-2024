@@ -139,10 +139,10 @@
 }
 
 .card-course-box {
-  background: #f8f9fa; /* Light grey background */
   border: 1px solid #dee2e6; /* Light border */
   border-radius: 5px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+  padding: 20px;
 }
 
 .course-section-title {

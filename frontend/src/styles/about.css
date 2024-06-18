@@ -155,12 +155,7 @@
   padding: 20px;
 }
 
-.vision-mission-text {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin: 0 20px;
-}
+
 .h3-mission-vision {
   font-size: 24px;
   font-weight: 700;
@@ -168,14 +163,7 @@
   text-align: center;
 }
 
-.mission-text,
-.vision-text {
-  font-size: 16px;
-  font-weight: 400;
-  line-height: 28px;
-  text-align: center;
-  max-width: 300px;
-}
+
 
 .vision-text {
   margin-bottom: 20px;

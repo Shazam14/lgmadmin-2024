@@ -50,7 +50,6 @@
   font-weight: 400;
   line-height: 19px;
   outline: none;
-  margin-bottom: 8px;
 }
 
 .continue-appform-button {
@@ -79,4 +78,26 @@
   padding: 20px;
   border-radius: 4px;
   outline: none;
+}
+
+.buttons-apply-form{
+  height: 40px;
+  width: 150px;
+}
+
+.float-right{
+  float: right;
+}
+
+.phone-number-group {
+  display: flex;
+  align-items: center;
+}
+
+.phone-code-input {
+  width: 70px !important;
+  height: 40px !important;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 16px;
 }

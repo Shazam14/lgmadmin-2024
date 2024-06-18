@@ -13,7 +13,6 @@ const GradeSchoolCurriculum = () => {
           </span>
           <div className="curriculum-grid">
             <div className="curriculum-item">
-              <Card>
                 <Card.Body>
                   <div className="d-flex align-items-start mb-2">
                     <div className="icon me-2">
@@ -38,11 +37,9 @@ const GradeSchoolCurriculum = () => {
                     </div>
                   </div>
                 </Card.Body>
-              </Card>
             </div>
 
             <div className="curriculum-item">
-              <Card>
                 <Card.Body>
                   <div className="d-flex align-items-start mb-2">
                     <div className="icon me-2">
@@ -68,11 +65,9 @@ const GradeSchoolCurriculum = () => {
                     </div>
                   </div>
                 </Card.Body>
-              </Card>
             </div>
 
-            <div className="curriculum-item">
-              <Card>
+            <div className="curriculum-item">       
                 <Card.Body>
                   <div className="d-flex align-items-start mb-2">
                     <div className="icon me-2">
@@ -106,11 +101,9 @@ const GradeSchoolCurriculum = () => {
                     </div>
                   </div>
                 </Card.Body>
-              </Card>
             </div>
 
             <div className="curriculum-item">
-              <Card>
                 <Card.Body>
                   <div className="d-flex align-items-start mb-2">
                     <div className="icon me-2">
@@ -135,10 +128,8 @@ const GradeSchoolCurriculum = () => {
                     </div>
                   </div>
                 </Card.Body>
-              </Card>
             </div>
-
-            <Card>
+          
               <Card.Body>
                 <div className="curriculum-item">
                   <div className="d-flex align-items-start mb-2">
@@ -165,7 +156,6 @@ const GradeSchoolCurriculum = () => {
                   </div>
                 </div>
               </Card.Body>
-            </Card>
           </div>
         </div>
       </section>
