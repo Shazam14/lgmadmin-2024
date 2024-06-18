@@ -69,6 +69,8 @@ const ApplicantForm = ({
             options: ["Female", "Male"],
           }
         )}
+        <Row>
+          <Col>
         {renderInput(
           "applicant",
           "age",
@@ -79,6 +81,8 @@ const ApplicantForm = ({
             onChange: handleAgeChange,
           }
         )}
+        </Col>
+        <Col>
         {renderInput(
           "applicant",
           "birthday",
@@ -89,6 +93,8 @@ const ApplicantForm = ({
             ref: birthdayRef,
           }
         )}
+        </Col>
+        </Row>
         {renderInput(
           "applicant",
           "program_option",
