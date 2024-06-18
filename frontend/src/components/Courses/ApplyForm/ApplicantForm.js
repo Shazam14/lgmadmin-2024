@@ -50,10 +50,7 @@ const ApplicantForm = ({
   handleAgeChange,
   birthdayRef,
   programs,
-  birthMonth,
-  handleBirthMonthChange,
   birthDay,
-  handleBirthDayChange,
 }) => {
   return (
     <div className="form-app-section">
@@ -82,48 +79,13 @@ const ApplicantForm = ({
             onChange: handleAgeChange,
           }
         )}
-        <Row>
-          <Col>
-            <Form.Group controlId="birthMonth">
-              <Form.Label>Birth Month:</Form.Label>
-              <Form.Control
-                as="select"
-                value={birthMonth}
-                onChange={handleBirthMonthChange}
-                className="input-card student-appform-input"
-              >
-                {Array.from({ length: 12 }, (_, index) => (
-                  <option key={index} value={index + 1}>
-                    {new Date(0, index).toLocaleString("default", {
-                      month: "long",
-                    })}
-                  </option>
-                ))}
-              </Form.Control>
-            </Form.Group>
-          </Col>
-          <Col>
-            <Form.Group controlId="birthDay">
-              <Form.Label>Birth Day:</Form.Label>
-              <Form.Control
-                type="number"
-                value={birthDay}
-                onChange={handleBirthDayChange}
-                min="1"
-                max="31"
-                className="input-card student-appform-input"
-              />
-            </Form.Group>
-          </Col>
-        </Row>
         {renderInput(
           "applicant",
           "birthday",
           formData,
           handleInputChange,
-          "text",
+          "date",
           {
-            readOnly: true,
             ref: birthdayRef,
           }
         )}
