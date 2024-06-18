@@ -32,7 +32,6 @@ const ApplyForm = React.forwardRef(
         last_name: "",
         email: "",
         phone_number: "",
-        phone_code: "+63",
         street_address: "",
         city: "",
         state_province: "",
