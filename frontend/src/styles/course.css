@@ -1,5 +1,10 @@
 /* CASAHeroSection.css */
-
+.hs-common-row {
+  margin: 1rem !important;
+}
+.highschool-common-table {
+  width: 90% !important;
+}
 .course-hero-section {
   position: relative;
   display: flex;
