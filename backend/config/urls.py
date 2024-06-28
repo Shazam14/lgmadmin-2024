@@ -17,7 +17,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from .views import home
-from api.views import api_root, SignupView, LoginView, LogoutView, AuthStatusView
+from api.views import api_root, SignupView, LoginView, LogoutView, AuthStatusView, user_role
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from oauth2_provider.views import TokenView
 
@@ -33,10 +33,12 @@ urlpatterns = [
         path('enrollments/', include('apps.enrollments.urls')),
         path('parents/', include('apps.parents.urls')),
         path('grades/', include('apps.grades.urls')),
+        path('announcements/', include('apps.announcements.urls')),
         path('login/', LoginView.as_view(), name='login'),
         path('signup/', SignupView.as_view(), name='signup'),
         path('logout/', LogoutView.as_view(), name='logout'),
         path('auth-status/', AuthStatusView.as_view(), name='auth-status'),
+        path('user-role/', user_role, name='user_role'),
     ])),
     # for authentication
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),

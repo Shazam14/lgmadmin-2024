@@ -1,31 +1,34 @@
 from rest_framework import serializers
 from apps.parents.models import Parent
 from apps.students.models import Student
+from apps.applicants.models import Applicant
+from apps.applicants.serializers import ApplicantSerializer
 
 
 class ParentSerializer(serializers.ModelSerializer):
-    students = serializers.PrimaryKeyRelatedField(
-        many=True, queryset=Student.objects.all())
-
-    """ students = serializers.StringRelatedField(many=True) """
-    """ students = serializers.HyperlinkedRelatedField(
-        view_name='student-detail',
-        queryset=Student.objects.all(),
-        many=True,
-        lookup_field='student_id'
-    ) """
 
     class Meta:
         model = Parent
         fields = '__all__'
 
-    # previous version before enrollment to students change
-    """ class Meta:
-        model = Parent
-        fields = ['id', 'first_name', 'middle_name', 'last_name', 'email', 'phone_number',
-                  'street_address', 'city', 'state_province', 'parent_id', 'account_status',
-                  'relationship', 'primary_contact', 'secondary_contact', 'contact_priority', 'students']
- """
+    def validate(self, data):
+        if 'email' in data and not data['email']:
+            raise serializers.ValidationError("Email cannot be empty")
+        return data
+
+
+class ApplicationSerializer(serializers.Serializer):
+    parent = ParentSerializer()
+    applicant = ApplicantSerializer()
+
+    def create(self, validated_data):
+        parent_data = validated_data.pop('parent')
+        applicant_data = validated_data.pop('applicant')
+
+        parent = Parent.objects.create(**parent_data)
+        applicant = Applicant.objects.create(parent=parent, **applicant_data)
+
+        return {'parent': parent, 'applicant': applicant}
 
 
 class ParentUploadSerializer(serializers.Serializer):

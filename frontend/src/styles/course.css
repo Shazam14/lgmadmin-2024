@@ -1,5 +1,10 @@
 /* CASAHeroSection.css */
-
+.hs-common-row {
+  margin: 1rem !important;
+}
+.highschool-common-table {
+  width: 90% !important;
+}
 .course-hero-section {
   position: relative;
   display: flex;
@@ -10,17 +15,49 @@
 
 .course-image-container {
   width: 100%;
-  height: 290px;
   border-radius: 24px;
-  background-position: center center;
+  position: relative;
+  height: 400px;
+  overflow: hidden;
+}
+
+.image-wrapper {
+  width: 100%;
+  height: 100%;
+  background-image: url("../assets/images/courses_img/lgms_apply_header.jpg");
   background-size: cover;
-  background-repeat: no-repeat;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 0;
+  opacity: 0.4;
+}
+
+.course-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.2;
+}
+
+.text-container {
+  position: relative;
+  z-index: 1;
   display: flex;
-  opacity: 0.37;
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  height: 100%;
 }
+
+/* .course-image-container {
+  width: 100%;
+  border-radius: 24px;
+  background-image: url("../assets/images/courses_img/lgms_apply_header.jpg");
+  background-size: cover;
+  background-position: center;
+  height: 400px;
+} */
 
 .course-discover-text {
   color: #286e34;
@@ -97,32 +134,26 @@
 }
 
 .our-course-program {
-  margin-top: 80px;
-  margin-bottom: 40px;
+  margin-top: 20px;
+  margin-bottom: 10px;
 }
 
 .our-course-section {
-  margin-top: 20px;
-  margin-bottom: 20px;
+  margin-top: 5px;
+  margin-bottom: 5px;
 }
 
 .card-course-box {
-  top: 459px;
-  height: auto;
-  background-color: #ffffff;
-  box-shadow: 0px 2px 10px rgba(3, 3, 3, 0.1);
+  border: 1px solid #dee2e6; /* Light border */
+  border-radius: 5px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow */
   padding: 20px;
-  margin: auto;
-  width: 100%;
 }
 
 .course-section-title {
-  color: #030303;
-  font-size: 24px;
-  font-family: "Montserrat", sans-serif;
-  font-weight: 700;
-  line-height: 28px;
-  margin-bottom: 20px;
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
 }
 
 .course-section-text {

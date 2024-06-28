@@ -1,24 +1,27 @@
 from django.db import models
 
 
+from django.db import models
+from phonenumber_field.modelfields import PhoneNumberField
+
 class Parent(models.Model):
     first_name = models.CharField(max_length=50)
-    middle_name = models.CharField(max_length=50, blank=True)
+    middle_name = models.CharField(max_length=50, null=True, blank=True)
     last_name = models.CharField(max_length=50)
     email = models.EmailField()
-    phone_number = models.CharField(max_length=15)
+    phone_number = PhoneNumberField(null=True, blank=True)
     street_address = models.CharField(max_length=255)
     city = models.CharField(max_length=50)
     state_province = models.CharField(max_length=50)
-    parent_id = models.CharField(max_length=20, primary_key=True)
     account_status = models.CharField(max_length=20, default='Active', choices=[
                                       ('Active', 'Active'), ('Inactive', 'Inactive')])
-    relationship = models.CharField(max_length=50, choices=[(
-        'Mother', 'Mother'), ('Father', 'Father'), ('Guardian', 'Guardian')])
-    primary_contact = models.CharField(max_length=15)
-    secondary_contact = models.CharField(max_length=15, blank=True)
-    contact_priority = models.CharField(
-        max_length=20, choices=[('Primary', 'Primary'), ('Secondary', 'Secondary')])
+    relationship = models.CharField(max_length=50, choices=[
+        ('Mother', 'Mother'), ('Father', 'Father'), ('Guardian', 'Guardian')
+    ])
+    primary_contact_value = PhoneNumberField()
+    contact_priority = models.CharField(max_length=20, choices=[
+        ('Primary', 'Primary'), ('Secondary', 'Secondary')
+    ])
     attended_conferences = models.BooleanField(default=False)
     participated_activities = models.BooleanField(default=False)
     returned_reply_slips = models.BooleanField(default=False)
@@ -33,7 +36,7 @@ class Parent(models.Model):
         super().save(*args, **kwargs)
 
     def __str__(self):
-        return f"{self.first_name} {self.last_name} ({self.parent_id})"
+        return f"{self.first_name} {self.last_name}"
 
 
 class SignedJournal(models.Model):

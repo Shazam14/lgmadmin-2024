@@ -1,21 +1,27 @@
-from django.test import TestCase
 from django.core import mail
-from apps.applicants.views import ApplicantApprovalView
+from rest_framework.test import APITestCase
 
 
-class EmailSendingTestCase(TestCase):
-    def setUp(self):
-        self.view = ApplicantApprovalView()
+class ApplicationFormTestCase(APITestCase):
+    def test_form_submission_sends_email(self):
+        # Prepare the form data
+        form_data = {
+            'parent_name': 'John Quincy Public',
+            'applicant_name': 'Jane Doe Public',
+            # Add other form fields as needed
+        }
 
-    def test_send_mail(self):
-        to_email = "test@example.com"
-        subject = "Test Subject"
-        body = "Test Body"
+        # Send a POST request to the form submission endpoint
+        response = self.client.post('/api/submit-form/', form_data)
 
-        self.view.send_mail(to_email, subject, body)
+        # Assert the response status code
+        self.assertEqual(response.status_code, 201)
 
-        # Check that an email has been sent
+        # Assert that an email was sent
         self.assertEqual(len(mail.outbox), 1)
-        self.assertEqual(mail.outbox[0].subject, subject)
-        self.assertEqual(mail.outbox[0].body, body)
-        self.assertEqual(mail.outbox[0].to, [to_email])
+
+        # Assert the email details
+        email = mail.outbox[0]
+        self.assertEqual(email.subject, 'New Application Submitted')
+        self.assertIn('Parent\'s Name: John Quincy Public', email.body)
+        self.assertIn('Applicant Full Name: Jane Doe Public', email.body)

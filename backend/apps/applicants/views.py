@@ -1,15 +1,19 @@
 import os
-from django.core.mail import EmailMessage
+from django.core.mail import EmailMessage, send_mail
 from django.db import transaction
 from rest_framework import status
-from rest_framework import viewsets
-from rest_framework.permissions import IsAuthenticated
+from rest_framework import permissions, viewsets
+from rest_framework.decorators import api_view, permission_classes
+from django.views.decorators.csrf import csrf_exempt
+from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.response import Response
 from .models import Applicant
 from .serializers import ApplicantSerializer
 from rest_framework.views import APIView
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from rest_framework_simplejwt.tokens import RefreshToken
+from django.db import IntegrityError
 from apps.applicants.models import Applicant
 from apps.students.models import Student
 from apps.parents.models import Parent
@@ -18,16 +22,127 @@ from apps.applicants.utils.utils import (
     get_program_based_on_applicant,
     generate_unique_student_id,
 )
-from datetime import timedelta
+from datetime import timedelta, datetime
+from apps.parents.serializers import ParentSerializer
+
 import logging
 
 logger = logging.getLogger(__name__)
 
 
+@api_view(['GET'])
+def email_test_view(request):
+    emails = []
+    for email in mail.outbox:
+        emails.append({
+            'subject': email.subject,
+            'body': email.body,
+            'from_email': email.from_email,
+            'to': email.to,
+        })
+    return Response(emails)
+
+
+@api_view(['POST'])
+def validate_applicant(request):
+    logger.debug(f"verify_applicant view reached: {request.data}")
+    serializer = ApplicantSerializer(data=request.data)
+    if serializer.is_valid():
+        return Response({'message': 'Applicant data is valid'}, status=status.HTTP_200_OK)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['POST'])
+def create_applicant(request):
+    try:
+        applicant_data = request.data.get('applicant')
+        parent_data = request.data.get('parent')
+
+        # Check if the parent already exists in the database
+        parent_email = parent_data.get('email')
+        parent = Parent.objects.filter(email=parent_email).first()
+
+        if parent:
+            # Parent already exists, use the existing parent
+            logger.debug(f"Parent already exists with ID: {parent.id}")
+        else:
+            # Parent doesn't exist, create a new parent
+            parent_serializer = ParentSerializer(data=parent_data)
+            if not parent_serializer.is_valid():
+                logger.error(
+                    f"Parent data invalid: {parent_serializer.errors}")
+                return Response(parent_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            parent = parent_serializer.save()
+            logger.debug(f"Parent created with ID: {parent.id}")
+
+        # Ensure parent ID is set in applicant data
+        applicant_data['parent'] = parent.id
+        logger.debug(f"Applicant data before validation: {applicant_data}")
+
+        # Validate applicant data
+        applicant_serializer = ApplicantSerializer(data=applicant_data)
+        if not applicant_serializer.is_valid():
+            logger.error(
+                f"Applicant data invalid: {applicant_serializer.errors}")
+            return Response(applicant_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        reference_number = Applicant.generate_unique_reference_number()
+        applicant_data['reference_number'] = reference_number
+
+        # Save applicant
+        try:
+            applicant = applicant_serializer.save()
+            logger.debug(f"Applicant created with ID: {applicant.id}")
+        except IntegrityError:
+            reference_number = Applicant.generate_unique_reference_number()
+            applicant_data['reference_number'] = reference_number
+            applicant = applicant_serializer.save()
+
+        logger.debug(f"Applicant data after validation: {applicant_data}")
+
+        # Send email to applicant
+        send_mail(
+            'Application Submitted',
+            f'Dear {parent.first_name} {parent.last_name},\n\n'
+            f'Thank you for submitting the application for {applicant.first_name} {applicant.last_name}! '
+            f'The application is currently under review. '
+            f'Please expect a call or an email regarding the next steps in the process.\n\n'
+            f'Reference Number: {reference_number}\n\n'
+            f'Best regards,\n'
+            f'LGMS Montessori',
+            'lgmsmontessori@gmail.com',
+            [applicant.email],
+            fail_silently=False,
+        )
+
+        # Send email to admin
+        send_mail(
+            'New Application Submitted',
+            f'A new application has been submitted by {parent.first_name} {parent.last_name} '
+            f'for {applicant.first_name} {applicant.last_name}.\n\n'
+            f'Reference Number: {reference_number}\n\n'
+            f'Please review the application in the admin panel.',
+            'lgmsmontessori@gmail.com',
+            ['lgmsmontessori@gmail.com'],
+            fail_silently=False,
+        )
+
+        return Response({"message": "Form submitted successfully"}, status=status.HTTP_201_CREATED)
+    except Exception as e:
+        logger.exception("An error occurred during applicant creation.")
+        return Response({'error': 'An error occurred.'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
 class ApplicantViewSet(viewsets.ModelViewSet):
     queryset = Applicant.objects.all()
     serializer_class = ApplicantSerializer
-    permission_classes = [IsAuthenticated]
+
+    def get_permissions(self):
+        if self.action == 'create':
+            permission_classes = [AllowAny]
+        else:
+            permission_classes = [IsAuthenticated]
+        return [permission() for permission in permission_classes]
 
 
 class ApplicantApprovalView(APIView):

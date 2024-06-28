@@ -35,9 +35,9 @@ const TestimonialCarousel = () => {
   };
 
   return (
-    <Container fluid>
+    <Container fluid className="no-gutters">
       <div className="testimonial-carousel-container">
-        <h1 className="display-6">//Testimonial</h1>
+        <h1 className="display-6">Testimonial</h1>
 
         <Slider {...settings}>
           {testimonials.map((testimonial, idx) => (

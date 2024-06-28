@@ -1,14 +1,35 @@
+import logging
+from rest_framework import status
 from rest_framework import viewsets, generics, parsers, response
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.decorators import api_view, permission_classes
 from .models import Parent
 from .serializers import ParentSerializer, ParentUploadSerializer
 from django.http import JsonResponse
+from rest_framework.response import Response
+
+
+logger = logging.getLogger(__name__)
+
+
+@api_view(['POST'])
+def validate_parent(request):
+    serializer = ParentSerializer(data=request.data)
+    if serializer.is_valid():
+        return response.Response({"message": "Parent data is valid"}, status=status.HTTP_200_OK)
+    return response.Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class ParentViewSet(viewsets.ModelViewSet):
     queryset = Parent.objects.all()
     serializer_class = ParentSerializer
-    permission_classes = [IsAuthenticated]
+
+    def get_permissions(self):
+        if self.action == 'create':
+            permission_classes = [AllowAny]
+        else:
+            permission_classes = [IsAuthenticated]
+        return [permission() for permission in permission_classes]
 
 
 class ParenttUploadView(generics.CreateAPIView):

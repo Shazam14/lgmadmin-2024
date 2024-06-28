@@ -1,10 +1,11 @@
 // studentApi.js
 import apiClient from "./apiClient";
+import api from "./api";
 import { handleApiError } from "./apiUtils";
 
 export const fetchStudents = async () => {
   try {
-    const response = await apiClient.get("/students/");
+    const response = await apiClient.get("students/");
     console.log("printing response from student api", response.data);
     return response.data;
   } catch (error) {
@@ -15,8 +16,8 @@ export const fetchStudents = async () => {
 
 export const fetchStudentByStudentId = async (studentId) => {
   try {
-    const response = await apiClient.get(`/students/${studentId}/`);
-    return response.data;
+    const response = await api.get(`students/${studentId}/`);
+    return response; // Note: response.data is not needed since the api.get method already returns the parsed data
   } catch (error) {
     handleApiError(error);
   }
@@ -24,7 +25,7 @@ export const fetchStudentByStudentId = async (studentId) => {
 
 export const fetchParentDetails = async (parentUrl) => {
   try {
-    const response = await apiClient.get(parentUrl);
+    const response = await api.get(parentUrl);
     return response.data;
   } catch (error) {
     handleApiError(error);

@@ -32,7 +32,7 @@ const AdminDashboard = () => {
 
       <Grid container spacing={3}>
         <Grid item xs={12} sm={4}>
-          <Card>
+          
             <CardContent>
               <Typography variant="h5" component="div">
                 Applicants
@@ -41,11 +41,11 @@ const AdminDashboard = () => {
                 {applicantsCount}
               </Typography>
             </CardContent>
-          </Card>
+          
         </Grid>
 
         <Grid item xs={12} sm={4}>
-          <Card>
+          
             <CardContent>
               <Typography variant="h5" component="div">
                 Enrollments
@@ -54,11 +54,11 @@ const AdminDashboard = () => {
                 {enrollmentsCount}
               </Typography>
             </CardContent>
-          </Card>
+          
         </Grid>
 
         <Grid item xs={12} sm={4}>
-          <Card>
+          
             <CardContent>
               <Typography variant="h5" component="div">
                 Students
@@ -67,7 +67,7 @@ const AdminDashboard = () => {
                 {studentsCount}
               </Typography>
             </CardContent>
-          </Card>
+          
         </Grid>
       </Grid>
     </div>

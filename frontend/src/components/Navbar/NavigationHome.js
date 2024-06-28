@@ -1,23 +1,40 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { Navbar, Nav, NavDropdown, Container } from "react-bootstrap";
-import BotpressChat from "../Botpress/BotpressChat";
+import {
+  Navbar,
+  Nav,
+  NavDropdown,
+  Container,
+  Modal,
+  Button,
+} from "react-bootstrap";
+import LGMSChatbot from "../LGMSChatbot/LGMSChatbot";
+
 const NavigationHome = () => {
+  const [showChatbot, setShowChatbot] = useState(false);
+
+  const handleShowChatbot = () => setShowChatbot(true);
+  const handleCloseChatbot = () => setShowChatbot(false);
+
   return (
     <Container>
       <Navbar
         fixed="top"
-        bg="light"
         expand="lg"
-        style={{ backgroundColor: "#f0f0f0" }}
+        style={{ backgroundColor: "#317B41", padding: "10px" }}
       >
-        <Navbar.Brand as={Link} to="/">
+        <Nav.Link className="text-white" as={Link} to="/">
           Home
-        </Navbar.Brand>
+        </Nav.Link>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="me-auto">
-            <Nav.Link as={Link} to="/chatbot" style={{ color: "#286e34" }}>
+            <Nav.Link
+              as={Link}
+              to="#"
+              onClick={handleShowChatbot}
+              className="text-white"
+            >
               Chatbot
             </Nav.Link>
             <NavDropdown title="Programs" id="courses-dropdown">
@@ -25,22 +42,22 @@ const NavigationHome = () => {
                 CASA
               </NavDropdown.Item>
               <NavDropdown.Item as={Link} to="/courses/grade-school">
-                Grade School
+                Elementary School
               </NavDropdown.Item>
               <NavDropdown.Item as={Link} to="/courses/highschool">
-                High School
+                Junior High School
               </NavDropdown.Item>
-              <NavDropdown.Item as={Link} to="/courses/sped">
-                SPED
+              <NavDropdown.Item as={Link} to="/courses/lgmsteach">
+                LGMS T.E.A.C.H
               </NavDropdown.Item>
-              <NavDropdown.Item as={Link} to="/courses/homestudy">
-                HomeStudy
+              <NavDropdown.Item as={Link} to="/courses/playgroup">
+                Playgroup
               </NavDropdown.Item>
             </NavDropdown>
-            <Nav.Link as={Link} to="/about">
+            <Nav.Link className="text-white" as={Link} to="/about">
               About
             </Nav.Link>
-            <Nav.Link as={Link} to="/apply-form">
+            <Nav.Link className="text-white" as={Link} to="/apply-form">
               Apply Online
             </Nav.Link>
           </Nav>
@@ -56,6 +73,19 @@ const NavigationHome = () => {
           </Nav>
         </Navbar.Collapse>
       </Navbar>
+      <Modal
+        className="custom-modal"
+        show={showChatbot}
+        onHide={handleCloseChatbot}
+        size="lg"
+      >
+        <Modal.Header closeButton>
+          <Modal.Title>LGMS Chatbot</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <LGMSChatbot />
+        </Modal.Body>
+      </Modal>
     </Container>
   );
 };

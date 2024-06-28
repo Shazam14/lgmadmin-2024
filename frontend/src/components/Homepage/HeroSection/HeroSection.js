@@ -5,7 +5,10 @@ import "../../../styles/homepage.css";
 
 const HeroSection = () => {
   return (
-    <Container fluid style={{ backgroundColor: "#cdf2d0", padding: "4rem 0" }}>
+    <Container
+      fluid
+      style={{ backgroundColor: "#cdf2d0", padding: "4rem 0 2rem 0" }}
+    >
       <Row className="align-items-center">
         <Col lg={{ span: 8 }}>
           <Stack direction="vertical">
@@ -25,23 +28,23 @@ const HeroSection = () => {
             </div>
           </Stack>
         </Col>
-        <Col lg="auto">
+        <Col lg={{ span: 2 }}>
           <div className="school-logo-text">
             <div>
-              <span className="font-bold">L</span>earning
+              <span className="lgms-primary-color font-bold">L</span>earning
             </div>
             <div>
-              <span className="font-bold">G</span>arden
+              <span className="lgms-primary-color  font-bold">G</span>arden
             </div>
             <div>
-              <span className="font-bold">M</span>ontessori
+              <span className="lgms-primary-color  font-bold">M</span>ontessori
             </div>
             <div>
-              <span className="font-bold">S</span>chool
+              <span className="lgms-primary-color  font-bold">S</span>chool
             </div>
           </div>
         </Col>
-        <Col>
+        <Col lg={{ span: 2 }}>
           <Image src={logoImage} alt="School Logo LGMS" fluid />
         </Col>
       </Row>

@@ -1,0 +1,7 @@
+{
+  "env": {
+    "REACT_APP_RECAPTCHA_SITE_KEY": "6LehhNkpAAAAAAbT4e83dfASMjlIqXzheo49BT4j",
+    "CYPRESS_TESTING": true,
+    "baseUrl": "http://localhost:3001"
+  }
+}

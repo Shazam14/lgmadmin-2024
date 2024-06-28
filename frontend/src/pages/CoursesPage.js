@@ -16,8 +16,8 @@ const CoursesPage = () => {
       <Route path="casa" element={<CASA />} />
       <Route path="grade-school" element={<GradeSchool />} />
       <Route path="highschool" element={<HighSchool />} />
-      <Route path="sped" element={<SPED />} />
-      <Route path="homestudy" element={<HomeStudy />} />
+      <Route path="lgmsteach" element={<SPED />} />
+      <Route path="playgroup" element={<HomeStudy />} />
       <Route path="applyform" element={<ApplyForm />} />
       {/* You can add more routes here if needed */}
     </Routes>
