@@ -24,8 +24,8 @@ const OnlineServices = () => {
             </div>
           ))}
         </div>
-        <div className="horizontal-divider"></div>
       </div>
+      <div className="horizontal-divider" />
     </Container>
   );
 };

@@ -1,25 +1,29 @@
-import React , { useState }from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { Navbar, Nav, NavDropdown, Container, Modal, Button } from "react-bootstrap";
+import {
+  Navbar,
+  Nav,
+  NavDropdown,
+  Container,
+  Modal,
+  Button,
+} from "react-bootstrap";
 import LGMSChatbot from "../LGMSChatbot/LGMSChatbot";
 
 const NavigationHome = () => {
-
   const [showChatbot, setShowChatbot] = useState(false);
 
   const handleShowChatbot = () => setShowChatbot(true);
   const handleCloseChatbot = () => setShowChatbot(false);
 
-
   return (
     <Container>
       <Navbar
         fixed="top"
-        bg="light"
         expand="lg"
-        style={{ backgroundColor: "#f0f0f0", padding: "10px" }}
+        style={{ backgroundColor: "#317B41", padding: "10px" }}
       >
-        <Nav.Link as={Link} to="/">
+        <Nav.Link className="text-white" as={Link} to="/">
           Home
         </Nav.Link>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
@@ -29,7 +33,7 @@ const NavigationHome = () => {
               as={Link}
               to="#"
               onClick={handleShowChatbot}
-              style={{ color: "#286e34" }}
+              className="text-white"
             >
               Chatbot
             </Nav.Link>
@@ -50,10 +54,10 @@ const NavigationHome = () => {
                 Playgroup
               </NavDropdown.Item>
             </NavDropdown>
-            <Nav.Link as={Link} to="/about">
+            <Nav.Link className="text-white" as={Link} to="/about">
               About
             </Nav.Link>
-            <Nav.Link as={Link} to="/apply-form">
+            <Nav.Link className="text-white" as={Link} to="/apply-form">
               Apply Online
             </Nav.Link>
           </Nav>

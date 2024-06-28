@@ -336,6 +336,8 @@ const HighSchoolCurriculum = () => {
             </Col>
           </Row>
 
+          <div className="horizontal-divider" />
+
           <Row className="hs-common-row">
             <Col sm={4}>
               <div className="curriculum-section">
@@ -635,6 +637,8 @@ const HighSchoolCurriculum = () => {
               </div>
             </Col>
           </Row>
+
+          <div className="horizontal-divider" />
 
           <Row className="hs-common-row">
             <Col sm={6}>
