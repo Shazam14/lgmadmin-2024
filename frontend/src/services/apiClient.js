@@ -4,7 +4,7 @@ const getBaseURL = () => {
   if (window.location.origin.includes("systems.learninggardenmontessori.ph")) {
     return "https://backend.learninggardenmontessori.ph/api";
   } else {
-    return "http://192.168.0.148:8004/api/";
+    return process.env.REACT_APP_API_BASE_URL;
   }
 };
 
