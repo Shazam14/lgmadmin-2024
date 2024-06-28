@@ -150,6 +150,7 @@ const ParentForm = React.memo(({ formData, handleInputChange, errors }) => {
           "contact_priority",
           formData,
           handleInputChange,
+          errors,
           "select",
           {
             options: ["Primary", "Secondary"],
@@ -175,6 +176,7 @@ const ParentForm = React.memo(({ formData, handleInputChange, errors }) => {
           "relationship",
           formData,
           handleInputChange,
+          errors,
           "select",
           {
             options: [
