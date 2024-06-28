@@ -12,10 +12,6 @@ class ParentSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
     def validate(self, data):
-        # Example of basic validation
-        if 'phone_number' in data and len(data['phone_number']) < 10:
-            raise serializers.ValidationError(
-                "Phone number must be at least 10 digits long")
         if 'email' in data and not data['email']:
             raise serializers.ValidationError("Email cannot be empty")
         return data

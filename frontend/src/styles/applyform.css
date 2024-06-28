@@ -80,12 +80,12 @@
   outline: none;
 }
 
-.buttons-apply-form{
+.buttons-apply-form {
   height: 40px;
   width: 150px;
 }
 
-.float-right{
+.float-right {
   float: right;
 }
 
@@ -94,10 +94,21 @@
   align-items: center;
 }
 
-.phone-code-input {
+.country-code {
   width: 70px !important;
   height: 40px !important;
   border: 1px solid #ccc;
-  border-radius: 4px;
   font-size: 16px;
+}
+
+.text-danger {
+  font-size: 13px;
+}
+
+.apply-field-errors {
+  border: 1px solid #f00505 !important;
+}
+
+.no-padding-top {
+  padding-top: 0 !important;
 }

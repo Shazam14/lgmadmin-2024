@@ -5,6 +5,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.core.mail import send_mail
 import datetime
 import random
+from phonenumber_field.modelfields import PhoneNumberField
 
 
 class Applicant(models.Model):
@@ -23,7 +24,7 @@ class Applicant(models.Model):
     program_option = models.ForeignKey(
         'grades.Program', on_delete=models.SET_NULL, null=True, blank=True, verbose_name="Program")
     email = models.EmailField(blank=True)
-    phone_number = models.CharField(max_length=20, blank=True)
+    phone_number = PhoneNumberField(max_length=20, null=True, blank=True)
     address_house_no = models.CharField(max_length=10, blank=True)
     address_street = models.CharField(max_length=200, blank=True)
     address_barangay = models.CharField(max_length=100, blank=True)

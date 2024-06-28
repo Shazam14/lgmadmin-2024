@@ -25,12 +25,14 @@ const ApplyForm = React.forwardRef(
     const [progress, setProgress] = useState(0);
     const [programMapping, setProgramMapping] = useState({});
     const [captchaValue, setCaptchaValue] = useState(null);
+    const [errors, setErrors] = useState({});
     const [formData, setFormData] = useState({
       parent: {
         first_name: "",
         middle_name: "",
         last_name: "",
         email: "",
+        primary_phone_number: "",
         phone_number: "",
         street_address: "",
         city: "",
@@ -58,8 +60,8 @@ const ApplyForm = React.forwardRef(
       },
     });
     const [currentStep, setCurrentStep] = useState(1);
-    const [birthMonth, setBirthMonth] = useState("");
-    const [birthDay, setBirthDay] = useState("");
+    // const [birthMonth, setBirthMonth] = useState("");
+    // const [birthDay, setBirthDay] = useState("");
     const [parentId, setParentId] = useState(null);
     const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false); // State for success modal
 
@@ -113,47 +115,46 @@ const ApplyForm = React.forwardRef(
           age: age,
         },
       }));
-      updateBirthday(age, birthMonth, birthDay);
     };
 
-    const handleBirthMonthChange = (e) => {
-      const selectedBirthMonth = parseInt(e.target.value);
-      setBirthMonth(selectedBirthMonth);
-      updateBirthday(formData.applicant.age, selectedBirthMonth, birthDay);
-    };
+    // const handleBirthMonthChange = (e) => {
+    //   const selectedBirthMonth = parseInt(e.target.value);
+    //   setBirthMonth(selectedBirthMonth);
+    //   updateBirthday(formData.applicant.age, selectedBirthMonth, birthDay);
+    // };
 
-    const handleBirthDayChange = (e) => {
-      const selectedBirthDay = parseInt(e.target.value);
-      setBirthDay(selectedBirthDay);
-      updateBirthday(formData.applicant.age, birthMonth, selectedBirthDay);
-    };
+    // const handleBirthDayChange = (e) => {
+    //   const selectedBirthDay = parseInt(e.target.value);
+    //   setBirthDay(selectedBirthDay);
+    //   updateBirthday(formData.applicant.age, birthMonth, selectedBirthDay);
+    // };
 
-    const updateBirthday = (age, month, day) => {
-      if (age && month && day) {
-        const currentDate = new Date();
-        const currentYear = currentDate.getFullYear();
-        const currentMonth = currentDate.getMonth() + 1;
-        const currentDay = currentDate.getDate();
+    // const updateBirthday = (age, month, day) => {
+    //   if (age && month && day) {
+    //     const currentDate = new Date();
+    //     const currentYear = currentDate.getFullYear();
+    //     const currentMonth = currentDate.getMonth() + 1;
+    //     const currentDay = currentDate.getDate();
 
-        let birthYear = currentYear - age;
-        if (
-          month > currentMonth ||
-          (month === currentMonth && day > currentDay)
-        ) {
-          birthYear--;
-        }
+    //     let birthYear = currentYear - age;
+    //     if (
+    //       month > currentMonth ||
+    //       (month === currentMonth && day > currentDay)
+    //     ) {
+    //       birthYear--;
+    //     }
 
-        const birthday = `${birthYear}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+    //     const birthday = `${birthYear}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
 
-        setFormData((prevData) => ({
-          ...prevData,
-          applicant: {
-            ...prevData.applicant,
-            birthday: birthday,
-          },
-        }));
-      }
-    };
+    //     setFormData((prevData) => ({
+    //       ...prevData,
+    //       applicant: {
+    //         ...prevData.applicant,
+    //         birthday: birthday,
+    //       },
+    //     }));
+    //   }
+    // };
 
     const handleCaptchaChange = (value) => {
       setCaptchaValue(value);
@@ -172,30 +173,31 @@ const ApplyForm = React.forwardRef(
       });
       return missingFields.length === 0;
     };
+    const concatenateAreaCode = () => {
+      let phonePrefix = "+63";
+      const updatedFormData = { ...formData };
 
-    const validateParent = () => {
-      const requiredFields = [
-        "parent.first_name",
-        "parent.last_name",
-        "parent.email",
-        "parent.phone_number",
-      ];
-      const missingFields = requiredFields.filter((field) => {
-        const [model, name] = field.split(".");
-        return !formData[model][name];
-      });
-      return missingFields.length === 0;
+      if (document.getElementById("primary_phone_number")?.value) {
+        phonePrefix = document.getElementById("country_code1")?.value;
+        updatedFormData.parent.primary_contact_value =
+          phonePrefix + document.getElementById("primary_phone_number")?.value;
+      }
+      if (document.getElementById("secondary_phone_number")?.value) {
+        phonePrefix = document.getElementById("country_code2")?.value;
+        updatedFormData.parent.phone_number =
+          phonePrefix +
+          document.getElementById("secondary_phone_number")?.value;
+      }
     };
 
     const handleNextStep = async (e) => {
       e.preventDefault();
       console.log("Form Data on Submit:", formData); // Debugging form data before submission
-      console.log("Current Step:", currentStep);
-      console.log("CAPTCHA Value:", captchaValue);
-      
+      // console.log("Current Step:", currentStep);
+      // console.log("CAPTCHA Value:", captchaValue);
+      concatenateAreaCode();
       try {
-        if (currentStep === 1 && validateParent()) {
-          console.log("Attempting to submit parent data...");
+        if (currentStep === 1) {
           setIsLoading(true);
           const response = await apiClient.post("parents/", formData.parent);
           if (response.status === 201) {
@@ -205,7 +207,7 @@ const ApplyForm = React.forwardRef(
             throw new Error("Parent creation failed");
           }
           setIsLoading(false);
-        } else if (currentStep === 2 && validateApplicant()) {
+        } else if (currentStep === 2) {
           console.log("Attempting to validate applicant data...");
           setIsLoading(true);
           // Add the parent ID to the applicant data, ensure program_option is included
@@ -255,8 +257,10 @@ const ApplyForm = React.forwardRef(
           alert("Please fill in all required fields.");
         }
       } catch (error) {
-        console.error("Error submitting the form:", error);
-        alert("An error occurred. Please try again.");
+        console.error("Error submitting the form:", error.response.data);
+        setErrors(error.response.data);
+        alert("An error occurred. Please check your inputs.");
+
         setIsLoading(false);
       }
     };
@@ -293,6 +297,7 @@ const ApplyForm = React.forwardRef(
                     <ParentForm
                       formData={formData}
                       handleInputChange={handleInputChange}
+                      errors={errors}
                     />
                   )}
                   {currentStep === 2 && (
@@ -301,27 +306,40 @@ const ApplyForm = React.forwardRef(
                       handleInputChange={handleInputChange}
                       handleAgeChange={handleAgeChange}
                       birthdayRef={birthdayRef}
-                      birthMonth={birthMonth}
-                      handleBirthMonthChange={handleBirthMonthChange}
-                      birthDay={birthDay}
-                      handleBirthDayChange={handleBirthDayChange}
+                      // birthMonth={birthMonth}
+                      // handleBirthMonthChange={handleBirthMonthChange}
+                      // birthDay={birthDay}
+                      // handleBirthDayChange={handleBirthDayChange}
                       programs={programs}
+                      errors={errors}
                     />
                   )}
                   {currentStep === 3 && <Confirm formData={formData} />}
                   <div className="form-navigation-buttons">
                     {currentStep > 1 && currentStep < 3 && (
-                      <button type="button" onClick={handlePreviousStep} className="buttons-apply-form">
+                      <button
+                        type="button"
+                        onClick={handlePreviousStep}
+                        className="buttons-apply-form"
+                      >
                         Previous
                       </button>
                     )}
                     {currentStep < 3 && (
-                      <button type="button" onClick={handleNextStep} className="buttons-apply-form float-right">
+                      <button
+                        type="button"
+                        onClick={handleNextStep}
+                        className="buttons-apply-form float-right"
+                      >
                         Next
                       </button>
                     )}
                     {currentStep === 3 && (
-                      <button type="button" onClick={handleNextStep} className="buttons-apply-form float-right">
+                      <button
+                        type="button"
+                        onClick={handleNextStep}
+                        className="buttons-apply-form float-right"
+                      >
                         Submit
                       </button>
                     )}

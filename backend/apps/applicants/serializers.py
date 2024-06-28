@@ -28,6 +28,4 @@ class ApplicantSerializer(serializers.ModelSerializer):
     def validate(self, data):
         if data['age'] < 0:
             raise serializers.ValidationError("Age cannot be negative")
-        if 'email' in data and not data['email']:
-            raise serializers.ValidationError("Email cannot be empty")
         return data

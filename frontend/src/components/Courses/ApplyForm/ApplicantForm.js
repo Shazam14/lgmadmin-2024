@@ -6,20 +6,28 @@ const renderInput = (
   field,
   formData,
   handleInputChange,
+  errors,
   type = "text",
   options = {}
 ) => (
   <Form.Group controlId={`${model}.${field}`}>
     <Form.Label>
-      {options.label || field.replace("_", " ").toUpperCase()}:
-    </Form.Label>
+      {field === "first_name" || field === "last_name"
+        ? `APPLICANT ${options.label || field.replace("_", " ").toUpperCase()}: *`
+        : field === "middle_name"
+          ? `APPLICANT ${options.label || field.replace("_", " ").toUpperCase()}: `
+          : field === "age"
+            ? `${options.label || field.replace("_", " ").toUpperCase()}: `
+            : `${options.label || field.replace("_", " ").toUpperCase()}: *`}
+      {errors[field] && <div className="text-danger">{errors[field]}</div>}
+    </Form.Label> 
     {type === "select" ? (
       <FormControl
         as="select"
         name={`${model}.${field}`}
         value={formData[model][field]}
         onChange={handleInputChange}
-        className={`input-card ${model}-appform-input`}
+        className={`input-card ${model}-appform-input ${errors[field] ? "apply-field-errors" : ""}`}
         {...options}
       >
         {options.options.map((option) => (
@@ -34,7 +42,7 @@ const renderInput = (
         placeholder={
           options.placeholder || field.replace("_", " ").toUpperCase()
         }
-        className={`input-card ${model}-appform-input`}
+        className={`input-card ${model}-appform-input ${errors[field] ? "apply-field-errors" : ""}`}
         name={`${model}.${field}`}
         value={formData[model][field]}
         onChange={handleInputChange}
@@ -49,6 +57,7 @@ const ApplicantForm = ({
   handleInputChange,
   handleAgeChange,
   birthdayRef,
+  errors,
   programs,
   birthDay,
 }) => {
@@ -56,14 +65,33 @@ const ApplicantForm = ({
     <div className="form-app-section">
       <h3 className="label">Applicant Student Information</h3>
       <div className="student-info-card">
-        {renderInput("applicant", "first_name", formData, handleInputChange)}
-        {renderInput("applicant", "middle_name", formData, handleInputChange)}
-        {renderInput("applicant", "last_name", formData, handleInputChange)}
+        {renderInput(
+          "applicant",
+          "first_name",
+          formData,
+          handleInputChange,
+          errors
+        )}
+        {renderInput(
+          "applicant",
+          "middle_name",
+          formData,
+          handleInputChange,
+          errors
+        )}
+        {renderInput(
+          "applicant",
+          "last_name",
+          formData,
+          handleInputChange,
+          errors
+        )}
         {renderInput(
           "applicant",
           "gender",
           formData,
           handleInputChange,
+          errors,
           "select",
           {
             options: ["Female", "Male"],
@@ -71,35 +99,38 @@ const ApplicantForm = ({
         )}
         <Row>
           <Col>
-        {renderInput(
-          "applicant",
-          "age",
-          formData,
-          handleInputChange,
-          "number",
-          {
-            onChange: handleAgeChange,
-          }
-        )}
-        </Col>
-        <Col>
-        {renderInput(
-          "applicant",
-          "birthday",
-          formData,
-          handleInputChange,
-          "date",
-          {
-            ref: birthdayRef,
-          }
-        )}
-        </Col>
+            {renderInput(
+              "applicant",
+              "age",
+              formData,
+              handleInputChange,
+              errors,
+              "number",
+              {
+                onChange: handleAgeChange,
+              }
+            )}
+          </Col>
+          <Col>
+            {renderInput(
+              "applicant",
+              "birthday",
+              formData,
+              handleInputChange,
+              errors,
+              "date",
+              {
+                ref: birthdayRef,
+              }
+            )}
+          </Col>
         </Row>
         {renderInput(
           "applicant",
           "program_option",
           formData,
           handleInputChange,
+          errors,
           "select",
           {
             options: programs.map((program) => ({
@@ -111,11 +142,16 @@ const ApplicantForm = ({
         <Row>
           <Col>
             <Form.Group controlId="studentEmail">
-              <Form.Label>Student Email:</Form.Label>
+              <Form.Label>
+                Student Email:
+                {errors.email && (
+                  <div className="text-danger">{errors.email}</div>
+                )}
+              </Form.Label>
               <FormControl
                 type="email"
                 placeholder="Student Email"
-                className="input-card student-appform-input"
+                className={`input-card student-appform-input ${errors.email ? "apply-field-errors" : ""}`}
                 name="applicant.email"
                 value={formData.applicant.email}
                 onChange={handleInputChange}
@@ -124,11 +160,16 @@ const ApplicantForm = ({
           </Col>
           <Col>
             <Form.Group controlId="studentPhoneNumber">
-              <Form.Label>Phone Number:</Form.Label>
+              <Form.Label>
+                Phone Number:
+                {errors.phone_number && (
+                  <div className="text-danger">{errors.phone_number}</div>
+                )}
+              </Form.Label>
               <FormControl
                 type="text"
                 placeholder="Student Phone Number"
-                className="input-card student-appform-input"
+                className={`input-card student-appform-input ${errors.phone_number ? "apply-field-errors" : ""}`}
                 name="applicant.phone_number"
                 value={formData.applicant.phone_number}
                 onChange={handleInputChange}

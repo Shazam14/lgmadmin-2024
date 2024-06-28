@@ -2,14 +2,14 @@ from django.db import models
 
 
 from django.db import models
-
+from phonenumber_field.modelfields import PhoneNumberField
 
 class Parent(models.Model):
     first_name = models.CharField(max_length=50)
-    middle_name = models.CharField(max_length=50, blank=True)
+    middle_name = models.CharField(max_length=50, null=True, blank=True)
     last_name = models.CharField(max_length=50)
     email = models.EmailField()
-    phone_number = models.CharField(max_length=15)
+    phone_number = PhoneNumberField(null=True, blank=True)
     street_address = models.CharField(max_length=255)
     city = models.CharField(max_length=50)
     state_province = models.CharField(max_length=50)
@@ -18,15 +18,7 @@ class Parent(models.Model):
     relationship = models.CharField(max_length=50, choices=[
         ('Mother', 'Mother'), ('Father', 'Father'), ('Guardian', 'Guardian')
     ])
-    primary_contact_value = models.CharField(
-        max_length=100, blank=True, null=True)
-    secondary_contact_value = models.CharField(max_length=100, blank=True)
-    primary_contact_type = models.CharField(max_length=20, blank=True, null=True, choices=[
-        ('Phone', 'Phone'), ('Email', 'Email')
-    ])
-    secondary_contact_type = models.CharField(max_length=20, choices=[
-        ('Phone', 'Phone'), ('Email', 'Email')
-    ], blank=True)
+    primary_contact_value = PhoneNumberField()
     contact_priority = models.CharField(max_length=20, choices=[
         ('Primary', 'Primary'), ('Secondary', 'Secondary')
     ])
