@@ -6,14 +6,24 @@ const LGMSChatbot = () => {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
 
+  const getRasaServerURL = () => {
+    const localURL = 'http://192.168.0.148:5005/webhooks/rest/webhook';
+    const publicURL = 'https://lgmschatbot.lgmsmontessori.workers.dev/webhooks/rest/webhook';
+    return window.location.hostname === '192.168.0.148' ? localURL : publicURL;
+  };
+
   useEffect(() => {
-    // Send a message to the Rasa server to trigger the first chatbot message
     const triggerFirstMessage = async () => {
       try {
-        const response = await axios.post('http://0.0.0.0:5005/webhooks/rest/webhook', {
+        const response = await axios.post(getRasaServerURL(), {
           sender: 'test_user',
           message: 'hi'
+        }, {
+          headers: {
+            'Content-Type': 'application/json',
+          }
         });
+        console.log('Response from Rasa:', response.data); // Debugging log
         const botMessages = response.data.map((msg, index) => ({
           sender: 'bot',
           message: msg.text || <img src={msg.image} alt="bot response" />
@@ -34,11 +44,16 @@ const LGMSChatbot = () => {
       setInput('');
 
       try {
-        const response = await axios.post('http://0.0.0.0:5005/webhooks/rest/webhook', {
+        const response = await axios.post(getRasaServerURL(), {
           sender: 'test_user',
           message: input
+        }, {
+          headers: {
+            'Content-Type': 'application/json',
+          }
         });
 
+        console.log('Response from Rasa:', response.data); // Debugging log
         const botMessages = response.data.map((msg, index) => ({
           sender: 'bot',
           message: msg.text || <img src={msg.image} alt="bot response" />

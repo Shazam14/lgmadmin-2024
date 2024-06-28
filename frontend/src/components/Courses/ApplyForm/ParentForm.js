@@ -52,8 +52,7 @@ const renderInput = (
   </Form.Group>
 );
 
-const ParentForm = ({ formData, handleInputChange, errors }) => {
-  console.log("Parent Form: " + errors.primary_contact_value);
+const ParentForm = React.memo(({ formData, handleInputChange, errors }) => {
   return (
     <div className="form-app-section">
       <h3 className="label">Parent's Information</h3>
@@ -99,18 +98,21 @@ const ParentForm = ({ formData, handleInputChange, errors }) => {
             <div className="phone-number-group">
               <FormControl
                 type="text"
-                className="country-code input-card parent-appform-input "
+                className="country-code input-card parent-appform-input"
                 id="country_code1"
                 value="+63"
                 disabled
-              ></FormControl>
+              />
               <FormControl
                 type="text"
                 id="primary_phone_number"
+                name="parent.primary_contact_value"
+                value={formData.parent.primary_contact_value}
+                onChange={handleInputChange}
                 className={`input-card parent-appform-input ${errors.primary_contact_value ? "apply-field-errors" : ""}`}
                 placeholder="input number in this format: 9123456789"
                 maxLength={10}
-              ></FormControl>
+              />
             </div>
           </Col>
         </Form.Group>
@@ -185,6 +187,6 @@ const ParentForm = ({ formData, handleInputChange, errors }) => {
       </div>
     </div>
   );
-};
+});
 
 export default ParentForm;

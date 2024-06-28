@@ -17,17 +17,17 @@ const MissionVision = () => {
             <Card.Body>
               <Card.Title className="h3-mission-vision">MISSION</Card.Title>
               <Card.Text className="mission-text">
-                <p>
+              <span style={{ display: 'block', marginBottom: '1rem' }}>
                   We are committed to developing compassionate global citizens
                   with a sense of responsibility, integrity, inner discipline,
                   and c reativity.
-                </p>
-                <p>
+                </span>
+                <span style={{ display: 'block', marginBottom: '1rem' }}>
                   We are committed to preparing them to confidently enhance
                   challenges and the child’s potential to the fullest extent
                   possible through a rich comprehensive curriculum in a prepared
                   environment.
-                </p>
+                </span>
               </Card.Text>
             </Card.Body>
           </Col>
@@ -35,12 +35,12 @@ const MissionVision = () => {
             <Card.Body>
               <Card.Title className="h3-mission-vision">VISION</Card.Title>
               <Card.Text className="vision-text">
-                <p>
+              <span style={{ display: 'block', marginBottom: '1rem' }}>
                   Learning Garden Montessori School envisions learners who are
                   holistically developed, globally competitive, and good
                   stewards of the Earth with great love for the country and
                   strong faith in God who will be movers of the future
-                </p>
+                  </span>
               </Card.Text>
             </Card.Body>
           </Col>

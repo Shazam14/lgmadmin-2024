@@ -1,7 +1,7 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useCallback } from "react";
 import "../../../styles/applyform.css";
 import { useLocation } from "react-router-dom";
-import { Container, Row, Stack, Form, ProgressBar } from "react-bootstrap";
+import { Container, Row, Stack, Form, ProgressBar, Spinner } from "react-bootstrap";
 import ReCAPTCHA from "react-google-recaptcha";
 import NavigationHome from "../../Navbar/NavigationHome";
 import Footer from "../../Footer/Footer";
@@ -22,6 +22,7 @@ const ApplyForm = React.forwardRef(
     const [selectedProgram, setSelectedProgram] = useState(program || "");
     const [programs, setPrograms] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
+    const [isSubmitting, setIsSubmitting] = useState(false);
     const [progress, setProgress] = useState(0);
     const [programMapping, setProgramMapping] = useState({});
     const [captchaValue, setCaptchaValue] = useState(null);
@@ -32,7 +33,7 @@ const ApplyForm = React.forwardRef(
         middle_name: "",
         last_name: "",
         email: "",
-        primary_phone_number: "",
+        primary_contact_value: "",
         phone_number: "",
         street_address: "",
         city: "",
@@ -84,7 +85,7 @@ const ApplyForm = React.forwardRef(
       fetchPrograms();
     }, []);
 
-    const handleInputChange = (e) => {
+    const handleInputChange = useCallback((e) => {
       const { name, value } = e.target;
       const [model, field] = name.split(".");
 
@@ -92,21 +93,23 @@ const ApplyForm = React.forwardRef(
         console.log("Selected Program:", value);
       }
 
-      if (!formData[model]) {
-        console.error(`Invalid model: ${model}`);
-        return;
-      }
+      setFormData((prevData) => {
+        if (!prevData[model]) {
+          console.error(`Invalid model: ${model}`);
+          return prevData; // Return previous state unchanged if model is invalid
+        }
 
-      setFormData((prevData) => ({
-        ...prevData,
-        [model]: {
-          ...prevData[model],
-          [field]: value,
-        },
-      }));
-    };
+        return {
+          ...prevData,
+          [model]: {
+            ...prevData[model],
+            [field]: value,
+          },
+        };
+      });
+    }, []);
 
-    const handleAgeChange = (e) => {
+    const handleAgeChange = useCallback((e) => {
       const age = parseInt(e.target.value);
       setFormData((prevData) => ({
         ...prevData,
@@ -115,46 +118,7 @@ const ApplyForm = React.forwardRef(
           age: age,
         },
       }));
-    };
-
-    // const handleBirthMonthChange = (e) => {
-    //   const selectedBirthMonth = parseInt(e.target.value);
-    //   setBirthMonth(selectedBirthMonth);
-    //   updateBirthday(formData.applicant.age, selectedBirthMonth, birthDay);
-    // };
-
-    // const handleBirthDayChange = (e) => {
-    //   const selectedBirthDay = parseInt(e.target.value);
-    //   setBirthDay(selectedBirthDay);
-    //   updateBirthday(formData.applicant.age, birthMonth, selectedBirthDay);
-    // };
-
-    // const updateBirthday = (age, month, day) => {
-    //   if (age && month && day) {
-    //     const currentDate = new Date();
-    //     const currentYear = currentDate.getFullYear();
-    //     const currentMonth = currentDate.getMonth() + 1;
-    //     const currentDay = currentDate.getDate();
-
-    //     let birthYear = currentYear - age;
-    //     if (
-    //       month > currentMonth ||
-    //       (month === currentMonth && day > currentDay)
-    //     ) {
-    //       birthYear--;
-    //     }
-
-    //     const birthday = `${birthYear}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
-
-    //     setFormData((prevData) => ({
-    //       ...prevData,
-    //       applicant: {
-    //         ...prevData.applicant,
-    //         birthday: birthday,
-    //       },
-    //     }));
-    //   }
-    // };
+    }, []);
 
     const handleCaptchaChange = (value) => {
       setCaptchaValue(value);
@@ -173,97 +137,95 @@ const ApplyForm = React.forwardRef(
       });
       return missingFields.length === 0;
     };
-    const concatenateAreaCode = () => {
-      let phonePrefix = "+63";
-      const updatedFormData = { ...formData };
 
-      if (document.getElementById("primary_phone_number")?.value) {
-        phonePrefix = document.getElementById("country_code1")?.value;
-        updatedFormData.parent.primary_contact_value =
-          phonePrefix + document.getElementById("primary_phone_number")?.value;
-      }
-      if (document.getElementById("secondary_phone_number")?.value) {
-        phonePrefix = document.getElementById("country_code2")?.value;
-        updatedFormData.parent.phone_number =
-          phonePrefix +
-          document.getElementById("secondary_phone_number")?.value;
-      }
-    };
 
-    const handleNextStep = async (e) => {
+    const concatenateAreaCode = useCallback(() => {
+      setFormData(prevData => {
+        const updatedData = { ...prevData };
+        const phonePrefix = "+63";
+
+        if (updatedData.parent.primary_contact_value) {
+          // Only add the prefix if it's not already there
+          updatedData.parent.primary_contact_value = updatedData.parent.primary_contact_value.startsWith(phonePrefix)
+            ? updatedData.parent.primary_contact_value
+            : phonePrefix + updatedData.parent.primary_contact_value;
+        }
+        if (updatedData.parent.phone_number) {
+          // Only add the prefix if it's not already there
+          updatedData.parent.phone_number = updatedData.parent.phone_number.startsWith(phonePrefix)
+            ? updatedData.parent.phone_number
+            : phonePrefix + updatedData.parent.phone_number;
+        }
+
+        return updatedData;
+      });
+    }, []);
+
+    const handleNextStep = useCallback(async (e) => {
       e.preventDefault();
-      console.log("Form Data on Submit:", formData); // Debugging form data before submission
-      // console.log("Current Step:", currentStep);
-      // console.log("CAPTCHA Value:", captchaValue);
-      concatenateAreaCode();
+
       try {
         if (currentStep === 1) {
           setIsLoading(true);
+          concatenateAreaCode();
+          await new Promise(resolve => setTimeout(resolve, 0));
           const response = await apiClient.post("parents/", formData.parent);
           if (response.status === 201) {
             setParentId(response.data.id);
-            setCurrentStep(currentStep + 1);
+            setCurrentStep(prev => prev + 1);
           } else {
             throw new Error("Parent creation failed");
           }
           setIsLoading(false);
         } else if (currentStep === 2) {
-          console.log("Attempting to validate applicant data...");
           setIsLoading(true);
-          // Add the parent ID to the applicant data, ensure program_option is included
           const applicantData = {
             ...formData.applicant,
             parent: parentId,
             program_option: formData.applicant.program_option,
           };
 
-          const applicantValidationResponse = await apiClient.post(
-            "applicants/validate_applicant/",
-            applicantData
-          );
+          const applicantValidationResponse = await apiClient.post("applicants/validate_applicant/", applicantData);
           if (applicantValidationResponse.status !== 200) {
             throw new Error("Applicant validation failed");
           }
 
-          console.log("Attempting to create applicant...");
+          const applicantResponse = await apiClient.post("applicants/create_applicant/", {
+            applicant: applicantData,
+            parent: formData.parent,
+          });
 
-          const applicantResponse = await apiClient.post(
-            "applicants/create_applicant/",
-            {
-              applicant: applicantData,
-              parent: formData.parent, //will remove this formData.parent here..
-            }
-          );
-
-          console.log("Submission Response:", applicantResponse);
           if (applicantResponse.status === 201) {
-            setCurrentStep(currentStep + 1); // Move to confirmation step
-            let simulatedProgress = 0;
-            const progressInterval = setInterval(() => {
-              simulatedProgress += 10;
-              setProgress(simulatedProgress);
-              if (simulatedProgress >= 100) {
-                clearInterval(progressInterval);
-                setIsLoading(false);
-                setIsSuccessModalOpen(true); // Open success modal
-              }
-            }, 500);
+            setCurrentStep(prev => prev + 1);
+            simulateProgress();
           } else {
             throw new Error("Failed to submit the form");
           }
         } else if (currentStep === 3) {
-          setIsSuccessModalOpen(true); // Open success modal
-        } else {
-          alert("Please fill in all required fields.");
+          setIsSuccessModalOpen(true);
         }
       } catch (error) {
-        console.error("Error submitting the form:", error.response.data);
-        setErrors(error.response.data);
+        console.error("Error submitting the form:", error.response?.data || error.message);
+        setErrors(error.response?.data || {});
         alert("An error occurred. Please check your inputs.");
-
+      }
+      finally {
         setIsLoading(false);
       }
-    };
+    }, [currentStep, formData, parentId, concatenateAreaCode]);
+
+    const simulateProgress = useCallback(() => {
+      let simulatedProgress = 0;
+      const progressInterval = setInterval(() => {
+        simulatedProgress += 10;
+        setProgress(simulatedProgress);
+        if (simulatedProgress >= 100) {
+          clearInterval(progressInterval);
+          setIsLoading(false);
+          setIsSuccessModalOpen(true);
+        }
+      }, 500);
+    }, []);
 
     const handlePreviousStep = () => {
       setCurrentStep(currentStep - 1);
@@ -306,12 +268,8 @@ const ApplyForm = React.forwardRef(
                       handleInputChange={handleInputChange}
                       handleAgeChange={handleAgeChange}
                       birthdayRef={birthdayRef}
-                      // birthMonth={birthMonth}
-                      // handleBirthMonthChange={handleBirthMonthChange}
-                      // birthDay={birthDay}
-                      // handleBirthDayChange={handleBirthDayChange}
-                      programs={programs}
                       errors={errors}
+                      programs={programs}
                     />
                   )}
                   {currentStep === 3 && <Confirm formData={formData} />}

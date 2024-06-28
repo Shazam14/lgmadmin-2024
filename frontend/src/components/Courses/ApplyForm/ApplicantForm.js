@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Form, FormControl, Col, Row } from "react-bootstrap";
 
 const renderInput = (
@@ -61,6 +61,7 @@ const ApplicantForm = ({
   programs,
   birthDay,
 }) => {
+  const [useParentPhone, setUseParentPhone] = useState(true);
   return (
     <div className="form-app-section">
       <h3 className="label">Applicant Student Information</h3>
@@ -166,13 +167,30 @@ const ApplicantForm = ({
                   <div className="text-danger">{errors.phone_number}</div>
                 )}
               </Form.Label>
+              <Form.Check 
+                type="checkbox"
+                label="Use parent's phone number"
+                checked={useParentPhone}
+                onChange={(e) => {
+                  setUseParentPhone(e.target.checked);
+                  if (e.target.checked) {
+                    handleInputChange({
+                      target: {
+                        name: 'applicant.phone_number',
+                        value: formData.parent.primary_contact_value
+                      }
+                    });
+                  }
+                }}
+              />
               <FormControl
                 type="text"
                 placeholder="Student Phone Number"
                 className={`input-card student-appform-input ${errors.phone_number ? "apply-field-errors" : ""}`}
                 name="applicant.phone_number"
-                value={formData.applicant.phone_number}
+                value={useParentPhone ? formData.parent.primary_contact_value : formData.applicant.phone_number}
                 onChange={handleInputChange}
+                disabled={useParentPhone}
               />
             </Form.Group>
           </Col>

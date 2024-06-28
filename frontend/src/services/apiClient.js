@@ -1,6 +1,15 @@
 import axios from "axios";
+
+const getBaseURL = () => {
+  if (window.location.origin.includes("systems.learninggardenmontessori.ph")) {
+    return "https://backend.learninggardenmontessori.ph/api";
+  } else {
+    return "http://192.168.0.148:8004/api/";
+  }
+};
+
 const apiClient = axios.create({
-  baseURL: "http://192.168.1.5:8001/api/",
+  baseURL: getBaseURL(),
   headers: {
     "Content-Type": "application/json",
   },

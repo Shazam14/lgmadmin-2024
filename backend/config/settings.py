@@ -61,6 +61,8 @@ allowed_hosts = os.getenv("ALLOWED_HOSTS")
 ALLOWED_HOSTS = (
     [host.strip() for host in allowed_hosts.split(",")] if allowed_hosts else []
 )
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -116,19 +118,22 @@ SIMPLE_JWT = {
 
 
 MIDDLEWARE = [
-    "corsheaders.middleware.CorsMiddleware",
-    "django.middleware.security.SecurityMiddleware",
-    "django.contrib.sessions.middleware.SessionMiddleware",
-    "django.middleware.common.CommonMiddleware",
-    "django.middleware.csrf.CsrfViewMiddleware",
-    "django.contrib.auth.middleware.AuthenticationMiddleware",
-    "django.contrib.messages.middleware.MessageMiddleware",
-    "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',  # Add WhiteNoiseMiddleware
+    'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.common.CommonMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.contrib.messages.middleware.MessageMiddleware',
+    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django.middleware.common.BrokenLinkEmailsMiddleware',  # Add BrokenLinkEmailsMiddleware
 ]
 
 
 CORS_ALLOW_CREDENTIALS = True
 CORS_ORIGIN_WHITELIST = [
+    "https://systems.learninggardenmontessori.ph",
     "http://localhost:3001",
     "http://192.168.1.2:3001",
     # Update with your frontend's URL
@@ -136,10 +141,16 @@ CORS_ORIGIN_WHITELIST = [
 CORS_ALLOW_ALL_ORIGINS = True
 
 CORS_ALLOWED_ORIGINS = [
+    "https://systems.learninggardenmontessori.ph",
     "http://localhost:3001",
     "http://192.168.1.2:3001",  # Include the scheme (http:// or https://)
+    
 ]
 
+
+CORS_ALLOWED_ORIGIN_REGEXES = [
+    r"^https://\w+\.learninggardenmontessori\.ph$",
+]
 
 ROOT_URLCONF = "config.urls"
 
