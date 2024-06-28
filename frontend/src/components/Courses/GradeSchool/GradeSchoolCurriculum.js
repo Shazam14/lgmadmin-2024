@@ -52,7 +52,7 @@ const GradeSchoolCurriculum = () => {
                       <Row>
                         <Col>
                           <Card.Title className="course-section-text mb-0">
-                            Balarila at Panitikan | Aralining Panlipunan
+                            Balarila at Panitikan | Araling Panlipunan
                           </Card.Title>
                         </Col>
                       </Row>

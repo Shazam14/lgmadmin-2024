@@ -7,10 +7,10 @@ const About = () => {
   return (
     <Container fluid style={{ padding: "4rem 0 2rem 0" }}>
       <div className="about-us-section">
-          <div
-            className="about-school-logo-image"
-            style={{ backgroundImage: `url(${schoolLogo})` }}
-          />
+        <div
+          className="about-school-logo-image"
+          style={{ backgroundImage: `url(${schoolLogo})` }}
+        />
       </div>
       <div className="about-text-container">
         <h2 className="about-text-header">
@@ -21,9 +21,10 @@ const About = () => {
         </h2>
         <h3 className="about-us-text">About Us</h3>
         <p className="about-text-description">
-          LGMS is duly recognized by the Department of Education in 2003 for
-          our Casa course, 2005 for complete elementary course and 2015
-          complete Secondary Course
+          LGMS was duly recognized by the Department of Education in 2003 for
+          our Casa course, in 2006 for the complete elementary course, in 2011
+          for our SPED Program, and in 2013 for the complete Secondary High
+          School.
         </p>
       </div>
     </Container>
