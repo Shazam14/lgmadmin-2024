@@ -2,8 +2,18 @@
 
 import { getCookieValue } from "./apiUtils";
 
-const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
+
+const getBaseURL = () => {
+  if (window.location.origin.includes("systems.learninggardenmontessori.ph")) {
+    return process.env.REACT_APP_API_BASE_URL_CLOUD;
+  } else {
+    return process.env.REACT_APP_API_BASE_URL;
+  }
+};
+
+const API_BASE_URL = getBaseURL();
 console.log(API_BASE_URL);
+
 const api = {
   fetchData: async (endpoint, options = {}) => {
     const url = `${API_BASE_URL}/${endpoint}`;
