@@ -22,6 +22,7 @@ const ApplyForm = React.forwardRef(
     const [selectedProgram, setSelectedProgram] = useState(program || "");
     const [programs, setPrograms] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
+    const [loadingMessage, setLoadingMessage] = useState("");
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [progress, setProgress] = useState(0);
     const [programMapping, setProgramMapping] = useState({});
@@ -167,18 +168,21 @@ const ApplyForm = React.forwardRef(
       try {
         if (currentStep === 1) {
           setIsLoading(true);
+          setLoadingMessage("Submitting Parent/ Guardian Information");
           concatenateAreaCode();
           await new Promise(resolve => setTimeout(resolve, 0));
           const response = await apiClient.post("parents/", formData.parent);
+          console.log("full response", response);
           if (response.status === 201) {
             setParentId(response.data.id);
             setCurrentStep(prev => prev + 1);
           } else {
-            throw new Error("Parent creation failed");
+            throw new Error("Unexpected response status: " + response.status);
           }
           setIsLoading(false);
         } else if (currentStep === 2) {
           setIsLoading(true);
+          setLoadingMessage("Submitting applicant Information......");
           const applicantData = {
             ...formData.applicant,
             parent: parentId,
@@ -202,15 +206,22 @@ const ApplyForm = React.forwardRef(
             throw new Error("Failed to submit the form");
           }
         } else if (currentStep === 3) {
+          setIsLoading(true);
+          setLoadingMessage("Finalising submission....");
+          await new Promise(resolve => setTimeout(resolve, 1000));
           setIsSuccessModalOpen(true);
         }
       } catch (error) {
         console.error("Error submitting the form:", error.response?.data || error.message);
+        console.error("Error response:", error.response);
+        console.error("Error data:", error.response?.data);
+        console.error("Error status:", error.response?.status);
         setErrors(error.response?.data || {});
         alert("An error occurred. Please check your inputs.");
       }
       finally {
         setIsLoading(false);
+        setLoadingMessage("");
       }
     }, [currentStep, formData, parentId, concatenateAreaCode]);
 
@@ -252,7 +263,13 @@ const ApplyForm = React.forwardRef(
                 </Stack>
                 <br />
                 {isLoading && (
-                  <ProgressBar now={progress} label={`${progress}%`} animated />
+                  <>
+                    <ProgressBar now={progress} label={`${progress}%`} animated />
+                    <div className="text-center mt-2">
+                      <Spinner animation="border" size="sm" className="me-2" />
+                      <span>{loadingMessage}</span>
+                    </div>
+                  </>
                 )}
                 <Form onSubmit={handleNextStep} ref={ref}>
                   {currentStep === 1 && (
@@ -279,6 +296,7 @@ const ApplyForm = React.forwardRef(
                         type="button"
                         onClick={handlePreviousStep}
                         className="buttons-apply-form"
+                        disabled={isLoading}
                       >
                         Previous
                       </button>
@@ -288,8 +306,9 @@ const ApplyForm = React.forwardRef(
                         type="button"
                         onClick={handleNextStep}
                         className="buttons-apply-form float-right"
+                        disabled={isLoading}
                       >
-                        Next
+                        {isLoading ? 'Processing...' : 'Next'}
                       </button>
                     )}
                     {currentStep === 3 && (
@@ -297,8 +316,9 @@ const ApplyForm = React.forwardRef(
                         type="button"
                         onClick={handleNextStep}
                         className="buttons-apply-form float-right"
+                        disabled={isLoading}
                       >
-                        Submit
+                        {isLoading ? 'Submitting...' : 'Submit'}
                       </button>
                     )}
                   </div>
