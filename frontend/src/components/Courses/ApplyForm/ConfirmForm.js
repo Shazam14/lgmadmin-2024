@@ -10,7 +10,7 @@ const Confirm = ({ formData }) => {
     <Table striped bordered hover className="mb-4">
       <thead>
         <tr>
-          <th colSpan="2" className="bg-primary text-white">{title}</th>
+        <th colSpan="2" style={{ backgroundColor: '#317B41', color: 'white' }}>{title}</th>
         </tr>
       </thead>
       <tbody>
@@ -29,8 +29,8 @@ const Confirm = ({ formData }) => {
       <Container>
         <Row>
           <Col>
-            <h2 className="text-center mb-4">Confirm Your Information</h2>
-            {renderTable(formData.parent, "Parent Information")}
+          <h2 className="text-center mb-4" style={{ color: '#317B41' }}>Confirm Your Information</h2>
+          {renderTable(formData.parent, "Parent Information")}
             {renderTable(formData.applicant, "Applicant Information")}
           </Col>
         </Row>

@@ -117,6 +117,14 @@
   margin-bottom: 20px;
 }
 
+.progress-bar {
+  background-color: #317B41;
+}
+
+.spinner-border {
+  color: #317B41;
+}
+
 .confirm-information {
   margin-bottom: 20px;
 }

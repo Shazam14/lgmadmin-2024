@@ -162,13 +162,28 @@ const ApplyForm = React.forwardRef(
       });
     }, []);
 
+    const simulateProgress = useCallback(() => {
+      let simulatedProgress = 0;
+      const progressInterval = setInterval(() => {
+        simulatedProgress += 10;
+        setProgress(simulatedProgress);
+        if (simulatedProgress >= 100) {
+          clearInterval(progressInterval);
+          setIsLoading(false);
+          setIsSuccessModalOpen(true);
+        }
+      }, 500);
+    }, []);
+
     const handleNextStep = useCallback(async (e) => {
       e.preventDefault();
 
       try {
         if (currentStep === 1) {
           setIsLoading(true);
+          setProgress(0);
           setLoadingMessage("Submitting Parent/ Guardian Information");
+          simulateProgress();
           concatenateAreaCode();
           await new Promise(resolve => setTimeout(resolve, 0));
           const response = await apiClient.post("parents/", formData.parent);
@@ -182,7 +197,9 @@ const ApplyForm = React.forwardRef(
           setIsLoading(false);
         } else if (currentStep === 2) {
           setIsLoading(true);
+          setProgress(0);
           setLoadingMessage("Submitting applicant Information......");
+          simulateProgress();
           const applicantData = {
             ...formData.applicant,
             parent: parentId,
@@ -207,7 +224,9 @@ const ApplyForm = React.forwardRef(
           }
         } else if (currentStep === 3) {
           setIsLoading(true);
+          setProgress(0);
           setLoadingMessage("Finalising submission....");
+          simulateProgress();
           await new Promise(resolve => setTimeout(resolve, 1000));
           setIsSuccessModalOpen(true);
         }
@@ -223,21 +242,9 @@ const ApplyForm = React.forwardRef(
         setIsLoading(false);
         setLoadingMessage("");
       }
-    }, [currentStep, formData, parentId, concatenateAreaCode]);
+    }, [currentStep, formData, parentId, concatenateAreaCode, simulateProgress]);
 
-    const simulateProgress = useCallback(() => {
-      let simulatedProgress = 0;
-      const progressInterval = setInterval(() => {
-        simulatedProgress += 10;
-        setProgress(simulatedProgress);
-        if (simulatedProgress >= 100) {
-          clearInterval(progressInterval);
-          setIsLoading(false);
-          setIsSuccessModalOpen(true);
-        }
-      }, 500);
-    }, []);
-
+  
     const handlePreviousStep = () => {
       setCurrentStep(currentStep - 1);
     };
@@ -263,13 +270,24 @@ const ApplyForm = React.forwardRef(
                 </Stack>
                 <br />
                 {isLoading && (
-                  <>
-                    <ProgressBar now={progress} label={`${progress}%`} animated />
+                  <div className="loading-container">
+                    <ProgressBar 
+                      now={progress} 
+                      label={`${progress}%`} 
+                      animated 
+                      style={{ backgroundColor: '#e9ecef', height: '25px' }}
+                    >
+                      <ProgressBar 
+                        now={progress} 
+                        label={`${progress}%`} 
+                        style={{ backgroundColor: '#317B41' }} 
+                      />
+                    </ProgressBar>
                     <div className="text-center mt-2">
-                      <Spinner animation="border" size="sm" className="me-2" />
+                      <Spinner animation="border" size="sm" style={{ color: '#317B41' }} className="me-2" />
                       <span>{loadingMessage}</span>
                     </div>
-                  </>
+                  </div>
                 )}
                 <Form onSubmit={handleNextStep} ref={ref}>
                   {currentStep === 1 && (
@@ -331,7 +349,6 @@ const ApplyForm = React.forwardRef(
         <SuccessForm isOpen={isSuccessModalOpen} onClose={handleModalClose} />
       </div>
     );
-  }
-);
-
-export default ApplyForm;
+  });
+  
+  export default ApplyForm;
