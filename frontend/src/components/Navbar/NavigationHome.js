@@ -59,14 +59,14 @@ const NavigationHome = () => {
               </Nav.Link>
             </Nav>
             <Nav className="ms-auto">
-              <NavDropdown title="LGMS Portal" id="portal-dropdown">
-                <NavDropdown.Item as={Link} to="/portal/student">
-                  Student
-                </NavDropdown.Item>
-                <NavDropdown.Item as={Link} to="/portal/teacher">
-                  Teacher
-                </NavDropdown.Item>
-              </NavDropdown>
+            <Nav.Link 
+                className="text-white" 
+                href="https://lgms-portal.learninggardenmontessori.ph/"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                LGMS Portal
+              </Nav.Link>
             </Nav>
           </Navbar.Collapse>
         </Navbar>

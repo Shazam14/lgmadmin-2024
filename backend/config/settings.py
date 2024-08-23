@@ -192,7 +192,7 @@ DATABASES = {
 # Apply environment-specific settings
 if DJANGO_ENV == "production":
     DATABASES["default"]["OPTIONS"] = {
-        "sslmode": "require",
+        "sslmode": "disable",
     }
 elif DJANGO_ENV in ["development", "testing"]:
     DATABASES["default"]["HOST"] = "localhost"

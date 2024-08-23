@@ -8,19 +8,24 @@ const OnlineServices = () => {
     { text: "Family Portal", icon: <IconComponent2 /> },
     { text: "Teacher Portal", icon: <IconComponent3 /> },
   ];
-
+  const portalUrl = "https://lgms-portal.learninggardenmontessori.ph";
   return (
     <Container fluid>
       <div className="online-services-container">
         <div className="services-header">
-          <h1 className="display-6">Our Online Services - coming soon!</h1>
+          <h1 className="display-6">Access your Complete Educational Journey </h1>
+          <p>
+          Our integrated portal enhances collaboration and support for students, parents, and teachers throughout the learning journey.
+          </p>
         </div>
 
         <div className="services-list">
           {items.map((item, index) => (
             <div key={index} className="service-item">
-              <button className="button-services">{item.icon}</button>
-              <div className="text-homepage">{item.text}</div>
+              <a href={portalUrl} target="_blank" rel="noopener noreferrer">
+                <button className="button-services">{item.icon}</button>
+                <div className="text-homepage">{item.text}</div>
+              </a>
             </div>
           ))}
         </div>

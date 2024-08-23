@@ -36,3 +36,4 @@ frontend/cypress/screenshots/applyform.cy.js/Application Form Submission -- fill
 .env.development
 .env.production
 .env.testing
+logs/gunicorn.error.log
