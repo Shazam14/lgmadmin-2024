@@ -112,3 +112,41 @@
 .no-padding-top {
   padding-top: 0 !important;
 }
+
+.loading-container {
+  margin-bottom: 20px;
+}
+
+.progress-bar {
+  background-color: #317B41;
+}
+
+.spinner-border {
+  color: #317B41;
+}
+
+.confirm-information {
+  margin-bottom: 20px;
+}
+
+.confirm-information h2 {
+  color: #317B41;
+}
+
+.loading-container {
+  margin-bottom: 20px;
+}
+
+.buttons-apply-form {
+  background-color: #317B41;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.buttons-apply-form:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}

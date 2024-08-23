@@ -35,7 +35,10 @@ dotenv_file = f".env.{DJANGO_ENV}"
 dotenv_path = BASE_DIR / dotenv_file
 if dotenv_path.exists():
     # Quick-start development settings - unsuitable for production
+    print(f"Loading environment-specific .env file: {dotenv_file}")
     load_dotenv(dotenv_path)
+else:
+    print(f"No environment-specific .env file found for: {DJANGO_ENV}")
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 
@@ -43,16 +46,10 @@ if dotenv_path.exists():
 SECRET_KEY = os.getenv("SECRET_KEY")
 if not SECRET_KEY:
     raise ValueError("SECRET_KEY environment variable not set")
-
+else:
+    print("SECRET_KEY is set")
 
 DEBUG = os.getenv("DEBUG", "True") == "True"
-
-DEFAULT_HOST = "192.168.1.2"
-DEFAULT_PORT = "8001"
-
-HOST = os.environ.get("DJANGO_HOST", DEFAULT_HOST)
-PORT = os.environ.get("DJANGO_PORT", DEFAULT_PORT)
-
 
 # Get the ALLOWED_HOSTS environment variable
 allowed_hosts = os.getenv("ALLOWED_HOSTS")
@@ -135,7 +132,8 @@ CORS_ALLOW_CREDENTIALS = True
 CORS_ORIGIN_WHITELIST = [
     "https://systems.learninggardenmontessori.ph",
     "http://localhost:3001",
-    "http://192.168.1.2:3001",
+    "http://192.168.0.148:3001",
+    
     # Update with your frontend's URL
 ]
 CORS_ALLOW_ALL_ORIGINS = True
@@ -143,7 +141,7 @@ CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOWED_ORIGINS = [
     "https://systems.learninggardenmontessori.ph",
     "http://localhost:3001",
-    "http://192.168.1.2:3001",  # Include the scheme (http:// or https://)
+    "http://192.168.0.148:3001",  # Include the scheme (http:// or https://)
     
 ]
 
@@ -194,7 +192,7 @@ DATABASES = {
 # Apply environment-specific settings
 if DJANGO_ENV == "production":
     DATABASES["default"]["OPTIONS"] = {
-        "sslmode": "require",
+        "sslmode": "disable",
     }
 elif DJANGO_ENV in ["development", "testing"]:
     DATABASES["default"]["HOST"] = "localhost"
