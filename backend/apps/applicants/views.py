@@ -189,65 +189,89 @@ class ApplicantApprovalView(APIView):
             )
             return False, "Student already enrolled"
 
-        student, created = Student.objects.get_or_create(
-            applicant=applicant,
-            defaults={
-                "first_name": applicant.first_name,
-                "middle_name": applicant.middle_name or "",
-                "last_name": applicant.last_name,
-                "gender": applicant.gender,
-                "age": int(round(applicant.age)),
-                "birthday": applicant.birthday,
-                "email": applicant.email,
-                "student_id": generate_unique_student_id(),
-                "student_status": "Active",
-                "grade": "10",  # Default value, adjust as necessary
-                "section": "A",  # Default value, adjust as necessary
-                "tuition_status": "U",  # Default to 'Unsettled'
-                "account_status": "A",  # Default to 'Active'
-                "program": get_program_based_on_applicant(applicant),
-                "promoted": False,
-                "elementary_certificate": False,
-                "junior_high_certificate": False,
-                "attendance_percentage": 0.0,
-            },
-        )
-        logger.debug("Created student ID: {}".format(student.id))
-        print(f"Student created: {created}")
+        try:
+            # Create student record
+            student, created = Student.objects.get_or_create(
+                applicant=applicant,
+                defaults={
+                    "first_name": applicant.first_name,
+                    "middle_name": applicant.middle_name or "",
+                    "last_name": applicant.last_name,
+                    "gender": applicant.gender,
+                    "age": int(round(applicant.age)),
+                    "birthday": applicant.birthday,
+                    "email": applicant.email,
+                    "student_id": generate_unique_student_id(),
+                    "student_status": "Active",
+                    "grade": "10",  # Default value, adjust as necessary
+                    "section": "A",  # Default value, adjust as necessary
+                    "tuition_status": "U",  # Default to 'Unsettled'
+                    "account_status": "A",  # Default to 'Active'
+                    "program": get_program_based_on_applicant(applicant),
+                    "promoted": False,
+                    "elementary_certificate": False,
+                    "junior_high_certificate": False,
+                    "attendance_percentage": 0.0,
+                },
+            )
 
-        if created:
-            self.setup_student_courses(student)
-            self.send_welcome_email(student)
+            if created:
+                # Generate portal access codes
+                parent_code = applicant.parent.generate_access_code()
+                student_code = student.generate_access_code()
 
-            # Generate the enrollment link
-            enrollment_link = self.generate_enrollment_link(student)
-            print(f"Enrollment link here we go LINE 104: {enrollment_link}")
+                # Setup courses
+                self.setup_student_courses(student)
 
-            # Prepare email content with the link
-            email_subject = "Application Approved"
-            email_body = f"""
-            Dear {applicant.parent.first_name} {applicant.parent.last_name},
-            Your application for {applicant.first_name} {applicant.last_name} has been approved.
-            Please complete your enrollment by following this link: {enrollment_link}
-            """
-            print(f"Email subject: {email_subject}")
-            print(f"Email body: {email_body}")
+                # Generate enrollment link
+                enrollment_link = self.generate_enrollment_link(student)
 
-            result, body = self.send_mail(
-                applicant.parent.email, email_subject, email_body)
-            print(f"Email send result: {result}")
-            print(f"Returned email body: {body}")
+                # Send welcome emails with portal access
+                email_subject = "Application Approved - Portal Access"
+                email_body = f"""
+                Dear {applicant.parent.first_name} {applicant.parent.last_name},
+                
+                Your application for {applicant.first_name} {applicant.last_name} has been approved.
+                
+                Please complete your enrollment by following this link: {enrollment_link}
+                
+                You can also now create your portal accounts using these access codes:
+                Parent Portal Access Code: {parent_code}
+                Student Portal Access Code: {student_code}
+                
+                Create your portal account at: {settings.FRONTEND_URL}/portal-signup
+                
+                Please keep these codes secure.
+                
+                Best regards,
+                LGMS Montessori
+                """
 
-            if result:
-                print("Email sent successfully")
-                return True, "Enrollment successful"
+                result, body = self.send_mail(
+                    applicant.parent.email, email_subject, email_body)
+
+                # Send student welcome email
+                self.send_welcome_email(student)
+
+                if result:
+                    logger.info(
+                        f"Enrollment successful for applicant ID: {applicant.id}")
+                    return True, "Enrollment successful"
+                else:
+                    logger.error(
+                        f"Failed to send enrollment email for applicant ID: {applicant.id}")
+                    return False, "Failed to send enrollment email"
             else:
-                error_message = body or "Failed to send email"
-                print("Failed to send email")
-                return False, error_message
-        else:
-            print("Student already enrolled")
-            return False, "Student already enrolled"
+                logger.warning(
+                    f"Student already exists for applicant ID: {applicant.id}")
+                return False, "Student already enrolled"
+
+        except Exception as e:
+            logger.error(
+                f"Enrollment error for applicant ID {applicant.id}: {str(e)}")
+            return False, str(e)
+
+    # Your other existing methods remain the same...
 
     def generate_enrollment_link(self, student):
         refresh = RefreshToken.for_user(student)

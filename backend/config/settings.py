@@ -68,6 +68,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "api",
     "apps.parents",
     "apps.teachers",
     "apps.applicants",
@@ -76,6 +77,8 @@ INSTALLED_APPS = [
     "apps.students",
     "apps.grades",
     "apps.announcements",
+    "apps.accounts",
+    "apps.portal",
     "corsheaders",
     "rest_framework",
     "oauth2_provider",
@@ -124,7 +127,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'django.middleware.common.BrokenLinkEmailsMiddleware',  # Add BrokenLinkEmailsMiddleware
+    # Add BrokenLinkEmailsMiddleware
+    'django.middleware.common.BrokenLinkEmailsMiddleware',
 ]
 
 
@@ -133,7 +137,7 @@ CORS_ORIGIN_WHITELIST = [
     "https://systems.learninggardenmontessori.ph",
     "http://localhost:3001",
     "http://192.168.0.148:3001",
-    
+
     # Update with your frontend's URL
 ]
 CORS_ALLOW_ALL_ORIGINS = True
@@ -142,7 +146,7 @@ CORS_ALLOWED_ORIGINS = [
     "https://systems.learninggardenmontessori.ph",
     "http://localhost:3001",
     "http://192.168.0.148:3001",  # Include the scheme (http:// or https://)
-    
+
 ]
 
 

@@ -1,5 +1,7 @@
 import axios from "axios";
 
+console.log("API CLIENT LOCAL URL:", process.env.REACT_APP_API_BASE_URL);
+
 const getBaseURL = () => {
   if (window.location.origin.includes("systems.learninggardenmontessori.ph")) {
     return "https://backend.learninggardenmontessori.ph/api";
@@ -19,12 +21,12 @@ const apiClient = axios.create({
   },
 });
 apiClient.interceptors.response.use(
-  response => {
-    console.log('API CLIENT Response:', response);
+  (response) => {
+    console.log("API CLIENT Response:", response);
     return response;
   },
-  error => {
-    console.error('API CLIENT Error:', error);
+  (error) => {
+    console.error("API CLIENT Error:", error);
     return Promise.reject(error);
   }
 );

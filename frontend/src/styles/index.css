@@ -1,21 +1,89 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 @import "./fonts.css";
 
-body {
-  margin: 0;
-  font-family: "Montserrat", -apple-system, BlinkMacSystemFont, "Segoe UI",
-    "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans",
-    "Helvetica Neue", sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 47.4% 11.2%;
+
+    /* Convert your existing green colors to HSL */
+    --primary: 134 43% 34%; /* #317B41 */
+    --primary-hover: 134 43% 27%; /* #266332 */
+    --primary-foreground: 0 0% 100%;
+
+    /* Rest of the system colors */
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 134 43% 34%; /* Matching your primary color */
+
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+
+    --destructive: 0 100% 50%;
+    --destructive-foreground: 210 40% 98%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 47.4% 11.2%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 47.4% 11.2%;
+
+    --radius: 0.5rem;
+  }
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
-    monospace;
+@layer base {
+  body {
+    margin: 0;
+    font-family:
+      "Montserrat",
+      -apple-system,
+      BlinkMacSystemFont,
+      "Segoe UI",
+      "Roboto",
+      "Oxygen",
+      "Ubuntu",
+      "Cantarell",
+      "Fira Sans",
+      "Droid Sans",
+      "Helvetica Neue",
+      sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    @apply bg-background text-foreground;
+  }
+
+  code {
+    font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
+      monospace;
+  }
 }
-.btn-primary, .btn-secondary {
-  background-color: #317B41 !important;
-  border-color: #317B41 !important;
+
+@layer components {
+  .btn-primary {
+    @apply bg-primary border-primary text-primary-foreground hover:bg-[#266332] hover:border-[#266332] transition-colors;
+  }
+
+  .btn-secondary {
+    @apply bg-primary/80 border-primary/80 text-primary-foreground hover:bg-[#266332] hover:border-[#266332] transition-colors;
+  }
+}
+
+/* Keep any other custom styles that don't fit into Tailwind's utility classes */
+
+.btn-primary,
+.btn-secondary {
+  background-color: #317b41 !important;
+  border-color: #317b41 !important;
   color: white !important;
 }
 
@@ -23,7 +91,8 @@ code {
   opacity: 0.8;
 }
 
-.btn-primary:hover, .btn-secondary:hover {
+.btn-primary:hover,
+.btn-secondary:hover {
   background-color: #266332 !important;
   border-color: #266332 !important;
 }

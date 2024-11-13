@@ -27,17 +27,40 @@ def api_root(request):
         'student_upload': reverse('student-upload', request=request),
         'parents': reverse('parent-list', request=request),
         'grades': reverse('grade-list', request=request),
-        'announcements': reverse('announcement-list', request=request)
+        'announcements': reverse('announcement-list', request=request),
+
+        'portal': {
+            'dashboard': reverse('portal-dashboard', request=request),
+            'parent': reverse('parent-profile', request=request),
+            'children': reverse('portal-children    ', request=request),
+            'student': reverse('student-profile', request=request),
+            'notifications': reverse('portal-notifications', request=request),
+            'auth': {
+                'login': reverse('portal-login', request=request),
+                'signup': reverse('portal-signup', request=request),
+                'logout': reverse('portal-logout', request=request),
+                'verify': reverse('portal-verify', request=request),
+                'status': reverse('portal-status', request=request),
+            }
+        }
     })
+
+# Update user_role to handle portal roles
 
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def user_role(request):
-    is_admin = request.user.is_staff
-    role = "admin" if is_admin else "user"
-    print("MY BACKEND ROLE: ", role)
-    return Response({"role": role})
+    try:
+        user_profile = request.user.userprofile
+        role = user_profile.user_type.lower()
+        return Response({
+            "role": role,
+            "profile_type": "PARENT" if hasattr(user_profile, 'parent_profile') else "STUDENT"
+        })
+    except UserProfile.DoesNotExist:
+        is_admin = request.user.is_staff
+        return Response({"role": "admin" if is_admin else "user"})
 
 
 class AuthStatusView(APIView):

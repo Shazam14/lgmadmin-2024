@@ -228,3 +228,31 @@
     white-space: nowrap;
   }
 }
+
+/* Add to your existing admin.css */
+.icon-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  padding: 4px;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+}
+
+.icon-button:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.icon-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Add to your existing icons class */
+.icons {
+  display: flex;
+  align-items: center;
+  gap: 12px; /* Space between icons */
+}
