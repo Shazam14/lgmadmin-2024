@@ -46,6 +46,9 @@ import FamilyPortalApi from "./components/Portal/FamilyPortal/FamilyPortalApi.js
 import FamilyPortalEnhanced from "./components/Portal/FamilyPortal/FamilyPortalEnhanced.js";
 import FamilyPortalDashboard from "./components/Portal/FamilyPortal/FamilyPortalDashboard.js";
 import FamilyPortalSample from "./components/Portal/FamilyPortal/FamilyPortalSample.js";
+import apiClientUpdate from "./services/apiClientUpdate.js";
+import StudentPortalView from "./components/Portal/StudentPortal/StudentPortalView.js";
+import AdminPortalView from "./components/Portal/AdminPortal/AdminPortalView.js";
 function App() {
   const [authState, setAuthState] = useState({
     isAuthenticated: false,
@@ -56,7 +59,7 @@ function App() {
 
   const checkAuthStatus = async () => {
     try {
-      const response = await apiClient.get("auth-status/");
+      const response = await apiClientUpdate.get("auth-status/");
       setAuthState({
         isAuthenticated: response.data.isAuthenticated,
         userType: response.data.userType,
@@ -123,7 +126,7 @@ function App() {
                       routeType="student"
                       userType={authState.userType}
                     >
-                      <StudentPortalPage />
+                      <StudentPortalView />
                     </ProtectedRoute>
                   }
                 >
@@ -165,7 +168,7 @@ function App() {
                       routeType="admin"
                       userType={authState.userType}
                     >
-                      <AdminPortalPage />
+                      <AdminPortalView />
                     </ProtectedRoute>
                   }
                 >

@@ -1,11 +1,11 @@
 // src/hooks/usePortalData.js
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { usePortalAuth } from "../contexts/PortalAuthContext";
-import apiClient from "../services/apiClient";
-import { transformStudentData } from "../utils/transformers"; // We'll create this later if needed
+import apiClientUpdate from "../services/apiClientUpdate";
+import Cookies, { set } from "js-cookie";
 
 export const usePortalData = () => {
-  const { isParent, isStudent } = usePortalAuth();
+  const { isAuthenticated } = usePortalAuth();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [children, setChildren] = useState([]);
@@ -19,6 +19,7 @@ export const usePortalData = () => {
       gender: "",
       bloodType: "",
       nationality: "",
+      studentId: "",
     },
     characteristics: {
       height: "",
@@ -97,38 +98,134 @@ export const usePortalData = () => {
 
   // Fetch children data
   const fetchChildren = useCallback(async () => {
+    if (!isAuthenticated) return;
+
     try {
-      setLoading(true);
-      const response = await apiClient.get("portal/children/");
-      console.log(response, "RESPONSE 103");
+      const response = await apiClientUpdate.get("/portal/children/");
+      if (process.env.NODE_ENV === "testing") {
+        console.log("Children response:", response.data);
+      }
       setChildren(response.data);
       setError(null);
     } catch (err) {
       console.error("Error fetching children:", err);
-      setError(err.message);
-    } finally {
-      setLoading(false);
+      setError(
+        err.response?.status === 401 ? "Please login again" : err.message
+      );
     }
-  }, []);
+  }, [isAuthenticated]);
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      setLoading(true);
+      fetchChildren().finally(() => setLoading(false));
+    }
+  }, [isAuthenticated, fetchChildren]);
 
   // Fetch student details
-  const fetchStudentDetails = useCallback(async (studentId) => {
-    if (!studentId) return;
+  const fetchStudentDetails = useCallback(
+    async (studentId) => {
+      if (!studentId || !isAuthenticated) {
+        console.warn("No student ID provided");
+        return;
+      }
 
-    try {
-      setLoading(true);
-      const response = await apiClient.get(
-        `/portal/student/${studentId}/details/`
-      );
-      setStudentInfo(transformStudentData(response.data)); // Transform the data if needed
-      setError(null);
-    } catch (err) {
-      console.error("Error fetching student details:", err);
-      setError(err.message);
-    } finally {
-      setLoading(false);
+      try {
+        setLoading(true);
+        setError(null);
+
+        // Debug request setup
+        const token = Cookies.get("portal_access_token");
+        console.log({
+          requestInfo: {
+            studentId,
+            hasToken: !!token,
+            tokenValue: token ? `${token.substring(0, 10)}...` : "none",
+            endpoint: `/portal/student/${studentId}/details/`,
+          },
+        });
+
+        const response = await apiClientUpdate.get(
+          `portal/student/${studentId}/details/`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
+
+        // Validate response data
+        if (!response.data) {
+          throw new Error("No data received from server");
+        }
+
+        // Debug response
+        console.log("Student details received:", {
+          status: response.status,
+          headers: response.headers,
+          dataKeys: Object.keys(response.data),
+        });
+
+        // Update state with new data
+        setStudentInfo((prevState) => ({
+          ...prevState,
+          personal: response.data.personal || {},
+          academic: response.data.academic || {},
+          medical: response.data.medical || {},
+          father: response.data.father || {},
+          mother: response.data.mother || {},
+          // Add other sections as needed
+        }));
+      } catch (err) {
+        // Enhanced error logging
+        console.error("Error fetching student details:", {
+          error: err,
+          status: err.response?.status,
+          data: err.response?.data,
+          config: err.config,
+          message: err.message,
+        });
+
+        // Handle specific error cases
+        let errorMessage = "Failed to fetch student details";
+
+        switch (err.response?.status) {
+          case 401:
+            errorMessage = "Your session has expired. Please log in again.";
+            // Optional: Redirect to login
+            // window.location.href = '/portal-login';
+            break;
+          case 403:
+            errorMessage =
+              "You do not have permission to view this student's details";
+            break;
+          case 404:
+            errorMessage = "Student information not found";
+            break;
+          case 400:
+            errorMessage = err.response.data?.error || "Invalid request";
+            break;
+          default:
+            errorMessage =
+              err.response?.data?.error || "An unexpected error occurred";
+            break;
+        }
+
+        setError(errorMessage);
+      } finally {
+        setLoading(false);
+      }
+    },
+    [!isAuthenticated]
+  );
+
+  // Usage example:
+  useEffect(() => {
+    if (selectedChild?.id) {
+      fetchStudentDetails(selectedChild.id);
     }
-  }, []);
+  }, [selectedChild?.id, fetchStudentDetails]);
 
   // Update student information
   const updateStudentInfo = useCallback(
@@ -137,38 +234,25 @@ export const usePortalData = () => {
 
       try {
         setLoading(true);
-        await apiClient.patch(
-          `/portal/student/${selectedChild.id}/${section}/`,
-          data
+        await apiClientUpdate.patch(
+          `portal/student/${selectedChild.id}/update/`,
+          {
+            section,
+            data,
+          }
         );
 
-        // Refresh student data after update
+        // Refresh student details after update
         await fetchStudentDetails(selectedChild.id);
-        setError(null);
       } catch (err) {
-        console.error("Error updating student info:", err);
-        setError(err.message);
-        throw err; // Re-throw to handle in component
+        console.error("Error updating student:", err);
+        throw err;
       } finally {
         setLoading(false);
       }
     },
-    [selectedChild, fetchStudentDetails]
+    [selectedChild?.id, isAuthenticated, fetchStudentDetails]
   );
-
-  // Initial data fetch
-  useEffect(() => {
-    if (isParent) {
-      fetchChildren();
-    }
-  }, [isParent, fetchChildren]);
-
-  // Fetch student details when selected child changes
-  useEffect(() => {
-    if (selectedChild) {
-      fetchStudentDetails(selectedChild.id);
-    }
-  }, [selectedChild, fetchStudentDetails]);
 
   return {
     // Data

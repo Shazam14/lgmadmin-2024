@@ -4,40 +4,108 @@
 export const transformStudentData = (rawData) => {
   if (!rawData) return null;
 
+  const studentData = rawData.student || rawData.personal || rawData;
+
   return {
     personal: {
-      firstName: rawData.first_name || "",
-      middleName: rawData.middle_name || "",
-      lastName: rawData.last_name || "",
-      birthday: rawData.birthday || "",
-      gender: rawData.gender || "",
-      email: rawData.email || "",
-      studentId: rawData.student_id || "",
+      firstName: studentData.first_name || studentData.firstName || "",
+      middleName: studentData.middle_name || studentData.middleName || "",
+      lastName: studentData.last_name || studentData.lastName || "",
+      birthday: studentData.birthday || "",
+      gender: studentData.gender || "",
+      email: studentData.email || "",
+      studentId: studentData.student_id || "",
       nationality: "Filipino", // Default or from extended profile
     },
     characteristics: {
       // Map from extended profile/student profile data
-      height: rawData.extended_profile?.height || "",
-      weight: rawData.extended_profile?.weight || "",
-      eyeColor: rawData.extended_profile?.eye_color || "",
-      hairColor: rawData.extended_profile?.hair_color || "",
-      distinguishingMarks: rawData.extended_profile?.distinguishing_marks || "",
-      temperament: rawData.extended_profile?.temperament || "",
-      interests: rawData.extended_profile?.interests || "",
-      strengths: rawData.extended_profile?.strengths || "",
-      challenges: rawData.extended_profile?.challenges || "",
-      selectedTraits: rawData.extended_profile?.traits || [],
-      customFields: rawData.extended_profile?.custom_fields || {},
+      height: studentData.height || "",
+      weight: studentData.weight || "",
+      eyeColor: studentData.eye_color || "",
+      hairColor: studentData.hair_color || "",
+      distinguishingMarks: studentData.distinguishing_marks || "",
+      temperament: studentData.temperament || "",
+      interests: studentData.interests || "",
+      strengths: studentData.strengths || "",
+      challenges: studentData.challenges || "",
+      selectedTraits: studentData.traits || [],
+      customFields: studentData.custom_fields || {},
     },
     academic: {
-      grade: rawData.grade || "",
-      section: rawData.section || "",
+      grade: rawData.academic?.grade || "",
+      program: rawData.academic?.program || "",
+      section: rawData.academic?.section || "",
+      studentId: rawData.academic?.studentId || "",
+      attendance: rawData.academic?.attendance || "0.0%",
+    },
+    medical: {
+      bloodType: rawData.medical?.bloodType || "",
+      allergies: rawData.medical?.allergies || "",
+      medications: rawData.medical?.medications || "",
+      conditions: rawData.medical?.conditions || "",
+      immunizations: rawData.medical?.immunizations || "",
+      immunizationHistory: rawData.medical?.immunization_history || "",
+      specialNeeds: rawData.medical?.special_needs || "",
+      medicalHistory: rawData.medical?.medical_history || "",
+    },
+    father: {
+      firstName: rawData.father?.firstName || "",
+      lastName: rawData.father?.lastName || "",
+      email: rawData.father?.email || "",
+      phone: rawData.father?.phone || "",
+    },
+    mother: {
+      firstName: rawData.mother?.firstName || "",
+      lastName: rawData.mother?.lastName || "",
+      email: rawData.mother?.email || "",
+      phone: rawData.mother?.phone || "",
+    },
+    guardian: {
+      firstName: rawData.guardian?.firstName || "",
+      lastName: rawData.guardian?.lastName || "",
+      email: rawData.guardian?.email || "",
+      phone: rawData.guardian?.phone || "",
+    },
+    living: {
+      currentArrangement: determineLivingArrangement(rawData.parent_profiles),
+      address: formatAddress(rawData),
+      city: rawData.address_city || "",
+      postalCode: rawData.address_postal_code || "",
+      transportationMethod:
+        rawData.extended_profile?.transportation_method || "School Bus",
+      // Add other living arrangement fields
+    },
+  };
+};
+
+/**
+    }
+    }
+    }
+    }
+      height: rawData.characteristics?.extended_profile?.height || "",
+      weight: rawData.characteristics?.extended_profile?.weight || "",
+      eyeColor: rawData.characteristics?.extended_profile?.eye_color || "",
+      hairColor: rawData.characteristics?.extended_profile?.hair_color || "",
+      distinguishingMarks:
+        rawData.characteristics?.extended_profile?.distinguishing_marks || "",
+      temperament: rawData.characteristics?.extended_profile?.temperament || "",
+      interests: rawData.characteristics?.extended_profile?.interests || "",
+      strengths: rawData.characteristics?.extended_profile?.strengths || "",
+      challenges: rawData.characteristics?.extended_profile?.challenges || "",
+      selectedTraits: rawData.characteristics?.extended_profile?.traits || [],
+      customFields:
+        rawData.characteristics?.extended_profile?.custom_fields || {},
+    },
+    academic: {
+      grade: rawData.academic?.grade || "",
+      section: rawData.academic?.section || "",
       program: rawData.program?.name || "",
-      status: rawData.student_status || "",
-      promoted: rawData.promoted || false,
-      elementaryCertificate: rawData.elementary_certificate || false,
-      juniorHighCertificate: rawData.junior_high_certificate || false,
-      attendance: rawData.attendance_percentage || 0,
+      status: rawData.academic?.student_status || "",
+      promoted: rawData.academic?.promoted || false,
+      elementaryCertificate: rawData.academic?.elementary_certificate || false,
+      juniorHighCertificate: rawData.academic?.junior_high_certificate || false,
+      attendance: rawData.academic?.attendance_percentage || 0,
     },
     grades: {
       currentQuarter: determineCurrentQuarter(),

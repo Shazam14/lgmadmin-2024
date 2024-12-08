@@ -27,7 +27,7 @@ class Student(models.Model):
     email = models.EmailField()
     student_id = models.CharField(max_length=20, unique=True)
     student_status = models.CharField(max_length=20)
-    grade = models.CharField(max_length=20)
+    grade = models.CharField(max_length=50)
     section = models.CharField(max_length=20)
     tuition_notes = models.TextField(blank=True)
     tuition_status = models.CharField(
@@ -374,3 +374,14 @@ class StudentLivingArrangement(models.Model):
     pickup_time = models.TimeField(null=True)
     dropoff_time = models.TimeField(null=True)
     special_instructions = models.TextField(blank=True)
+
+
+class AttendanceRecord(models.Model):
+    student = models.ForeignKey(Student, on_delete=models.CASCADE)
+    date = models.DateField()
+    status = models.CharField(max_length=10, choices=[
+                              ('Present', 'Present'), ('Absent', 'Absent')])
+    remarks = models.CharField(max_length=100, blank=True, null=True)
+
+    def __str__(self):
+        return f"{self.student.first_name} {self.student.last_name} - {self.date} - {self.status}"

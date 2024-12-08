@@ -8,6 +8,7 @@ export const EditableField = ({
   textArea = false,
   className = "",
 }) => {
+  const displayValue = value ?? "";
   const label = field.replace(/([A-Z])/g, " $1").trim();
 
   if (textArea) {
@@ -17,7 +18,7 @@ export const EditableField = ({
           {label}
         </label>
         <textarea
-          value={value}
+          value={displayValue}
           onChange={(e) => onChange(e.target.value)}
           disabled={!isEditing}
           className={`w-full px-3 py-2 border rounded-md ${

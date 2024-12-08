@@ -17,24 +17,11 @@ const ROUTES = {
 // Helper functions
 const isPortalEndpoint = (url) => url.startsWith(ENDPOINTS.PORTAL);
 
-const getToken = (isPortal) => {
-  try {
-    return isPortal
-      ? Cookies.get("portal_access_token")
-      : Cookies.get("access_token");
-  } catch (error) {
-    console.error("Error getting token:", error);
-    return null;
-  }
-};
-
 const getBaseURL = () => {
-  const productionDomain = "systems.learninggardenmontessori.ph";
-  const productionAPI = "https://backend.learninggardenmontessori.ph/api";
-
-  return window.location.origin.includes(productionDomain)
-    ? productionAPI
-    : process.env.REACT_APP_API_BASE_URL;
+  if (window.location.origin.includes("systems.learninggardenmontessori.ph")) {
+    return "https://backend.learninggardenmontessori.ph/api";
+  }
+  return process.env.REACT_APP_API_BASE_URL;
 };
 
 // Create API client
@@ -46,110 +33,96 @@ const apiClientUpdate = axios.create({
   withCredentials: true,
 });
 
-// Request interceptor
+// Single request interceptor for auth
 apiClientUpdate.interceptors.request.use(
-  async (config) => {
+  (config) => {
+    // Add auth token if available
     const isPortal = isPortalEndpoint(config.url);
-    const token = getToken(isPortal);
+    const token = isPortal
+      ? Cookies.get("portal_access_token")
+      : Cookies.get("access_token");
 
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
 
-    return config;
-  },
-  (error) => {
-    console.error("Request interceptor error:", error);
-    return Promise.reject(error);
-  }
-);
-
-// Response interceptor
-apiClientUpdate.interceptors.response.use(
-  (response) => response,
-  async (error) => {
-    const originalRequest = error.config;
-
-    // Only attempt refresh once
-    if (error.response?.status !== 401 || originalRequest._retry) {
-      return Promise.reject(error);
-    }
-
-    try {
-      originalRequest._retry = true;
-      const isPortal = isPortalEndpoint(originalRequest.url);
-
-      // Get refresh token
-      const refreshToken = Cookies.get(
-        isPortal ? "portal_refresh_token" : "refresh_token"
-      );
-
-      if (!refreshToken) {
-        throw new Error("No refresh token available");
-      }
-
-      // Attempt token refresh
-      const response = await axios.post(
-        `${getBaseURL()}${isPortal ? ENDPOINTS.PORTAL_REFRESH : ENDPOINTS.ADMIN_REFRESH}`,
-        { refresh: refreshToken },
-        { withCredentials: true }
-      );
-
-      // Set new access token
-      const { access } = response.data;
-      Cookies.set(isPortal ? "portal_access_token" : "access_token", access);
-
-      // Retry original request
-      originalRequest.headers.Authorization = `Bearer ${access}`;
-      return apiClientUpdate(originalRequest);
-    } catch (refreshError) {
-      console.error("Token refresh failed:", refreshError);
-
-      // Clear tokens based on endpoint type
-      if (isPortalEndpoint(originalRequest.url)) {
-        Cookies.remove("portal_access_token");
-        Cookies.remove("portal_refresh_token");
-        window.location.href = ROUTES.PORTAL_LOGIN;
-      } else {
-        Cookies.remove("access_token");
-        Cookies.remove("refresh_token");
-        window.location.href = ROUTES.ADMIN_LOGIN;
-      }
-
-      return Promise.reject(refreshError);
-    }
-  }
-);
-
-// Add error event handler
-apiClientUpdate.interceptors.request.use(
-  (config) => {
-    // Add request timestamp for timeout tracking
+    // Add timestamp for debugging
     config.metadata = { startTime: new Date() };
+
     return config;
   },
-  (error) => {
-    return Promise.reject(error);
-  }
+  (error) => Promise.reject(error)
 );
 
+// Single response interceptor combining auth refresh and logging
 apiClientUpdate.interceptors.response.use(
   (response) => {
-    // Track request duration
+    // Log request duration
     const duration = new Date() - response.config.metadata.startTime;
     console.debug(`Request to ${response.config.url} took ${duration}ms`);
+
     return response;
   },
-  (error) => {
-    // Enhanced error logging
+  async (error) => {
+    // Handle 401 errors and token refresh
+    const originalRequest = error.config;
+
+    if (error.response?.status === 401 && !originalRequest._retry) {
+      try {
+        originalRequest._retry = true;
+        const isPortal = isPortalEndpoint(originalRequest.url);
+
+        // Get refresh token
+        const refreshToken = Cookies.get(
+          isPortal ? "portal_refresh_token" : "refresh_token"
+        );
+
+        if (!refreshToken) {
+          throw new Error("No refresh token");
+        }
+
+        // Get new access token
+        const response = await axios.post(
+          `${getBaseURL()}${isPortal ? ENDPOINTS.PORTAL_REFRESH : ENDPOINTS.ADMIN_REFRESH}`,
+          { refresh: refreshToken },
+          { withCredentials: true }
+        );
+
+        const { access } = response.data;
+
+        // Update token
+        Cookies.set(isPortal ? "portal_access_token" : "access_token", access);
+
+        // Retry original request
+        originalRequest.headers.Authorization = `Bearer ${access}`;
+        return apiClientUpdate(originalRequest);
+      } catch (refreshError) {
+        // Clear auth and redirect on refresh failure
+        const isPortal = isPortalEndpoint(originalRequest.url);
+
+        if (isPortal) {
+          Cookies.remove("portal_access_token");
+          Cookies.remove("portal_refresh_token");
+          window.location.href = ROUTES.PORTAL_LOGIN;
+        } else {
+          Cookies.remove("access_token");
+          Cookies.remove("refresh_token");
+          window.location.href = ROUTES.ADMIN_LOGIN;
+        }
+
+        return Promise.reject(refreshError);
+      }
+    }
+
+    // Log other errors
     if (error.response) {
-      console.error("Response Error:", {
+      console.error("API Error:", {
         status: error.response.status,
         data: error.response.data,
-        headers: error.response.headers,
         url: error.config.url,
       });
     }
+
     return Promise.reject(error);
   }
 );

@@ -63,9 +63,4 @@ ProtectedRoute.propTypes = {
   routeType: PropTypes.oneOf(["admin", "portal", "parent", "student"]),
 };
 
-ProtectedRoute.defaultProps = {
-  authenticated: false,
-  routeType: "admin",
-};
-
 export default ProtectedRoute;

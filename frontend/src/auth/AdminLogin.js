@@ -4,8 +4,9 @@ import { useNavigate } from "react-router-dom";
 import "../styles/adminlogin.css";
 import { AdminRoleContext } from "../contexts/AdminRoleContext";
 import apiClient from "../services/apiClient";
+import apiClientUpdate from "../services/apiClientUpdate";
 
-const AdminLogin = ({ setAuthenticated }) => {
+const AdminLogin = ({ setAuthState }) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
@@ -16,7 +17,7 @@ const AdminLogin = ({ setAuthenticated }) => {
   const handleLogin = async (event) => {
     event.preventDefault();
     try {
-      const response = await apiClient.post("login/", {
+      const response = await apiClientUpdate.post("login/", {
         username: username,
         password: password,
       });
@@ -26,16 +27,25 @@ const AdminLogin = ({ setAuthenticated }) => {
       Cookies.set("access_token", token, { path: "/" });
       Cookies.set("refresh_token", refreshToken, { path: "/" });
 
-      localStorage.setItem('username', username);
+      localStorage.setItem("username", username);
 
-      const roleResponse = await apiClient.get("user-role/", {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+      const roleResponse = await apiClientUpdate.get("/user-role/", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       const isAdmin = roleResponse.data.role === "admin";
+
+      setAuthState({
+        isAuthenticated: true,
+        userType: "admin",
+        user: {
+          username,
+          isAdmin,
+        },
+        loading: false,
+      });
       setIsAdmin(isAdmin);
-      setAuthenticated(isAdmin);
       Cookies.set("is_admin", isAdmin, { path: "/" });
       navigate("/admin");
     } catch (error) {
@@ -46,7 +56,7 @@ const AdminLogin = ({ setAuthenticated }) => {
   const handleSignup = async (event) => {
     event.preventDefault();
     try {
-      const response = await apiClient.post("signup/", {
+      const response = await apiClientUpdate.post("signup/", {
         username: username,
         password: password,
         email: email,
@@ -61,7 +71,7 @@ const AdminLogin = ({ setAuthenticated }) => {
       console.log("Access token after setting:", Cookies.get("access_token"));
       console.log("Refresh token after setting:", Cookies.get("refresh_token"));
 
-      setAuthenticated(true);
+      setAuthState(true);
       navigate("/admin");
       console.log("after the admin Role");
     } catch (error) {

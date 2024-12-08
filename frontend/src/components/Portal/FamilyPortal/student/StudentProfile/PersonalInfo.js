@@ -2,7 +2,7 @@
 import React from "react";
 import { FaUser } from "react-icons/fa";
 import { BaseSection } from "../../../common/sections/BaseSection";
-import { EditableField } from "../../../common/sections/EditableField";
+import { EditableField } from "../../../common/sections/EditableSection";
 
 export const PersonalInfo = ({
   data,

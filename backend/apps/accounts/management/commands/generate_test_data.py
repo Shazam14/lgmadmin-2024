@@ -139,6 +139,97 @@ class Command(BaseCommand):
             )
             raise e
 
+    def create_test_enrollment(self, student, academic_year="2024"):
+        """Create a test enrollment for a student"""
+        return Enrollment.objects.create(
+            student=student,
+            academic_year=academic_year,
+            enrollment_date=timezone.now(),
+            academic_period="Fall 2024",
+            enrollment_status="Active",
+            grade_level=student.program.gradelevel,
+            previous_school="Previous Test School",
+            previous_school_address="123 Test Street",
+            previous_school_phone="123-456-7890",
+            special_needs="None",
+            allergies="None",
+            medications="None",
+        )
+
+    def create_test_grades(self, student):
+        """Generate realistic test grades for a student"""
+        subjects = ["Mathematics", "Science", "English", "Filipino", "MAPEH"]
+        grades = []
+
+        for subject in subjects:
+            # Generate realistic grade components
+            written_work = random.randint(85, 95)
+            performance_task = random.randint(85, 95)
+            quarterly_exam = random.randint(85, 95)
+
+            # Calculate quarterly grade using proper weighting
+            quarterly_grade = (written_work * 0.3) + \
+                (performance_task * 0.5) + (quarterly_exam * 0.2)
+
+            grades.append(Grade.objects.create(
+                student=student,
+                subject=subject,
+                written_work=written_work,
+                performance_task=performance_task,
+                quarterly_exam=quarterly_exam,
+                quarterly_grade=round(quarterly_grade, 2),
+                evaluation_code="P" if quarterly_grade >= 75 else "F"
+            ))
+        return grades
+
+    def create_test_medical_records(self, student):
+        """Create test medical records for a student"""
+        return MedicalRecord.objects.create(
+            student=student,
+            blood_type=random.choice(
+                ['A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-']),
+            height=random.randint(100, 170),
+            weight=random.randint(20, 70),
+            vision_left="20/20",
+            vision_right="20/20",
+            last_checkup=timezone.now() - timedelta(days=random.randint(0, 180))
+        )
+
+    def create_test_attendance(self, student, start_date=None):
+        """Generate realistic attendance records"""
+        if not start_date:
+            start_date = timezone.now() - timedelta(days=90)
+
+        school_days = []
+        current = start_date
+        while current <= timezone.now():
+            if current.weekday() < 5:  # Monday to Friday
+                present = random.random() > 0.1  # 90% attendance rate
+                AttendanceRecord.objects.create(
+                    student=student,
+                    date=current,
+                    status='Present' if present else 'Absent',
+                    remarks="" if present else random.choice(
+                        ['Sick', 'Family Emergency', 'Other'])
+                )
+            current += timedelta(days=1)
+
+    def validate_test_data(self, student_id):
+        """Validate test data for a student"""
+        try:
+            student = Student.objects.get(student_id=student_id)
+            validations = {
+                'Enrollment': bool(student.enrollment_set.all()),
+                'Grades': bool(student.grade_set.exists()),
+                'Medical Records': bool(student.medicalrecord_set.exists()),
+                'Attendance': bool(student.attendancerecord_set.exists()),
+                'Parent Profiles': bool(student.parent_profiles.exists()),
+            }
+            missing = [k for k, v in validations.items() if not v]
+            return not bool(missing), missing
+        except Student.DoesNotExist:
+            return False, ['Student not found']
+
     def handle(self, *args, **kwargs):
         count = kwargs['count']
         self.stdout.write(self.style.NOTICE(
@@ -273,6 +364,14 @@ class Command(BaseCommand):
                             if i == 0 and j == 0:
                                 first_student_code = student_code
 
+                            enrollment = self.create_test_enrollment(student)
+                            grades = self.create_test_grades(student)
+                            medical = self.create_test_medical_records(
+                                student
+                            )
+                            attendance = self.create_test_attendance(
+                                student
+                            )
                             # Create student user
                             student_user = User.objects.create_user(
                                 username=f"student{i}{j}@test.com",
