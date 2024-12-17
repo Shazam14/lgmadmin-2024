@@ -24,6 +24,7 @@ export function Button({
         variant === "outline" &&
           "border border-input bg-background hover:bg-accent hover:text-accent-foreground",
         variant === "link" && "text-primary underline-offset-4 hover:underline",
+        variant === "custom" && "bg-green-600 text-white hover:bg-green-600/90", // New green variant
 
         // Sizes
         size === "default" && "h-10 px-4 py-2",

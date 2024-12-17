@@ -74,7 +74,7 @@ def api_root(request):
 def user_role(request):
     try:
         user = request.user
-        # First check if user is admin/staff
+        # Check for admin/staff first
         if user.is_staff or user.is_superuser:
             return Response({
                 "role": "admin",
@@ -86,27 +86,41 @@ def user_role(request):
                 }
             })
 
-        # If not admin, check user profile
-        user_profile = user.userprofile
-        role = user_profile.user_type.lower()
+        # Get user profile
+        try:
+            user_profile = user.userprofile
+            role = user_profile.user_type.lower()
 
+            # Determine profile type
+            profile_type = None
+            if hasattr(user_profile, 'parent_profile'):
+                profile_type = "PARENT"
+            elif hasattr(user_profile, 'student_profile'):
+                profile_type = "STUDENT"
+
+            return Response({
+                "role": role,
+                "is_admin": False,
+                "profile_type": profile_type,
+                "user_data": {
+                    "id": user.id,
+                    "email": user.email,
+                    "username": user.username,
+                    "user_type": user_profile.user_type
+                }
+            })
+
+        except UserProfile.DoesNotExist:
+            return Response({
+                "role": "user",
+                "is_admin": False,
+                "error": "No user profile found"
+            }, status=status.HTTP_404_NOT_FOUND)
+
+    except Exception as e:
         return Response({
-            "role": role,
-            "is_admin": False,
-            "profile_type": "PARENT" if hasattr(user_profile, 'parent_profile') else "STUDENT",
-            "user_data": {
-                "id": user.id,
-                "email": user.email,
-                "username": user.username,
-                "user_type": user_profile.user_type
-            }
-        })
-    except UserProfile.DoesNotExist:
-        return Response({
-            "role": "user",
-            "is_admin": False,
-            "error": "No user profile found"
-        })
+            "error": str(e)
+        }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 class AuthStatusView(APIView):

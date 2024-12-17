@@ -89,6 +89,8 @@ INSTALLED_APPS = [
 
 
 REST_FRAMEWORK = {
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 10,
     "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.AllowAny",),
     "DEFAULT_AUTHENTICATION_CLASSES": (
         "rest_framework_simplejwt.authentication.JWTAuthentication",
@@ -103,6 +105,21 @@ OAUTH2_PROVIDER = {
     "REFRESH_TOKEN_EXPIRE_SECONDS": 864000,
 }
 
+if DEBUG:
+    SESSION_COOKIE_SAMESITE = 'Lax'
+    CSRF_COOKIE_SAMESITE = 'Lax'
+    SESSION_COOKIE_SECURE = False
+    CSRF_COOKIE_SECURE = False
+    SESSION_COOKIE_DOMAIN = None
+    CSRF_COOKIE_DOMAIN = None
+else:
+    SESSION_COOKIE_SAMESITE = 'None'
+    CSRF_COOKIE_SAMESITE = 'None'
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    SESSION_COOKIE_DOMAIN = '.learninggardenmontessori.ph'
+    CSRF_COOKIE_DOMAIN = '.learninggardenmontessori.ph'
+
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=15),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
@@ -110,10 +127,11 @@ SIMPLE_JWT = {
     "BLACKLIST_AFTER_ROTATION": True,
     "UPDATE_LAST_LOGIN": False,
     "AUTH_COOKIE_HTTP_ONLY": True,  # Enable HttpOnly cookies
-    "AUTH_COOKIE_SECURE": True,  # Enable HTTPS for cookies (recommended)
+    # Enable HTTPS for cookies (recommended)
+    "AUTH_COOKIE_SECURE": SESSION_COOKIE_SECURE,
     "AUTH_COOKIE_PATH": "/",  # Set the cookie path
     # Set the SameSite attribute for CSRF protection
-    "AUTH_COOKIE_SAMESITE": "Strict",
+    "AUTH_COOKIE_SAMESITE": SESSION_COOKIE_SAMESITE,
 }
 
 

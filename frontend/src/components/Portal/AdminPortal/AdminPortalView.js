@@ -162,13 +162,19 @@ const AdminPortalView = () => {
           <CardTitle>Quick Actions</CardTitle>
         </CardHeader>
         <CardContent className="flex gap-4">
-          <Button onClick={() => navigate("/admin/applicants")}>
+          <Button
+            variant="custom"
+            onClick={() => navigate("/admin/applicants")}
+          >
             Review Applications ({stats.pendingApplications})
           </Button>
-          <Button onClick={() => navigate("/admin/grades")}>
+          <Button variant="custom" onClick={() => navigate("/admin/grades")}>
             Update Grades ({stats.pendingGrades})
           </Button>
-          <Button onClick={() => navigate("/admin/enrollments")}>
+          <Button
+            variant="custom"
+            onClick={() => navigate("/admin/enrollments")}
+          >
             Process Enrollments ({stats.pendingEnrollments})
           </Button>
         </CardContent>
@@ -186,6 +192,7 @@ const AdminPortalView = () => {
               <Button
                 onClick={() => handleBulkAction("approve")}
                 disabled={actionInProgress}
+                className="bg-green-500 text-white"
               >
                 Approve Selected
               </Button>
@@ -203,7 +210,7 @@ const AdminPortalView = () => {
           {navigationItems.map((item) => (
             <Button
               key={item.id}
-              variant={activeTab === item.id ? "default" : "outline"}
+              variant={activeTab === item.id ? "custom" : "outline"}
               onClick={() => setActiveTab(item.id)}
               className="flex items-center gap-2"
             >

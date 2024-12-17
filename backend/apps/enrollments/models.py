@@ -41,4 +41,4 @@ class Enrollment(models.Model):
     medications = models.TextField(blank=True)
 
     def __str__(self):
-        return f"Enrollment for {self.applicant.first_name} {self.applicant.last_name}"
+        return f"Enrollment for {self.student.first_name} {self.student.last_name}"

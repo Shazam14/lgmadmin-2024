@@ -16,7 +16,7 @@ const ROUTES = {
 
 // Helper functions
 const isPortalEndpoint = (url) => url.startsWith(ENDPOINTS.PORTAL);
-
+console.log("API.JS LOCAL URL:", process.env.REACT_APP_API_BASE_URL);
 const getBaseURL = () => {
   if (window.location.origin.includes("systems.learninggardenmontessori.ph")) {
     return "https://backend.learninggardenmontessori.ph/api";
@@ -116,7 +116,7 @@ apiClientUpdate.interceptors.response.use(
 
     // Log other errors
     if (error.response) {
-      console.error("API Error:", {
+      console.error("API CLIENT UPDATE Error:", {
         status: error.response.status,
         data: error.response.data,
         url: error.config.url,

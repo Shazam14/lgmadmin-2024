@@ -92,36 +92,30 @@ export const useStudentData = () => {
       const fetchOptions = {
         headers: {
           Authorization: `Bearer ${accessToken}`,
+          "Content-Type": "application/json",
         },
       };
 
       const [profileRes, academicRes, enrollmentRes] = await Promise.all([
         apiClientUpdate
-          .get("portal/student/profile/", fetchOptions)
+          .get("/portal/student/profile/", fetchOptions)
           .catch((err) => {
             console.error("Profile fetch error:", err);
             return { data: { personal: {} } };
           }),
         apiClientUpdate
-          .get("portal/student/details/", fetchOptions)
+          .get("/portal/student/details/", fetchOptions)
           .catch((err) => {
             console.error("Academic fetch error:", err);
             return { data: { grades: [] } };
           }),
         apiClientUpdate
-          .get("portal/student/enrollment/", fetchOptions)
+          .get("/portal/student/enrollment/", fetchOptions)
           .catch((err) => {
             console.error("Enrollment fetch error:", err);
             return { data: {} };
           }),
       ]);
-
-      console.log(
-        "Fetched student details:",
-        profileRes.data,
-        academicRes.data,
-        enrollmentRes.data
-      );
 
       // Use a functional update to avoid dependency on studentInfo
       setStudentInfo((prevState) => {
@@ -141,8 +135,6 @@ export const useStudentData = () => {
             remedial_passed: grade.remedial_passed || false,
             cle_mve_grade: grade.cle_mve_grade || 0,
           })) || [];
-
-        console.log("Transformed grades:", transformedGrades);
 
         return {
           ...prevState,

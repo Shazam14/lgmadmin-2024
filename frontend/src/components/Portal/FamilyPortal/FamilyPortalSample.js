@@ -1,7 +1,6 @@
 // src/components/Portal/FamilyPortal/FamilyPortalSample.js
 import React, { useState, useEffect, useCallback } from "react";
 import { usePortalData } from "../../../hooks/usePortalData";
-import { usePortalAccess } from "../../../hooks/usePortalAccess";
 import { BaseSection } from "../common/sections/BaseSection";
 import { GradesSection } from "../common/sections/GradesSection";
 import { TuitionSection } from "../common/sections/TuitionSection";

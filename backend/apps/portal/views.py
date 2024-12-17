@@ -10,6 +10,7 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.authentication import JWTAuthentication
+from rest_framework.pagination import PageNumberPagination
 from django.contrib.auth.models import User
 from django.middleware.csrf import get_token
 from django.http import JsonResponse
@@ -20,6 +21,11 @@ from apps.parents.models import Parent
 from apps.students.models import Student
 from apps.grades.models import Grade
 from apps.enrollments.models import Enrollment
+from apps.portal.serializers import PortalUserSerializer
+from apps.applicants.models import Applicant
+from django.db.models import Count, Q
+from apps.enrollments.models import Enrollment
+from apps.grades.models import Grade, Program
 import logging
 
 logger = logging.getLogger(__name__)
@@ -789,57 +795,192 @@ class StudentPortalViewSet(viewsets.ViewSet):
             )
 
 
-class AdminPortalViewSet(viewsets.ViewSet):
+class AdminPagination(PageNumberPagination):
+    page_size = 10
+    page_size_query_param = 'page_size'
+    max_page_size = 100
+
+
+class AdminPortalViewSet(viewsets.GenericViewSet):
     permission_classes = [IsAuthenticated, IsAdminUser]
     authentication_classes = [JWTAuthentication]
+    pagination_class = AdminPagination
+
+    def paginate_queryset(self, queryset):
+        """
+        Return a single page of results, or `None` if pagination is disabled.
+        """
+        if self.paginator is None:
+            return None
+        return self.paginator.paginate_queryset(queryset, self.request, view=self)
+
+    def get_paginated_response(self, data):
+        """
+        Return a paginated style `Response` object for the given output data.
+        """
+        assert self.paginator is not None
+        return self.paginator.get_paginated_response(data)
 
     def get_permissions(self):
         """Ensure user has admin permissions"""
-        if not self.request.user.is_authenticated:
-            return [IsAuthenticated()]
-        user_profile = self.request.user.userprofile
-        if user_profile.user_type not in ['ADMIN', 'STAFF']:
+        # Add error logging
+        try:
+            if not self.request.user.is_authenticated:
+                logger.warning(
+                    "Unauthenticated access attempt to admin portal")
+                return [IsAuthenticated()]
+
+            user_profile = getattr(self.request.user, 'userprofile', None)
+            if not user_profile:
+                logger.info(
+                    f"Creating new profile for admin user: {self.request.user.email}")
+                user_type = 'ADMIN' if (self.request.user.is_superuser or
+                                        self.request.user.is_staff) else 'STAFF'
+                user_profile = UserProfile.objects.create(
+                    user=self.request.user,
+                    user_type=user_type
+                )
+
+            if user_profile.user_type not in ['ADMIN', 'STAFF']:
+                logger.warning(
+                    f"Unauthorized access attempt by user: {self.request.user.email}")
+                return [IsAdminUser()]
+
+            return super().get_permissions()
+
+        except Exception as e:
+            logger.error(f"Permission check error: {str(e)}")
             return [IsAdminUser()]
-        return super().get_permissions()
 
     @action(detail=False, methods=['get'])
     def dashboard_stats(self, request):
         """Get admin dashboard statistics"""
         try:
+            # Add more detailed error handling and checks
+            try:
+                pending_applications = Applicant.objects.filter(
+                    status='Pending').count()
+            except Exception as e:
+                logger.error(f"Error counting pending applications: {str(e)}")
+                pending_applications = 0
+
+            try:
+                pending_enrollments = Enrollment.objects.filter(
+                    enrollment_status='Pending').count()
+            except Exception as e:
+                logger.error(f"Error counting pending enrollments: {str(e)}")
+                pending_enrollments = 0
+
+            try:
+                pending_grades = Grade.objects.filter(
+                    final_grade__isnull=True).count()
+            except Exception as e:
+                logger.error(f"Error counting pending grades: {str(e)}")
+                pending_grades = 0
+
+            try:
+                total_students = Student.objects.filter(
+                    account_status='A').count()
+            except Exception as e:
+                logger.error(f"Error counting total students: {str(e)}")
+                total_students = 0
+
+            try:
+                total_programs = Program.objects.count()
+            except Exception as e:
+                logger.error(f"Error counting total programs: {str(e)}")
+                total_programs = 0
+
+            try:
+                recent_activities = list(PortalActivity.objects.all()
+                                         .order_by('-timestamp')[:5]
+                                         .values('activity_type', 'description', 'timestamp'))
+            except Exception as e:
+                logger.error(f"Error fetching recent activities: {str(e)}")
+                recent_activities = []
+
             stats = {
-                'pendingApplications': Applicant.objects.filter(status='Pending').count(),
-                'pendingEnrollments': Enrollment.objects.filter(enrollment_status='Pending').count(),
-                'pendingGrades': Grade.objects.filter(final_grade__isnull=True).count(),
-                'totalStudents': Student.objects.filter(account_status='A').count(),
-                'totalPrograms': Program.objects.count(),
-                'recentActivities': PortalActivity.objects.all()[:5].values(
-                    'activity_type', 'description', 'timestamp'
-                )
+                'pendingApplications': pending_applications,
+                'pendingEnrollments': pending_enrollments,
+                'pendingGrades': pending_grades,
+                'totalStudents': total_students,
+                'totalPrograms': total_programs,
+                'recentActivities': recent_activities
             }
+
+            logger.info(f"Successfully fetched dashboard stats: {stats}")
             return Response(stats)
+
         except Exception as e:
-            logger.error(f"Error fetching dashboard stats: {str(e)}")
-            return Response({'error': 'Failed to fetch dashboard statistics'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            logger.exception(f"Error fetching dashboard stats: {str(e)}")
+            return Response(
+                {
+                    'error': 'Failed to fetch dashboard statistics',
+                    'detail': str(e) if settings.DEBUG else None,
+                    'stats': {
+                        'pendingApplications': 0,
+                        'pendingEnrollments': 0,
+                        'pendingGrades': 0,
+                        'totalStudents': 0,
+                        'totalPrograms': 0,
+                        'recentActivities': []
+                    }
+                },
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
 
     @action(detail=False, methods=['get'])
     def applicants(self, request):
         """Get filtered applicants list"""
         try:
+            queryset = Applicant.objects.select_related(
+                'parent', 'program_option').all()
             status_filter = request.query_params.get('status')
             program_filter = request.query_params.get('program')
-            queryset = Applicant.objects.all()
-            if status_filter:
+
+            # Only apply filters if they're not 'all'
+            if status_filter and status_filter != 'all':
                 queryset = queryset.filter(status=status_filter)
-            if program_filter:
+            if program_filter and program_filter != 'all':
                 queryset = queryset.filter(program_option_id=program_filter)
-            applicants_data = queryset.select_related('parent', 'program_option').values(
-                'id', 'first_name', 'last_name', 'status', 'applied_date',
-                'parent__first_name', 'parent__last_name', 'program_option__name'
-            )
-            return Response(applicants_data)
+
+            queryset = queryset.order_by('-applied_date')
+
+            # Paginate the queryset
+            page = self.paginate_queryset(queryset)
+            if page is None:
+                data = [{
+                    'id': app.id,
+                    'first_name': app.first_name,
+                    'last_name': app.last_name,
+                    'status': app.status,
+                    'applied_date': app.applied_date,
+                    'parent_name': f"{app.parent.first_name} {app.parent.last_name}" if app.parent else "No Parent",
+                    'program': app.program_option.name if app.program_option else None
+                } for app in queryset]
+                return Response(data)
+
+            data = [{
+                'id': app.id,
+                'first_name': app.first_name,
+                'last_name': app.last_name,
+                'status': app.status,
+                'applied_date': app.applied_date,
+                'parent_name': f"{app.parent.first_name} {app.parent.last_name}" if app.parent else "No Parent",
+                'program': app.program_option.name if app.program_option else None
+            } for app in page]
+
+            return self.get_paginated_response(data)
+
         except Exception as e:
-            logger.error(f"Error fetching applicants: {str(e)}")
-            return Response({'error': 'Failed to fetch applicants'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            logger.exception(f"Error fetching applicants: {str(e)}")
+            return Response(
+                {
+                    'error': 'Failed to fetch applicants',
+                    'detail': str(e) if settings.DEBUG else None
+                },
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
 
     @action(detail=False, methods=['post'])
     def bulk_approve_applicants(self, request):
@@ -866,24 +1007,66 @@ class AdminPortalViewSet(viewsets.ViewSet):
     def enrollments(self, request):
         """Get filtered enrollments list"""
         try:
+            # Start with a base queryset
+            queryset = Enrollment.objects.select_related(
+                'student',
+                'grade_level'
+            ).all()
+
+            # Apply filters only if they're not 'all'
             status_filter = request.query_params.get('status')
             grade_filter = request.query_params.get('grade')
-            queryset = Enrollment.objects.all()
-            if status_filter:
+            program_filter = request.query_params.get('program')
+            section_filter = request.query_params.get('section')
+
+            if status_filter and status_filter != 'all':
                 queryset = queryset.filter(enrollment_status=status_filter)
-            if grade_filter:
+            if grade_filter and grade_filter != 'all':
                 queryset = queryset.filter(grade_level__name=grade_filter)
-            enrollments_data = queryset.select_related(
-                'student', 'grade_level'
-            ).values(
-                'id', 'student__first_name', 'student__last_name',
-                'enrollment_date', 'enrollment_status', 'academic_year',
-                'grade_level__name'
-            )
-            return Response(enrollments_data)
+            if program_filter and program_filter != 'all':
+                queryset = queryset.filter(student__program_id=program_filter)
+            if section_filter and section_filter != 'all':
+                queryset = queryset.filter(student__section=section_filter)
+
+            # Order the queryset
+            queryset = queryset.order_by('-enrollment_date')
+
+            # Paginate the queryset
+            page = self.paginate_queryset(queryset)
+
+            # Transform the data
+            def get_enrollment_data(enrollment):
+                return {
+                    'id': enrollment.id,
+                    'student_id': enrollment.student.id,
+                    'student_name': f"{enrollment.student.first_name} {enrollment.student.last_name}",
+                    'enrollment_date': enrollment.enrollment_date,
+                    'enrollment_status': enrollment.enrollment_status,
+                    'academic_year': enrollment.academic_year,
+                    'academic_period': enrollment.academic_period,
+                    'grade_level': enrollment.grade_level.name if enrollment.grade_level else None,
+                    'program': enrollment.student.program.name if enrollment.student.program else None,
+                    'section': enrollment.student.section
+                }
+
+            if page is not None:
+                data = [get_enrollment_data(enrollment) for enrollment in page]
+                return self.get_paginated_response(data)
+
+            # If pagination is disabled
+            data = [get_enrollment_data(enrollment) for enrollment in queryset]
+            return Response(data)
+
         except Exception as e:
-            logger.error(f"Error fetching enrollments: {str(e)}")
-            return Response({'error': 'Failed to fetch enrollments'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            logger.exception(f"Error fetching enrollments: {str(e)}")
+            return Response(
+                {
+                    'error': 'Failed to fetch enrollments',
+                    'detail': str(e) if settings.DEBUG else None,
+                    'enrollments': []  # Return empty list as fallback
+                },
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
 
     @action(detail=False, methods=['get'])
     def programs(self, request):

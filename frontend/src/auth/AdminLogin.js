@@ -3,7 +3,6 @@ import Cookies from "js-cookie";
 import { useNavigate } from "react-router-dom";
 import "../styles/adminlogin.css";
 import { AdminRoleContext } from "../contexts/AdminRoleContext";
-import apiClient from "../services/apiClient";
 import apiClientUpdate from "../services/apiClientUpdate";
 
 const AdminLogin = ({ setAuthState }) => {
@@ -47,6 +46,7 @@ const AdminLogin = ({ setAuthState }) => {
       });
       setIsAdmin(isAdmin);
       Cookies.set("is_admin", isAdmin, { path: "/" });
+      console.log("Navigating to /admin");
       navigate("/admin");
     } catch (error) {
       console.error("Login failed:", error);

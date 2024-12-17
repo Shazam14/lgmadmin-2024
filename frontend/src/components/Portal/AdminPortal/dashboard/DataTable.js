@@ -121,7 +121,7 @@ export const DataTable = ({
                 <tr
                   key={item.id}
                   className={`${
-                    selected.includes(item.id) ? "bg-blue-50" : ""
+                    selected.includes(item.id) ? "bg-green-50" : ""
                   } hover:bg-gray-50 ${rowClassName?.(item, rowIndex) || ""}`}
                 >
                   {onSelect && (

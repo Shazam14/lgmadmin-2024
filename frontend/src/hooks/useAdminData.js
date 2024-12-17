@@ -1,24 +1,16 @@
 import { useState, useEffect, useCallback, useRef } from "react";
-import { useNavigate } from "react-router-dom";
 import apiClientUpdate from "../services/apiClientUpdate";
-import { usePortalAuth } from "../contexts/PortalAuthContext";
 import Cookies from "js-cookie";
 
 export const useAdminData = () => {
-  const navigate = useNavigate();
-  const { isAdmin, isAuthenticated } = usePortalAuth();
   const abortControllerRef = useRef(null);
-
-  const [data, setData] = useState({
-    students: [],
-    stats: {},
-    applicants: [],
-    enrollments: [],
-    programs: [],
-  });
-
-  const [loading, setLoading] = useState(true);
+  const [students, setStudents] = useState([]);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [stats, setStats] = useState({});
+  const [applicants, setApplicants] = useState([]);
+  const [enrollments, setEnrollments] = useState([]);
+  const [programs, setPrograms] = useState([]);
   const [filters, setFilters] = useState({
     status: "all",
     grade: "all",
@@ -26,198 +18,122 @@ export const useAdminData = () => {
     section: "all",
   });
 
-  const [authState, setAuthState] = useState({
-    isAuthenticated: false,
-    isLoading: true,
-    error: null,
-  });
+  const getAuthToken = () => {
+    // Check for admin token first, then portal token as fallback
+    return Cookies.get("access_token") || Cookies.get("portal_access_token");
+  };
 
-  // Token validation
-  const checkAuth = useCallback(() => {
-    const token = Cookies.get("portal_access_token");
-    const refreshToken = Cookies.get("portal_refresh_token");
-
-    if (!token && !refreshToken) {
-      console.log("No tokens found");
-      return false;
-    }
-
-    try {
-      const tokenData = JSON.parse(atob(token.split(".")[1]));
-      const isExpired = tokenData.exp * 1000 < Date.now();
-
-      if (isExpired) {
-        console.log("Token expired");
-        return false;
-      }
-
-      return true;
-    } catch (e) {
-      console.error("Token validation error:", e);
-      return false;
-    }
-  }, []);
-
-  // Data fetching function
-  const fetchData = useCallback(
-    async (type, url) => {
-      try {
-        if (!checkAuth()) {
-          console.log("Authentication check failed");
-          navigate("/portal-login");
-          return;
-        }
-
-        if (abortControllerRef.current) {
-          abortControllerRef.current.abort();
-        }
-        abortControllerRef.current = new AbortController();
-
-        console.log(`Fetching ${type} from ${url}`);
-
-        const response = await apiClientUpdate({
-          method: "get",
-          url,
-          signal: abortControllerRef.current.signal,
-          headers: {
-            Authorization: `Bearer ${Cookies.get("portal_access_token")}`,
-          },
-        });
-
-        console.log(`${type} response:`, response.data);
-
-        setData((prev) => ({
-          ...prev,
-          [type]: response.data,
-        }));
-
-        setError(null);
-      } catch (err) {
-        if (err.name === "AbortError") {
-          console.log("Request aborted");
-          return;
-        }
-
-        console.error(`Error details for ${type}:`, {
-          message: err.message,
-          status: err.response?.status,
-          statusText: err.response?.statusText,
-          data: err.response?.data,
-        });
-
-        if (err.response?.status === 401) {
-          setError("Session expired. Please login again.");
-          navigate("/portal-login");
-          return;
-        }
-
-        setError(`Failed to fetch ${type}: ${err.message}`);
-      }
-    },
-    [navigate, checkAuth]
-  );
-
-  // Authentication validation effect
-  useEffect(() => {
-    const validateAuth = async () => {
-      console.log("Validating auth - Current status:", {
-        isAdmin,
-        isAuthenticated: isAuthenticated(),
-      });
-
-      try {
-        // First check if authenticated
-        if (!isAuthenticated()) {
-          throw new Error("Not authenticated");
-        }
-
-        // Then check admin status
-        if (!isAdmin) {
-          throw new Error("Not authorized as admin");
-        }
-
-        // Verify token with backend
-        const response = await apiClientUpdate.get("/auth/verify/");
-
-        setAuthState({
-          isAuthenticated: true,
-          isLoading: false,
-          error: null,
-        });
-      } catch (err) {
-        console.error("Auth validation error:", err);
-        setAuthState({
-          isAuthenticated: false,
-          isLoading: false,
-          error: err.message,
-        });
-        navigate("/portal-login");
-      }
-    };
-
-    validateAuth();
-  }, [isAdmin, isAuthenticated, navigate]);
-
-  // Data fetching effect
-  useEffect(() => {
-    if (!authState.isAuthenticated) return;
-
-    const fetchAllData = async () => {
-      setLoading(true);
-      try {
-        await Promise.all([
-          fetchData("stats", "/portal/admin/dashboard_stats/"),
-          fetchData(
-            "applicants",
-            `/portal/admin/applicants/?${new URLSearchParams(filters).toString()}`
-          ),
-          fetchData(
-            "enrollments",
-            `/portal/admin/enrollments/?${new URLSearchParams(filters).toString()}`
-          ),
-          fetchData("programs", "/portal/admin/programs/"),
-        ]);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchAllData();
-  }, [authState.isAuthenticated, fetchData, filters]);
-
-  // Enhanced data refresh function
-  const refreshData = useCallback(async () => {
-    if (!authState.isAuthenticated) {
-      console.log("Not authenticated, skipping refresh");
-      return;
-    }
-
+  const fetchData = useCallback(async (type, url) => {
     setLoading(true);
     try {
-      await Promise.all([
-        fetchData("stats", "/portal/admin/dashboard_stats/"),
-        fetchData(
-          "applicants",
-          `/portal/admin/applicants/?${new URLSearchParams(filters).toString()}`
-        ),
-        fetchData(
-          "enrollments",
-          `/portal/admin/enrollments/?${new URLSearchParams(filters).toString()}`
-        ),
-        fetchData("programs", "/portal/admin/programs/"),
-      ]);
+      const token = getAuthToken();
+      console.log(`Token for ${url}:`, token); // Debug log
+      const response = await apiClientUpdate({
+        method: "get",
+        url,
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      console.log(`Response for ${type}:`, response.data); // Debug log
+      setError(null);
+      switch (type) {
+        case "dashboard":
+          setStats(response.data);
+          break;
+        case "applicants":
+          setApplicants(response.data);
+          break;
+        case "enrollments":
+          setEnrollments(response.data);
+          break;
+        case "programs":
+          setPrograms(response.data);
+          break;
+        default:
+          console.error(`Unknown type: ${type}`);
+      }
+    } catch (err) {
+      setError(`Failed to fetch ${type}`);
+      console.error(`Error fetching ${type}:`, err);
     } finally {
       setLoading(false);
     }
-  }, [authState.isAuthenticated, fetchData, filters]);
+  }, []);
+
+  const fetchDashboardStats = useCallback(
+    () => fetchData("dashboard", "portal/admin/dashboard_stats/"),
+    [fetchData]
+  );
+
+  const fetchApplicants = useCallback(
+    () =>
+      fetchData(
+        "applicants",
+        `portal/admin/applicants/?${new URLSearchParams(filters).toString()}`
+      ),
+    [fetchData, filters]
+  );
+
+  const fetchEnrollments = useCallback(
+    () =>
+      fetchData(
+        "enrollments",
+        `portal/admin/enrollments/?${new URLSearchParams(filters).toString()}`
+      ),
+    [fetchData, filters]
+  );
+
+  const fetchPrograms = useCallback(
+    () => fetchData("programs", "portal/admin/programs/"),
+    [fetchData]
+  );
+
+  useEffect(() => {
+    const fetchInitialData = async () => {
+      if (!Cookies.get("access_token")) {
+        console.log("Token missing - redirecting to login");
+        window.location.href = "/admin-login";
+        return;
+      }
+      await Promise.all([
+        fetchDashboardStats(),
+        fetchApplicants(),
+        fetchEnrollments(),
+        fetchPrograms(),
+      ]);
+    };
+    fetchInitialData();
+  }, [fetchDashboardStats, fetchApplicants, fetchEnrollments, fetchPrograms]);
+
+  useEffect(() => {
+    const fetchFilteredData = async () => {
+      if (!Cookies.get("access_token")) {
+        console.log("Token missing - redirecting to login");
+        window.location.href = "/admin-login";
+        return;
+      }
+      await Promise.all([fetchApplicants(), fetchEnrollments()]);
+    };
+    fetchFilteredData();
+  }, [filters, fetchApplicants, fetchEnrollments]);
 
   return {
-    ...data,
-    loading: loading || authState.isLoading,
-    error: error || authState.error,
+    stats,
+    applicants,
+    enrollments,
+    students,
+    programs,
+    loading,
+    error,
     filters,
     setFilters,
-    refreshData,
-    isAuthenticated: authState.isAuthenticated,
+    refreshData: async () => {
+      await fetchDashboardStats();
+      await fetchApplicants();
+      await fetchEnrollments();
+      await fetchPrograms();
+    },
+    sAuthenticated: Boolean(Cookies.get("access_token")),
   };
 };

@@ -146,7 +146,7 @@ export const usePortalData = () => {
         });
 
         const response = await apiClientUpdate.get(
-          `portal/student/${studentId}/details/`,
+          `/portal/student/${studentId}/details/`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -235,7 +235,7 @@ export const usePortalData = () => {
       try {
         setLoading(true);
         await apiClientUpdate.patch(
-          `portal/student/${selectedChild.id}/update/`,
+          `/portal/student/${selectedChild.id}/update/`,
           {
             section,
             data,
