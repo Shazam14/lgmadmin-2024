@@ -6,6 +6,7 @@ from apps.grades.models import Program, Subject, GradeLevel, Grade
 
 
 class Enrollment(models.Model):
+
     student = models.ForeignKey(
         "students.Student", on_delete=models.CASCADE, default=1)
     grade_level = models.ForeignKey(
@@ -39,6 +40,14 @@ class Enrollment(models.Model):
     special_needs = models.TextField(blank=True)
     allergies = models.TextField(blank=True)
     medications = models.TextField(blank=True)
+
+    class Meta:
+        indexes = [
+            models.Index(fields=['academic_year', 'enrollment_status']),
+            models.Index(
+                fields=['student', 'academic_year', 'academic_period']),
+        ]
+        unique_together = ['student', 'academic_year', 'academic_period']
 
     def __str__(self):
         return f"Enrollment for {self.student.first_name} {self.student.last_name}"

@@ -935,14 +935,39 @@ class AdminPortalViewSet(viewsets.GenericViewSet):
         try:
             queryset = Applicant.objects.select_related(
                 'parent', 'program_option').all()
+            logger.info(
+                f"Total applicants before filtering: {queryset.count()}")
+            for app in queryset:
+                logger.info(f"""
+                    Applicant detail:
+                    ID: {app.id}
+                    Name: {app.first_name} {app.last_name}
+                    Status: {app.status}
+                    Has Student: {hasattr(app, 'students')}
+                    Has Enrollment: {Enrollment.objects.filter(student__applicant=app).exists()}
+                """)
+
             status_filter = request.query_params.get('status')
             program_filter = request.query_params.get('program')
+            logger.info(
+                f"Applied filters - Status: {status_filter}, Program: {program_filter}")
 
             # Only apply filters if they're not 'all'
             if status_filter and status_filter != 'all':
                 queryset = queryset.filter(status=status_filter)
+                logger.info(
+                    f"After status filter: {queryset.count()} applicants")
+
             if program_filter and program_filter != 'all':
                 queryset = queryset.filter(program_option_id=program_filter)
+                logger.info(
+                    f"After program filter: {queryset.count()} applicants")
+
+            logger.info(f"""
+            Final query results:
+            Total count: {queryset.count()}
+            Statuses: {[{'id': a.id, 'status': a.status} for a in queryset]}
+        """)
 
             queryset = queryset.order_by('-applied_date')
 
@@ -951,6 +976,7 @@ class AdminPortalViewSet(viewsets.GenericViewSet):
             if page is None:
                 data = [{
                     'id': app.id,
+                    'reference_number': f"APP-{app.id:06d}",  # Added this line
                     'first_name': app.first_name,
                     'last_name': app.last_name,
                     'status': app.status,
@@ -962,6 +988,7 @@ class AdminPortalViewSet(viewsets.GenericViewSet):
 
             data = [{
                 'id': app.id,
+                'reference_number': f"APP-{app.id:06d}",
                 'first_name': app.first_name,
                 'last_name': app.last_name,
                 'status': app.status,
@@ -1133,3 +1160,283 @@ class AdminPortalViewSet(viewsets.GenericViewSet):
         except Exception as e:
             logger.error(f"Error fetching student grades: {str(e)}")
             return Response({'error': 'Failed to fetch student grades'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    # STUDENTS VIEW ADMINPORTAL PORTION
+    @action(detail=False, methods=['get'])
+    def students(self, request):
+        """Get filtered students list"""
+        try:
+            queryset = Student.objects.all()
+            grade_filter = request.query_params.get('grade')
+            program_filter = request.query_params.get('program')
+
+            if grade_filter:
+                queryset = queryset.filter(grade=grade_filter)
+            if program_filter:
+                queryset = queryset.filter(program__name=program_filter)
+
+            students_data = queryset.select_related(
+                'program', 'applicant'
+            ).values(
+                'id', 'first_name', 'last_name', 'student_id',
+                'grade', 'section', 'program__name', 'account_status',
+                'tuition_status', 'promoted'
+            )
+            return Response(students_data)
+        except Exception as e:
+            logger.error(f"Error fetching students: {str(e)}")
+            return Response(
+                {'error': 'Failed to fetch students'},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+    # enrollment part
+    # Add these to your AdminPortalViewSet
+
+    # In your AdminPortalViewSet
+
+    @action(detail=False, methods=['post'])
+    def create_enrollment(self, request):
+        """Create enrollment from approved applicant"""
+        try:
+            with transaction.atomic():
+                applicant_id = request.data.get('applicant_id')
+                applicant = Applicant.objects.get(id=applicant_id)
+
+                # Verify applicant is approved
+                if applicant.status != 'Approved':
+                    return Response(
+                        {'error': 'Applicant must be approved for enrollment'},
+                        status=status.HTTP_400_BAD_REQUEST
+                    )
+
+                # Create or get student record
+                student, created = Student.objects.get_or_create(
+                    applicant=applicant,
+                    defaults={
+                        'first_name': applicant.first_name,
+                        'last_name': applicant.last_name,
+                        'email': applicant.email,
+                        'program': applicant.program_option,
+                        'grade': request.data.get('grade_level'),
+                        'section': request.data.get('section'),
+                        'student_status': 'Active',
+                        'account_status': 'A'
+                    }
+                )
+
+                # Create enrollment record
+                enrollment = Enrollment.objects.create(
+                    student=student,
+                    academic_year=request.data.get('academic_year'),
+                    academic_period=request.data.get('academic_period'),
+                    enrollment_status='Pending',
+                    grade_level=request.data.get('grade_level'),
+                    previous_school=request.data.get('previous_school'),
+                    previous_school_address=request.data.get(
+                        'previous_school_address'),
+                    special_needs=request.data.get('special_needs'),
+                    allergies=request.data.get('allergies'),
+                    medications=request.data.get('medications'),
+                    enrollment_date=timezone.now()
+                )
+
+                # Update applicant status to reflect enrollment
+                applicant.status = 'Enrolled'
+                applicant.save()
+
+                # Return the created enrollment data
+                enrollment_data = {
+                    'id': enrollment.id,
+                    'student_id': student.student_id,
+                    'student_name': f"{student.first_name} {student.last_name}",
+                    'program': student.program.name if student.program else None,
+                    'grade_level': enrollment.grade_level,
+                    'enrollment_status': enrollment.enrollment_status,
+                    'enrollment_date': enrollment.enrollment_date,
+                    'academic_year': enrollment.academic_year,
+                    'academic_period': enrollment.academic_period
+                }
+
+                return Response(enrollment_data, status=status.HTTP_201_CREATED)
+
+        except Applicant.DoesNotExist:
+            return Response(
+                {'error': 'Applicant not found'},
+                status=status.HTTP_404_NOT_FOUND
+            )
+        except Exception as e:
+            logger.error(f"Enrollment creation failed: {str(e)}")
+            return Response(
+                {'error': 'Failed to create enrollment'},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+
+    @action(detail=True, methods=['post'])
+    def enroll_student(self, request, pk=None):
+        """Enroll an individual student"""
+        try:
+            with transaction.atomic():
+                student = Student.objects.get(pk=pk)
+
+                # Check if already enrolled
+                if Enrollment.objects.filter(student=student, academic_year=request.data.get('academic_year')).exists():
+                    return Response(
+                        {'error': 'Student already enrolled for this academic year'},
+                        status=status.HTTP_400_BAD_REQUEST
+                    )
+
+                # Create enrollment
+                enrollment = Enrollment.objects.create(
+                    student=student,
+                    academic_year=request.data.get('academic_year', '2024'),
+                    enrollment_status=request.data.get(
+                        'enrollment_status', 'Enrolled'),
+                    academic_period=request.data.get(
+                        'academic_period', '1st Semester'),
+                    enrollment_date=timezone.now(),
+                    grade_level=student.grade  # Assuming grade field exists
+                )
+
+                # Log the activity
+                PortalActivity.objects.create(
+                    user=request.user,
+                    activity_type="ENROLLMENT",
+                    description=f"Enrolled student {student.first_name} {student.last_name}"
+                )
+
+                return Response({
+                    'message': 'Student enrolled successfully',
+                    'enrollment': {
+                        'id': enrollment.id,
+                        'student_name': f"{student.first_name} {student.last_name}",
+                        'enrollment_date': enrollment.enrollment_date,
+                        'status': enrollment.enrollment_status
+                    }
+                })
+
+        except Student.DoesNotExist:
+            logger.error(f"Enrollment failed - Student {pk} not found")
+            return Response(
+                {'error': 'Student not found'},
+                status=status.HTTP_404_NOT_FOUND
+            )
+        except Exception as e:
+            logger.error(f"Enrollment failed for student {pk}: {str(e)}")
+            return Response(
+                {'error': 'Failed to enroll student'},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+
+    @action(detail=False, methods=['post'])
+    def bulk_enroll_students(self, request):
+        """Bulk enroll multiple students"""
+        try:
+            student_ids = request.data.get('student_ids', [])
+            academic_year = request.data.get('academic_year', '2024')
+            academic_period = request.data.get(
+                'academic_period', '1st Semester')
+
+            if not student_ids:
+                return Response(
+                    {'error': 'No students provided for enrollment'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+
+            successful_enrollments = []
+            failed_enrollments = []
+
+            with transaction.atomic():
+                for student_id in student_ids:
+                    try:
+                        student = Student.objects.get(pk=student_id)
+
+                        # Skip if already enrolled
+                        if Enrollment.objects.filter(
+                            student=student,
+                            academic_year=academic_year
+                        ).exists():
+                            failed_enrollments.append({
+                                'student_id': student_id,
+                                'reason': 'Already enrolled'
+                            })
+                            continue
+
+                        enrollment = Enrollment.objects.create(
+                            student=student,
+                            academic_year=academic_year,
+                            enrollment_status='Enrolled',
+                            academic_period=academic_period,
+                            enrollment_date=timezone.now(),
+                            grade_level=student.grade
+                        )
+
+                        successful_enrollments.append({
+                            'student_id': student_id,
+                            'enrollment_id': enrollment.id,
+                            'student_name': f"{student.first_name} {student.last_name}"
+                        })
+
+                    except Student.DoesNotExist:
+                        failed_enrollments.append({
+                            'student_id': student_id,
+                            'reason': 'Student not found'
+                        })
+                    except Exception as e:
+                        failed_enrollments.append({
+                            'student_id': student_id,
+                            'reason': str(e)
+                        })
+
+                # Log bulk activity
+                PortalActivity.objects.create(
+                    user=request.user,
+                    activity_type="BULK_ENROLLMENT",
+                    description=f"Bulk enrolled {len(successful_enrollments)} students"
+                )
+
+            return Response({
+                'message': f'Enrolled {len(successful_enrollments)} students',
+                'successful_enrollments': successful_enrollments,
+                'failed_enrollments': failed_enrollments
+            })
+
+        except Exception as e:
+            logger.error(f"Bulk enrollment failed: {str(e)}")
+            return Response(
+                {'error': 'Failed to process bulk enrollment'},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+
+    @action(detail=True, methods=['patch'])
+    def update_enrollment_status(self, request, pk=None):
+        """Update enrollment status"""
+        try:
+            enrollment = Enrollment.objects.get(pk=pk)
+            new_status = request.data.get('status')
+
+            if not new_status:
+                return Response(
+                    {'error': 'Status not provided'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+
+            enrollment.enrollment_status = new_status
+            enrollment.save()
+
+            return Response({
+                'message': 'Enrollment status updated successfully',
+                'enrollment_id': enrollment.id,
+                'new_status': new_status
+            })
+
+        except Enrollment.DoesNotExist:
+            return Response(
+                {'error': 'Enrollment not found'},
+                status=status.HTTP_404_NOT_FOUND
+            )
+        except Exception as e:
+            logger.error(f"Error updating enrollment status: {str(e)}")
+            return Response(
+                {'error': 'Failed to update enrollment status'},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )

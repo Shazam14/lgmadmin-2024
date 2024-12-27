@@ -49,6 +49,24 @@ class Student(models.Model):
     perfect_attendance_award = models.BooleanField(default=False)
     meritorious_award = models.BooleanField(default=False)
 
+    class Meta:
+        indexes = [
+            models.Index(fields=['account_status', 'student_status']),
+            models.Index(fields=['program', 'grade']),
+        ]
+
+    def get_current_enrollment(self):
+        return self.enrollment_set.filter(
+            academic_year=timezone.now().year,
+            enrollment_status='ENROLLED'
+        ).first()
+
+    def can_enroll(self, academic_year, academic_period):
+        return not self.enrollment_set.filter(
+            academic_year=academic_year,
+            academic_period=academic_period
+        ).exists()
+
     def get_full_profile(self):
         """Get complete student profile for portal"""
         return {

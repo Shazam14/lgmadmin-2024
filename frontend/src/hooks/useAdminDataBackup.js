@@ -49,21 +49,15 @@ export const useAdminData = () => {
           setStats(response.data);
           break;
         case "applicants":
-          if (Array.isArray(response.data.results)) {
-            setApplicants(response.data.results);
-            return response.data; // Return the response data
-          }
+          console.log(
+            "About to set applicants state with:",
+            response.data.results
+          );
+          setApplicants(response.data.results || []);
+          console.log("Applicants state after setting:", applicants);
           break;
         case "enrollments":
-          if (Array.isArray(response.data.results)) {
-            console.log(
-              "Setting enrollments state with:",
-              response.data.results
-            );
-            setEnrollments(response.data.results);
-          } else {
-            console.error("Invalid enrollments data format:", response.data);
-          }
+          setEnrollments(response.data.results || []);
           break;
         case "programs":
           setPrograms(response.data);
@@ -87,21 +81,14 @@ export const useAdminData = () => {
     [fetchData]
   );
 
-  // In useAdminData.js, add this console log right after the API call
-  const fetchApplicants = useCallback(async () => {
-    console.log("Fetching applicants...");
-    try {
-      const data = await fetchData(
+  const fetchApplicants = useCallback(
+    () =>
+      fetchData(
         "applicants",
         `portal/admin/applicants/?${new URLSearchParams(filters).toString()}`
-      );
-      console.log("FULL Applicants API Response:", data);
-      return data;
-    } catch (error) {
-      console.error("Error in fetchApplicants:", error);
-      return { results: [] }; // Return empty results on error
-    }
-  }, [fetchData, filters]);
+      ),
+    [fetchData, filters]
+  );
 
   const fetchEnrollments = useCallback(
     () =>
@@ -216,30 +203,13 @@ export const useAdminData = () => {
         window.location.href = "/admin-login";
         return;
       }
-      console.log("Fetching data with filters:", filters);
-      try {
-        const results = await Promise.all([
-          fetchDashboardStats(),
-          fetchApplicants(),
-          fetchEnrollments(),
-          fetchPrograms(),
-          fetchStudents(),
-        ]);
-
-        // Destructure results properly
-        const [dashboard, applicants, enrollments, programs, students] =
-          results;
-
-        console.log("Initial data fetch complete:", {
-          dashboard,
-          applicants,
-          enrollments,
-          programs,
-          students,
-        });
-      } catch (error) {
-        console.error("Error fetching initial data:", error);
-      }
+      await Promise.all([
+        fetchDashboardStats(),
+        fetchApplicants(),
+        fetchEnrollments(),
+        fetchPrograms(),
+        fetchStudents(),
+      ]);
     };
     fetchInitialData();
   }, [
@@ -248,30 +218,26 @@ export const useAdminData = () => {
     fetchEnrollments,
     fetchPrograms,
     fetchStudents,
-    filters,
   ]);
 
   useEffect(() => {
-    console.log("Applicants state changed:", {
-      length: applicants?.length || 0,
-      data: applicants,
-      isEmpty: !applicants || applicants.length === 0,
-    });
-  }, [applicants]);
-
-  useEffect(() => {
-    console.log("Enrollments state changed:", {
-      length: enrollments?.length,
-      data: enrollments,
-    });
-  }, [enrollments]);
+    const fetchFilteredData = async () => {
+      if (!Cookies.get("access_token")) {
+        console.log("Token missing - redirecting to login");
+        window.location.href = "/admin-login";
+        return;
+      }
+      await Promise.all([fetchApplicants(), fetchEnrollments()]);
+    };
+    fetchFilteredData();
+  }, [filters, fetchApplicants, fetchEnrollments]);
 
   return {
     stats,
-    applicants: applicants || [], // Ensure we always return an array
-    enrollments: enrollments || [],
-    students: students || [],
-    programs: programs || [],
+    applicants,
+    enrollments,
+    students,
+    programs,
     loading,
     error,
     filters,
@@ -279,15 +245,11 @@ export const useAdminData = () => {
     handleEnrollStudent,
     handleBulkEnroll,
     refreshData: async () => {
-      console.log("Starting data refresh...");
-      await Promise.all([
-        fetchDashboardStats(),
-        fetchApplicants(),
-        fetchEnrollments(),
-        fetchPrograms(),
-      ]);
-      console.log("Data refresh complete");
+      await fetchDashboardStats();
+      await fetchApplicants();
+      await fetchEnrollments();
+      await fetchPrograms();
     },
-    isAuthenticated: Boolean(Cookies.get("access_token")),
+    sAuthenticated: Boolean(Cookies.get("access_token")),
   };
 };

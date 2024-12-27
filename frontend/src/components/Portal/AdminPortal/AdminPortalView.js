@@ -45,6 +45,7 @@ const AdminPortalView = () => {
     stats,
     applicants,
     enrollments,
+    programs,
     students,
     loading,
     error,
@@ -55,6 +56,14 @@ const AdminPortalView = () => {
     handleUpdateGrades,
     refreshData,
   } = useAdminData();
+
+  console.log("AdminPortalView render with:", {
+    applicantsCount: applicants?.length,
+    applicantsData: applicants, // Add this to verify the data
+    enrollmentsCount: enrollments?.length,
+    enrollmentsData: enrollments, // Add this to verify the data
+    programsCount: programs?.length,
+  });
 
   const [activeTab, setActiveTab] = useState("dashboard");
   const [selectedItems, setSelectedItems] = useState([]);
@@ -249,18 +258,17 @@ const AdminPortalView = () => {
           {activeTab === "enrollments" && (
             <EnrollmentsSection
               enrollments={enrollments}
+              applicants={applicants}
+              programs={programs}
               selected={selectedItems}
               onSelect={setSelectedItems}
               onEnroll={handleEnrollStudent}
-              loading={actionInProgress}
+              loading={loading}
             />
           )}
 
           {activeTab === "students" && (
-            <StudentsSection
-              students={students}
-              onUpdateStudent={refreshData}
-            />
+            <StudentsSection students={students} loading={loading} />
           )}
 
           {activeTab === "grades" && (
