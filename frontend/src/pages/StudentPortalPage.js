@@ -1,5 +1,4 @@
-import React, { useContext } from "react";
-import { AdminRoleContext } from "../contexts/AdminRoleContext";
+import React from "react";
 import "../styles/admin.css";
 import StudentPortalNavbar from "../components/Portal/StudentPortal/StudentPortalNavbar";
 import Footer from "../components/Footer/Footer";

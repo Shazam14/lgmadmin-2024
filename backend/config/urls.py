@@ -34,11 +34,18 @@ urlpatterns = [
         path('parents/', include('apps.parents.urls')),
         path('grades/', include('apps.grades.urls')),
         path('announcements/', include('apps.announcements.urls')),
+
+        # for portal
+        path('accounts/', include('apps.accounts.urls')),
+        path('portal/', include('apps.portal.urls')),
+        # for authentication
         path('login/', LoginView.as_view(), name='login'),
         path('signup/', SignupView.as_view(), name='signup'),
         path('logout/', LogoutView.as_view(), name='logout'),
         path('auth-status/', AuthStatusView.as_view(), name='auth-status'),
         path('user-role/', user_role, name='user_role'),
+
+
     ])),
     # for authentication
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),

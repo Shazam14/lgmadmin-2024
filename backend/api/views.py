@@ -13,12 +13,14 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework_simplejwt.tokens import UntypedToken
 from rest_framework_simplejwt.exceptions import InvalidToken, TokenError
+from apps.accounts.models import UserProfile
 
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def api_root(request):
     return Response({
+        # Admin resources
         'students': reverse('student-list', request=request),
         'courses': reverse('course-list', request=request),
         'teachers': reverse('teacher-list', request=request),
@@ -27,17 +29,98 @@ def api_root(request):
         'student_upload': reverse('student-upload', request=request),
         'parents': reverse('parent-list', request=request),
         'grades': reverse('grade-list', request=request),
-        'announcements': reverse('announcement-list', request=request)
+        'announcements': reverse('announcement-list', request=request),
+
+        # Portal endpoints
+        'portal': {
+            # Main portal endpoints
+            'dashboard': reverse('portal-dashboard', request=request),
+            'children': reverse('portal-children', request=request),
+            'notifications': reverse('portal-notifications', request=request),
+
+            # Student portal endpoints - simplified
+            'student': {
+                'profile': reverse('student-profile', request=request),
+                'grades': reverse('student-grades', request=request),
+                'details': reverse('student-details', request=request),
+                'enrollment': reverse('student-enrollment', request=request)
+            },
+
+            # Admin portal endpoints - simplified
+            'admin': {
+                'dashboard_stats': reverse('admin-portal-dashboard_stats', request=request),
+                'applicants': reverse('admin-portal-applicants', request=request),
+                'enrollments': reverse('admin-portal-enrollments', request=request),
+                'programs': reverse('admin-portal-programs', request=request),
+                'student_grades': reverse('admin-portal-student_grades', request=request),
+            },
+
+            # Authentication endpoints
+            'auth': {
+                'login': reverse('portal-login', request=request),
+                'signup': reverse('portal-signup', request=request),
+                'logout': reverse('portal-logout', request=request),
+                'verify': reverse('portal-verify', request=request),
+                'status': reverse('portal-status', request=request),
+            }
+        }
     })
+
+# Update user_role to handle portal roles
 
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def user_role(request):
-    is_admin = request.user.is_staff
-    role = "admin" if is_admin else "user"
-    print("MY BACKEND ROLE: ", role)
-    return Response({"role": role})
+    try:
+        user = request.user
+        # Check for admin/staff first
+        if user.is_staff or user.is_superuser:
+            return Response({
+                "role": "admin",
+                "is_admin": True,
+                "user_data": {
+                    "id": user.id,
+                    "email": user.email,
+                    "username": user.username,
+                }
+            })
+
+        # Get user profile
+        try:
+            user_profile = user.userprofile
+            role = user_profile.user_type.lower()
+
+            # Determine profile type
+            profile_type = None
+            if hasattr(user_profile, 'parent_profile'):
+                profile_type = "PARENT"
+            elif hasattr(user_profile, 'student_profile'):
+                profile_type = "STUDENT"
+
+            return Response({
+                "role": role,
+                "is_admin": False,
+                "profile_type": profile_type,
+                "user_data": {
+                    "id": user.id,
+                    "email": user.email,
+                    "username": user.username,
+                    "user_type": user_profile.user_type
+                }
+            })
+
+        except UserProfile.DoesNotExist:
+            return Response({
+                "role": "user",
+                "is_admin": False,
+                "error": "No user profile found"
+            }, status=status.HTTP_404_NOT_FOUND)
+
+    except Exception as e:
+        return Response({
+            "error": str(e)
+        }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 class AuthStatusView(APIView):

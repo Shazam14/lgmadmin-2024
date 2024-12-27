@@ -33,11 +33,19 @@ class Applicant(models.Model):
     address_postal_code = models.CharField(max_length=20, blank=True)
     applied_date = models.DateField(default=timezone.now)
     status = models.CharField(max_length=20, choices=[
-        ('Pending', 'Pending'),
-        ('Approved', 'Approved'),
-        ('Rejected', 'Rejected')
+        ('PENDING', 'Pending'),
+        ('APPROVED', 'Approved'),
+        ('ENROLLED', 'Enrolled'),
+        ('REJECTED', 'Rejected')
     ], default='Pending')
     reference_number = models.CharField(max_length=30, unique=True, blank=True)
+
+    def check_enrollment_eligibility(self):
+        return (
+            self.status == 'APPROVED' and
+            not hasattr(self, 'students') and  # No student record yet
+            not Enrollment.objects.filter(student__applicant=self).exists()
+        )
 
     def __str__(self):
         return f"{self.first_name} {self.last_name}"
