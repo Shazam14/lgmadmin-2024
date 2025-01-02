@@ -53,6 +53,7 @@ def api_root(request):
                 'enrollments': reverse('admin-portal-enrollments', request=request),
                 'programs': reverse('admin-portal-programs', request=request),
                 'student_grades': reverse('admin-portal-student_grades', request=request),
+                'students': reverse('admin-portal-students', request=request),
             },
 
             # Authentication endpoints

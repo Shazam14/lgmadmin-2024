@@ -54,6 +54,10 @@ const AdminPortalView = () => {
     handleApproveApplicant,
     handleEnrollStudent,
     handleUpdateGrades,
+    handleUpdateStudent,
+    handleBulkUpdateStudents,
+    handleBulkUpdateGrades,
+    fetchGrades,
     refreshData,
   } = useAdminData();
 
@@ -264,19 +268,51 @@ const AdminPortalView = () => {
               onSelect={setSelectedItems}
               onEnroll={handleEnrollStudent}
               loading={loading}
+              filters={filters}
+              onFilterChange={setFilters}
+              onUpdateEnrollment={refreshData}
             />
           )}
 
           {activeTab === "students" && (
-            <StudentsSection students={students} loading={loading} />
+            <>
+              {console.log("Rendering StudentsSection with:", {
+                studentsData: students,
+                studentsCount: students?.length,
+                loading,
+                filters,
+              })}
+              <StudentsSection
+                students={students}
+                loading={loading}
+                filters={filters}
+                setFilters={setFilters}
+                onFilterChange={setFilters}
+                onUpdateStudent={handleUpdateStudent}
+                onBulkUpdate={handleBulkUpdateStudents}
+              />
+            </>
           )}
 
           {activeTab === "grades" && (
-            <AdminGradesSection
-              students={students}
-              onUpdateGrades={handleUpdateGrades}
-              refreshData={refreshData}
-            />
+            <>
+              {console.log("Rendering Grades Section with:", {
+                studentsPresent: Boolean(students),
+                studentCount: students?.length,
+                programsPresent: Boolean(programs),
+                programCount: programs?.length,
+              })}
+              <AdminGradesSection
+                students={students}
+                onUpdateGrades={handleBulkUpdateGrades}
+                onFetchGrades={fetchGrades}
+                loading={loading}
+                filters={filters}
+                setFilters={setFilters}
+                refreshData={refreshData}
+                programs={programs}
+              />
+            </>
           )}
 
           {activeTab === "programs" && <ProgramsSection />}

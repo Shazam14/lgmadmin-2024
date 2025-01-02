@@ -41,6 +41,13 @@ export const useAdminData = () => {
       if (type === "enrollments") {
         console.log("Raw enrollments data:", response.data);
       }
+      if (type === "students") {
+        console.log("Students API raw response:", {
+          status: response.status,
+          data: response.data,
+          url: url,
+        });
+      }
 
       console.log(`Response for ${type}:`, response.data); // Debug log
       setError(null);
@@ -69,7 +76,19 @@ export const useAdminData = () => {
           setPrograms(response.data);
           break;
         case "students":
-          setStudents(response.data.results || []);
+          if (response.data?.results) {
+            console.log(
+              "Setting students from results:",
+              response.data.results
+            );
+            setStudents(response.data.results);
+          } else if (Array.isArray(response.data)) {
+            console.log("Setting students from array:", response.data);
+            setStudents(response.data);
+          } else {
+            console.error("Unexpected students data format:", response.data);
+            setStudents([]);
+          }
           break;
         default:
           console.error(`Unknown type: ${type}`);
@@ -112,19 +131,204 @@ export const useAdminData = () => {
     [fetchData, filters]
   );
 
-  const fetchPrograms = useCallback(
-    () => fetchData("programs", "portal/admin/programs/"),
-    [fetchData]
+  // In useAdminData.js
+
+  const fetchGrades = useCallback(
+    async ({ grade_level, section, subject_id }) => {
+      try {
+        setLoading(true);
+        console.log("Starting fetchGrades with params:", {
+          grade_level,
+          section,
+          subject_id,
+          studentsCount: students?.length,
+          sampleStudents: students?.slice(0, 2),
+        });
+
+        const response = await apiClientUpdate.get(
+          "portal/admin/student_grades/",
+          {
+            params: {
+              grade_level,
+              section,
+              subject_id,
+            },
+          }
+        );
+
+        console.log("RAW Grades API Response Data:", {
+          raw: response.data,
+          isArray: Array.isArray(response.data),
+          count: response.data?.length || 0,
+        });
+
+        // Filter students for the selected class/section
+        const classStudents = students.filter(
+          (student) =>
+            student.grade === grade_level &&
+            (!section || student.section === section)
+        );
+
+        console.log("Filtered class students:", {
+          total: classStudents.length,
+          students: classStudents,
+        });
+
+        // Create base grades
+        const gradesByStudent = classStudents.map((student) => {
+          const baseGrade = {
+            student_id: student.student_id,
+            name: `${student.first_name} ${student.last_name}`,
+            written_work: "-",
+            performance_task: "-",
+            quarterly_exam: "-",
+            final_grade: "Not yet computed",
+          };
+
+          console.log("Created base grade for student:", {
+            studentId: student.student_id,
+            baseGrade,
+          });
+          return baseGrade;
+        });
+
+        // Merge with actual grades
+        const mergedGrades = gradesByStudent.map((baseGrade) => {
+          // Look for matching grade using student name since IDs might be different
+          const studentGrade = response.data.find((g) => {
+            const studentFullName = `${g.student__first_name} ${g.student__last_name}`;
+            const baseFullName = baseGrade.name;
+            const matches = studentFullName === baseFullName;
+
+            console.log("Grade matching attempt:", {
+              baseStudentName: baseFullName,
+              gradeStudentName: studentFullName,
+              matches,
+            });
+
+            return matches;
+          });
+
+          if (studentGrade) {
+            console.log("Found matching grade for student:", {
+              studentName: baseGrade.name,
+              grade: studentGrade,
+            });
+
+            return {
+              ...baseGrade,
+              written_work: studentGrade.written_work?.toString() || "-",
+              performance_task:
+                studentGrade.performance_task?.toString() || "-",
+              quarterly_exam: studentGrade.quarterly_exam?.toString() || "-",
+              final_grade:
+                studentGrade.final_grade?.toString() || "Not yet computed",
+            };
+          }
+
+          console.log("No matching grade found for student:", baseGrade.name);
+          return baseGrade;
+        });
+
+        console.log("Final merged grades result:", {
+          count: mergedGrades.length,
+          grades: mergedGrades,
+        });
+
+        return mergedGrades;
+      } catch (err) {
+        console.error("Error in fetchGrades:", {
+          error: err,
+          message: err.message,
+          response: err.response?.data,
+        });
+        setError("Failed to fetch grades");
+        throw err;
+      } finally {
+        setLoading(false);
+      }
+    },
+    [students]
   );
 
-  const fetchStudents = useCallback(
-    () =>
-      fetchData(
-        "students",
-        `portal/admin/students/?${new URLSearchParams(filters).toString()}`
-      ),
-    [fetchData, filters]
-  );
+  const fetchPrograms = useCallback(async () => {
+    try {
+      const token = getAuthToken();
+      console.log("Fetching programs data");
+
+      const response = await apiClientUpdate({
+        method: "get",
+        url: "portal/admin/programs/",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      console.log("Programs API response:", response.data);
+
+      if (response.data?.results) {
+        setPrograms(response.data.results);
+      } else if (Array.isArray(response.data)) {
+        setPrograms(response.data);
+      }
+    } catch (err) {
+      console.error("Error fetching programs:", err);
+      setPrograms([]);
+    }
+  }, []);
+
+  const fetchStudents = useCallback(() => {
+    console.log("Fetching students - start", {
+      filters,
+      url: `portal/admin/students/?${new URLSearchParams(filters).toString()}`,
+    });
+
+    return fetchData(
+      "students",
+      `portal/admin/students/?${new URLSearchParams(filters).toString()}`
+    )
+      .then((response) => {
+        console.log("Students fetch successful:", response);
+        return response;
+      })
+      .catch((error) => {
+        console.error("Students fetch failed:", error);
+        throw error;
+      });
+  }, [fetchData, filters]);
+
+  const handleUpdateStudent = async (studentId, action) => {
+    try {
+      setLoading(true);
+
+      switch (action.action) {
+        case "status":
+          await apiClientUpdate.patch(`portal/admin/students/${studentId}/`, {
+            account_status: action.data.status,
+          });
+          break;
+
+        case "promote":
+          await apiClientUpdate.post(
+            `portal/admin/students/${studentId}/promote/`
+          );
+          break;
+
+        case "view":
+          // Handle view action - maybe fetch detailed student data
+          break;
+      }
+
+      // Refresh students data after update
+      await fetchStudents();
+      setError(null);
+    } catch (err) {
+      setError("Failed to update student: " + err.message);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleEnrollment = async (enrollmentData) => {
     try {
@@ -209,6 +413,33 @@ export const useAdminData = () => {
     [fetchEnrollments]
   );
 
+  const handleBulkUpdateGrades = useCallback(
+    async (gradesData) => {
+      try {
+        setLoading(true);
+        await apiClientUpdate.patch("portal/admin/bulk_update_grades/", {
+          grades: gradesData.map((grade) => ({
+            student_id: grade.student_id,
+            subject_id: grade.subject_id,
+            written_work: grade.written_work,
+            performance_task: grade.performance_task,
+            quarterly_exam: grade.quarterly_exam,
+          })),
+        });
+
+        // Refresh grades after update
+        await fetchGrades(filters);
+      } catch (err) {
+        console.error("Error updating grades:", err);
+        setError("Failed to update grades");
+        throw err;
+      } finally {
+        setLoading(false);
+      }
+    },
+    [filters, fetchGrades]
+  );
+
   useEffect(() => {
     const fetchInitialData = async () => {
       if (!Cookies.get("access_token")) {
@@ -266,6 +497,15 @@ export const useAdminData = () => {
     });
   }, [enrollments]);
 
+  //use Effect for students
+  useEffect(() => {
+    console.log("Students state changed:", {
+      length: students?.length || 0,
+      data: students,
+      isEmpty: !students || students.length === 0,
+    });
+  }, [students]);
+
   return {
     stats,
     applicants: applicants || [], // Ensure we always return an array
@@ -278,6 +518,8 @@ export const useAdminData = () => {
     setFilters,
     handleEnrollStudent,
     handleBulkEnroll,
+    handleUpdateStudent,
+    fetchGrades,
     refreshData: async () => {
       console.log("Starting data refresh...");
       await Promise.all([
@@ -285,6 +527,9 @@ export const useAdminData = () => {
         fetchApplicants(),
         fetchEnrollments(),
         fetchPrograms(),
+        fetchStudents(),
+        handleBulkUpdateGrades(),
+        //handleUpdateGrade(),
       ]);
       console.log("Data refresh complete");
     },
