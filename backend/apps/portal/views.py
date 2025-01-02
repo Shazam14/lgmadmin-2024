@@ -1161,32 +1161,70 @@ class AdminPortalViewSet(viewsets.GenericViewSet):
             logger.error(f"Error fetching student grades: {str(e)}")
             return Response({'error': 'Failed to fetch student grades'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-    # STUDENTS VIEW ADMINPORTAL PORTION
     @action(detail=False, methods=['get'])
     def students(self, request):
         """Get filtered students list"""
         try:
-            queryset = Student.objects.all()
+            # Add ordering to make results consistent
+            queryset = Student.objects.select_related(
+                'program', 'applicant'
+            ).order_by('last_name', 'first_name')
+
+            logger.info(
+                f"Students endpoint called. Initial count: {queryset.count()}")
+
+            # Apply filters - add status filter and make filters case-insensitive
             grade_filter = request.query_params.get('grade')
             program_filter = request.query_params.get('program')
+            status_filter = request.query_params.get('status')
 
-            if grade_filter:
-                queryset = queryset.filter(grade=grade_filter)
-            if program_filter:
-                queryset = queryset.filter(program__name=program_filter)
+            if grade_filter and grade_filter != 'all':
+                queryset = queryset.filter(grade__iexact=grade_filter)
+            if program_filter and program_filter != 'all':
+                queryset = queryset.filter(
+                    program__name__iexact=program_filter)
+            if status_filter and status_filter != 'all':
+                queryset = queryset.filter(
+                    account_status__iexact=status_filter)
 
-            students_data = queryset.select_related(
-                'program', 'applicant'
-            ).values(
-                'id', 'first_name', 'last_name', 'student_id',
-                'grade', 'section', 'program__name', 'account_status',
-                'tuition_status', 'promoted'
-            )
-            return Response(students_data)
+            # Transform the data maintaining nested structure
+            students_data = [{
+                'id': student.id,
+                'student_id': student.student_id,
+                'first_name': student.first_name,
+                'last_name': student.last_name,
+                'grade': student.grade,
+                'section': student.section,
+                'program': {
+                    'id': student.program.id,
+                    'name': student.program.name
+                } if student.program else None,
+                'account_status': student.account_status,
+                'tuition_status': student.tuition_status,
+                'promoted': student.promoted
+            } for student in queryset]  # List comprehension instead of append loop
+
+            logger.info(f"Returning {len(students_data)} students")
+            if students_data:
+                logger.debug(f"Sample student data: {students_data[0]}")
+
+            return Response({
+                'results': students_data,
+                'count': len(students_data),
+                'filters': {  # Add available filters info
+                    'grade': grade_filter,
+                    'program': program_filter,
+                    'status': status_filter
+                }
+            })
+
         except Exception as e:
-            logger.error(f"Error fetching students: {str(e)}")
+            logger.exception(f"Error in students endpoint: {str(e)}")
             return Response(
-                {'error': 'Failed to fetch students'},
+                {
+                    'error': 'Failed to fetch students',
+                    'detail': str(e) if settings.DEBUG else None
+                },
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
     # enrollment part

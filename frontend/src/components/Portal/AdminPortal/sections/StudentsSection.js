@@ -27,7 +27,7 @@ export const StudentsSection = ({ students, onUpdateStudent, loading }) => {
     program: "all",
     grade: "all",
     section: "all",
-    status: "active",
+    status: "all",
   });
 
   const filterOptions = useMemo(
@@ -48,9 +48,20 @@ export const StudentsSection = ({ students, onUpdateStudent, loading }) => {
   // Filter students based on search term and filters
 
   const filteredStudents = useMemo(() => {
-    if (!students) return [];
+    console.log("Filtering students:", {
+      totalStudents: students?.length,
+      currentFilters: filters,
+      searchTerm,
+    });
 
-    return students.filter((student) => {
+    if (!students) {
+      console.log("No students data available");
+      return [];
+    }
+
+    const filtered = students.filter((student) => {
+      if (!student) return false;
+
       // Search term matching
       const searchString = [
         student.first_name,
@@ -65,7 +76,7 @@ export const StudentsSection = ({ students, onUpdateStudent, loading }) => {
       const matchesSearch =
         !searchTerm || searchString.includes(searchTerm.toLowerCase());
 
-      // Filter matching with null checks
+      // Filter matching
       const matchesFilters =
         (filters.program === "all" ||
           student.program?.name === filters.program) &&
@@ -73,9 +84,34 @@ export const StudentsSection = ({ students, onUpdateStudent, loading }) => {
         (filters.section === "all" || student.section === filters.section) &&
         (filters.status === "all" || student.account_status === filters.status);
 
-      return matchesSearch && matchesFilters;
+      const matches = matchesSearch && matchesFilters;
+
+      if (!matches) {
+        console.log("Student filtered out:", {
+          student: `${student.first_name} ${student.last_name}`,
+          matchesSearch,
+          matchesFilters,
+          filters,
+        });
+      }
+
+      return matches;
     });
+
+    console.log("Filtering complete:", {
+      filteredCount: filtered.length,
+      firstFiltered: filtered[0],
+    });
+
+    return filtered;
   }, [students, searchTerm, filters]);
+
+  console.log("StudentsSection initial data:", {
+    studentsCount: students?.length,
+    filteredCount: filteredStudents?.length,
+    firstStudent: students?.[0],
+    activeTab: "active", // default tab value
+  });
 
   // Handle status change with confirmation
   const handleStatusChange = useCallback(
@@ -94,116 +130,133 @@ export const StudentsSection = ({ students, onUpdateStudent, loading }) => {
 
   const renderStudentTable = useCallback(
     (students) => {
-      if (!students?.length) {
+      try {
+        if (!students?.length) {
+          return (
+            <Alert>
+              <AlertDescription>
+                No students found matching your criteria.
+              </AlertDescription>
+            </Alert>
+          );
+        }
+
         return (
-          <Alert>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableHeaderCell>Student ID</TableHeaderCell>
+                <TableHeaderCell>Name</TableHeaderCell>
+                <TableHeaderCell>Grade & Section</TableHeaderCell>
+                <TableHeaderCell>Program</TableHeaderCell>
+                <TableHeaderCell>Status</TableHeaderCell>
+                <TableHeaderCell>Academic Standing</TableHeaderCell>
+                <TableHeaderCell>Actions</TableHeaderCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {students.map((student) => (
+                <TableRow key={student.id} className="hover:bg-gray-50">
+                  <TableCell className="font-medium">
+                    {student.student_id}
+                  </TableCell>
+                  <TableCell>{`${student.first_name} ${student.last_name}`}</TableCell>
+                  <TableCell>{`${student.grade || "N/A"} - ${student.section || "N/A"}`}</TableCell>
+                  <TableCell>{student.program?.name || "N/A"}</TableCell>
+                  <TableCell>
+                    <span
+                      className={`px-2 py-1 rounded-full text-xs ${
+                        student.account_status === "A"
+                          ? "bg-green-100 text-green-800"
+                          : "bg-red-100 text-red-800"
+                      }`}
+                    >
+                      {student.account_status === "A" ? "Active" : "Inactive"}
+                    </span>
+                  </TableCell>
+                  <TableCell>
+                    <span
+                      className={`px-2 py-1 rounded-full text-xs ${
+                        student.promoted
+                          ? "bg-green-100 text-green-800"
+                          : student.tuition_status === "U"
+                            ? "bg-red-100 text-red-800"
+                            : "bg-yellow-100 text-yellow-800"
+                      }`}
+                    >
+                      {student.promoted
+                        ? "Promoted"
+                        : student.tuition_status === "U"
+                          ? "Pending Tuition"
+                          : "For Review"}
+                    </span>
+                  </TableCell>
+                  <TableCell>
+                    <Dropdown
+                      trigger={
+                        <Button variant="ghost" size="sm">
+                          <MoreVertical className="h-4 w-4" />
+                        </Button>
+                      }
+                      menu={
+                        <>
+                          <DropdownItem
+                            onClick={() =>
+                              onUpdateStudent(student.id, { action: "view" })
+                            }
+                          >
+                            View Details
+                          </DropdownItem>
+                          {student.account_status === "A" && (
+                            <DropdownItem
+                              onClick={() =>
+                                onUpdateStudent(student.id, {
+                                  action: "promote",
+                                })
+                              }
+                              disabled={student.tuition_status === "U"}
+                            >
+                              Promote Student
+                            </DropdownItem>
+                          )}
+                          <DropdownItem
+                            onClick={() =>
+                              handleStatusChange(
+                                student.id,
+                                student.account_status === "A" ? "I" : "A"
+                              )
+                            }
+                          >
+                            {student.account_status === "A"
+                              ? "Deactivate"
+                              : "Activate"}
+                          </DropdownItem>
+                        </>
+                      }
+                    />
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        );
+      } catch (error) {
+        console.error("Error rendering student table:", error);
+        return (
+          <Alert variant="destructive">
             <AlertDescription>
-              No students found matching your criteria.
+              Error displaying student data. Please try refreshing the page.
             </AlertDescription>
           </Alert>
         );
       }
-
-      return (
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableHeaderCell>Student ID</TableHeaderCell>
-              <TableHeaderCell>Name</TableHeaderCell>
-              <TableHeaderCell>Grade & Section</TableHeaderCell>
-              <TableHeaderCell>Program</TableHeaderCell>
-              <TableHeaderCell>Status</TableHeaderCell>
-              <TableHeaderCell>Academic Standing</TableHeaderCell>
-              <TableHeaderCell>Actions</TableHeaderCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {students.map((student) => (
-              <TableRow key={student.id} className="hover:bg-gray-50">
-                <TableCell className="font-medium">
-                  {student.student_id}
-                </TableCell>
-                <TableCell>{`${student.first_name} ${student.last_name}`}</TableCell>
-                <TableCell>{`${student.grade || "N/A"} - ${student.section || "N/A"}`}</TableCell>
-                <TableCell>{student.program?.name || "N/A"}</TableCell>
-                <TableCell>
-                  <span
-                    className={`px-2 py-1 rounded-full text-xs ${
-                      student.account_status === "A"
-                        ? "bg-green-100 text-green-800"
-                        : "bg-red-100 text-red-800"
-                    }`}
-                  >
-                    {student.account_status === "A" ? "Active" : "Inactive"}
-                  </span>
-                </TableCell>
-                <TableCell>
-                  <span
-                    className={`px-2 py-1 rounded-full text-xs ${
-                      student.promoted
-                        ? "bg-green-100 text-green-800"
-                        : student.tuition_status === "U"
-                          ? "bg-red-100 text-red-800"
-                          : "bg-yellow-100 text-yellow-800"
-                    }`}
-                  >
-                    {student.promoted
-                      ? "Promoted"
-                      : student.tuition_status === "U"
-                        ? "Pending Tuition"
-                        : "For Review"}
-                  </span>
-                </TableCell>
-                <TableCell>
-                  <Dropdown
-                    trigger={
-                      <Button variant="ghost" size="sm">
-                        <MoreVertical className="h-4 w-4" />
-                      </Button>
-                    }
-                    menu={
-                      <>
-                        <DropdownItem
-                          onClick={() =>
-                            onUpdateStudent(student.id, { action: "view" })
-                          }
-                        >
-                          View Details
-                        </DropdownItem>
-                        {student.account_status === "A" && (
-                          <DropdownItem
-                            onClick={() =>
-                              onUpdateStudent(student.id, { action: "promote" })
-                            }
-                            disabled={student.tuition_status === "U"}
-                          >
-                            Promote Student
-                          </DropdownItem>
-                        )}
-                        <DropdownItem
-                          onClick={() =>
-                            handleStatusChange(
-                              student.id,
-                              student.account_status === "A" ? "I" : "A"
-                            )
-                          }
-                        >
-                          {student.account_status === "A"
-                            ? "Deactivate"
-                            : "Activate"}
-                        </DropdownItem>
-                      </>
-                    }
-                  />
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      );
     },
     [handleStatusChange, onUpdateStudent]
   );
+
+  const activeFilters = Object.entries(filters)
+    .filter(([_, value]) => value !== "all")
+    .map(([key, value]) => `${key}: ${value}`);
 
   return (
     <div className="space-y-6">
@@ -281,6 +334,11 @@ export const StudentsSection = ({ students, onUpdateStudent, loading }) => {
                 </>
               }
             />
+            {activeFilters.length > 0 && (
+              <div className="text-sm text-gray-500 mt-2">
+                Active filters: {activeFilters.join(", ")}
+              </div>
+            )}
           </div>
 
           {/* Add Student Button */}
@@ -293,12 +351,22 @@ export const StudentsSection = ({ students, onUpdateStudent, loading }) => {
         <TabContent value="active">
           <Card>
             <CardHeader>
-              <CardTitle>Active Students</CardTitle>
+              <CardTitle>
+                Active Students ({filteredStudents?.length || 0})
+              </CardTitle>
             </CardHeader>
             <CardContent>
               {loading ? (
                 <div className="flex justify-center items-center h-64">
                   <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900" />
+                </div>
+              ) : !students?.length ? (
+                <div className="text-center py-4">
+                  No students data available
+                </div>
+              ) : !filteredStudents?.length ? (
+                <div className="text-center py-4">
+                  No students match the current filters
                 </div>
               ) : (
                 renderStudentTable(filteredStudents)

@@ -7,8 +7,9 @@ from django.db.models import Q
 from django.db.models.signals import post_save
 from apps.parents.models import Parent
 from apps.applicants.models import Applicant
-from apps.students.models import Student
-from apps.grades.models import Program
+from apps.enrollments.models import Enrollment
+from apps.students.models import Student, StudentMedical, AttendanceRecord
+from apps.grades.models import Program, GradeLevel, Grade, Subject
 from apps.accounts.models import UserProfile, ParentProfile, StudentProfile
 # Import your signal handlers
 from apps.accounts.signals import create_user_profile, create_parent_profile
@@ -141,13 +142,21 @@ class Command(BaseCommand):
 
     def create_test_enrollment(self, student, academic_year="2024"):
         """Create a test enrollment for a student"""
+        grade_level = student.program.gradelevel_set.first()
+
+        if not grade_level:
+            grade_level = GradeLevel.objects.create(
+                program=student.program,
+                name=student.grade
+            )
+
         return Enrollment.objects.create(
             student=student,
             academic_year=academic_year,
             enrollment_date=timezone.now(),
-            academic_period="Fall 2024",
-            enrollment_status="Active",
-            grade_level=student.program.gradelevel,
+            academic_period="Q1",
+            enrollment_status="ENROLLED",
+            grade_level=grade_level,
             previous_school="Previous Test School",
             previous_school_address="123 Test Street",
             previous_school_phone="123-456-7890",
@@ -159,9 +168,17 @@ class Command(BaseCommand):
     def create_test_grades(self, student):
         """Generate realistic test grades for a student"""
         subjects = ["Mathematics", "Science", "English", "Filipino", "MAPEH"]
+
         grades = []
 
-        for subject in subjects:
+        for subject_name in subjects:
+
+            subject, created = Subject.objects.get_or_create(
+                name=subject_name,
+                defaults={
+                    'description': f'Standard {subject_name} curriculum'
+                }
+            )
             # Generate realistic grade components
             written_work = random.randint(85, 95)
             performance_task = random.randint(85, 95)
@@ -184,15 +201,20 @@ class Command(BaseCommand):
 
     def create_test_medical_records(self, student):
         """Create test medical records for a student"""
-        return MedicalRecord.objects.create(
+        return StudentMedical.objects.create(
             student=student,
             blood_type=random.choice(
                 ['A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-']),
-            height=random.randint(100, 170),
-            weight=random.randint(20, 70),
-            vision_left="20/20",
-            vision_right="20/20",
-            last_checkup=timezone.now() - timedelta(days=random.randint(0, 180))
+            last_checkup=timezone.now() - timedelta(days=random.randint(0, 180)),
+            # Add required fields from StudentMedical model
+            emergency_contact="Emergency Contact Info",
+            doctor_name="Dr. Test",
+            doctor_contact="123-456-7890",
+            vaccination_status="PENDING",
+            medical_notes="Test medical notes",
+            allergies="None",
+            medications="None",
+            conditions="None",
         )
 
     def create_test_attendance(self, student, start_date=None):
@@ -364,14 +386,10 @@ class Command(BaseCommand):
                             if i == 0 and j == 0:
                                 first_student_code = student_code
 
-                            enrollment = self.create_test_enrollment(student)
-                            grades = self.create_test_grades(student)
-                            medical = self.create_test_medical_records(
-                                student
-                            )
-                            attendance = self.create_test_attendance(
-                                student
-                            )
+                            if j == 0:
+                                enrollment = self.create_test_enrollment(
+                                    student)
+
                             # Create student user
                             student_user = User.objects.create_user(
                                 username=f"student{i}{j}@test.com",
@@ -390,6 +408,15 @@ class Command(BaseCommand):
                                 user_profile=student_user_profile,
                                 student=student,
                                 parent_profile=parent_profile
+                            )
+
+                            # Create other student records
+                            grades = self.create_test_grades(student)
+                            medical = self.create_test_medical_records(
+                                student
+                            )
+                            attendance = self.create_test_attendance(
+                                student
                             )
 
                         # Create parent notifications after all setup is complete
